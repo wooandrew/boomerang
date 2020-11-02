@@ -8,4 +8,4 @@ This project is taken on in our free time. If we don't respond to an issue right
 
 Sincerely,<br>
 The Project Boomerang Team <br>
-Signed: Andrew Woo, Porter Squires, Brandon Yau
+Signed: Andrew Woo, Porter Squires, Brandon Yau, Awrish Khan

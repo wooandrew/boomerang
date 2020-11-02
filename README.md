@@ -1,6 +1,21 @@
 # Project Boomerang
 <img src="logo/githublogo.png" style="width:100%;"><br>
-:point_right: Howdy! Welcome to Project Boomerang's GitHub repository. Project Boomerang is a yet-to-be-titled video game project collaboration.
+:point_right: Howdy! Welcome to Project Boomerang's GitHub repository. Project Boomerang is an open-source, yet-to-be-titled video game project collaboration started by four college dudes.
+
+### Summary
+The goal of Project Boomerang is to create a fun, open-source video game that draws on inspiration from games enjoyed by the developers.
+
+This game is meant to be easily accessible for new players but also maintain a high skill ceiling so more seasoned players will continue to have fun. To do this, the core mechanics of the game will remain simple, but will be expanded upon by new skills and equipment that players can collect.
+
+While the initial development will focus on singleplayer, it remains a goal to create a fun multiplayer experience. In doing this, our aim is to enjoy a video game with friends that may not play many other video games, which explains our decision in how we want the learning curve to be.
+
+Various major features such as a skill tree and upgradable equipment will be implemented to promote a certain level of customization. This allows players to enjoy their time in this make-believe world how they want to, and hopefully provide a niche role to different players when multiplayer features roll around.
+
+In short, the goal of Project Boomerang is to create a fun, relaxed game that players can easily pick up and keep coming back to.
+
+For more information about our plans, check out [BRAINSTORM.md](BRAINSTORM.md)
+
+***
 
 ## Got Questions?
 Got a question about Project Boomerang? Go ahead and join our [Discord Server](https://discord.gg/NaM4FtJ) and ask one of the collaborators.
