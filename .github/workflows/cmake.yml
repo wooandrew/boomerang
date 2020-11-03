@@ -44,3 +44,10 @@ jobs:
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C $BUILD_TYPE
+      
+    - name: Actions Status Discord
+      uses: sarisia/actions-status-discord@v1.7.1
+      if: always()
+      with:
+        webhook: https://discord.com/api/webhooks/772976429885030420/MSDWs6IcS2YviwRV5Vxcj64hJMZf6aJef4nlWajUQ9ksm-zKWFf8foCwzNmDD5en64lZ
+
