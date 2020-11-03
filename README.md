@@ -1,5 +1,6 @@
 # Project Boomerang
 <img src="logo/githublogo.png" style="width:100%;"><br>
+![CMake](https://github.com/wooandrew/boomerang/workflows/CMake/badge.svg) ![](https://img.shields.io/github/languages/top/wooandrew/boomerang) ![Discord](https://img.shields.io/discord/769333702094225448?label=discord) ![license](https://img.shields.io/badge/license-Modified%20MIT-brightgreen)<br>
 :point_right: Howdy! Welcome to Project Boomerang's GitHub repository. Project Boomerang is an open-source, yet-to-be-titled video game project collaboration started by four college dudes.
 
 ### Summary
