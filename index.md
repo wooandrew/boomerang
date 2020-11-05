@@ -1,37 +1,36 @@
-## Welcome to GitHub Pages
+## About Project Boomerang
+<div style="text-align:center">
+<img src="https://github.com/wooandrew/boomerang/workflows/CMake/badge.svg">
+<img src="https://img.shields.io/github/languages/top/wooandrew/boomerang">
+<img src="https://img.shields.io/discord/769333702094225448?label=discord">
+<img src="https://img.shields.io/badge/license-Modified%20MIT-brightgreen">
+</div><br>
+The goal of Project Boomerang is to create a fun, open-source video game that draws on inspiration from games enjoyed by the developers.
 
-You can use the [editor on GitHub](https://github.com/wooandrew/boomerang/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+This game is meant to be easily accessible for new players but also maintain a high skill ceiling so more seasoned players will continue to have fun. To do this, the core mechanics of the game will remain simple, but will be expanded upon by new skills and equipment that players can collect.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+While the initial development will focus on singleplayer, it remains a goal to create a fun multiplayer experience. In doing this, our aim is to enjoy a video game with friends that may not play many other video games, which explains our decision in how we want the learning curve to be.
 
-### Markdown
+Various major features such as a skill tree and upgradable equipment will be implemented to promote a certain level of customization. This allows players to enjoy their time in this make-believe world how they want to, and hopefully provide a niche role to different players when multiplayer features roll around.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+In short, the goal of Project Boomerang is to create a fun, relaxed game that players can easily pick up and keep coming back to.
 
-```markdown
-Syntax highlighted code block
+For more information about our plans, check out [BRAINSTORM.md](https://github.com/wooandrew/boomerang/blob/master/BRAINSTORM.md)
 
-# Header 1
-## Header 2
-### Header 3
+### Got Questions?
+Got a question about Project Boomerang? Go ahead and join our [Discord Server](https://discord.gg/NaM4FtJ) and ask one of the collaborators.
 
-- Bulleted
-- List
+### Code of Conduct
+Before contributing, please read the project [Code of Conduct](https://github.com/wooandrew/boomerang/blob/master/CODE_OF_CONDUCT.md). This project is thusly governed, and all contributors and collaborators are expected to withhold these guidelines. Please report any violation of these guidelines to seungminleader@gmail.com.
 
-1. Numbered
-2. List
+### Contacting a Collaborator
+Want to directly contact a collaborator? Send us an email with the following subject line:<br>
+:arrow_right: `[Project Boomerang] - OneWordProblem - Longer Description`<br>
+:arrow_right: `[Project Boomerang] - Question - How do I contact a collaborator?`
 
-**Bold** and _Italic_ and `Code` text
+You should sign your email with your name and a way for us to contact you.
 
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/wooandrew/boomerang/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Our Emails:<br>
+`seungminleader@gmail.com` :arrow_right: Andrew Woo (Project Manager, Developer)<br>
+`pyertersquires@gmail.com` :arrow_right: Porter Squires (Developer)<br>
+`awrishkhan@gmail.com` :arrow_right: Awrish Khan (Developer)
