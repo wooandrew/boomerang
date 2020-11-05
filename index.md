@@ -1,9 +1,9 @@
 ## About Project Boomerang
 <div style="text-align:center">
-<img src="https://github.com/wooandrew/boomerang/workflows/CMake/badge.svg">
-<img src="https://img.shields.io/github/languages/top/wooandrew/boomerang">
-<img src="https://img.shields.io/discord/769333702094225448?label=discord">
-<img src="https://img.shields.io/badge/license-Modified%20MIT-brightgreen">
+<img src="https://github.com/wooandrew/boomerang/workflows/CMake/badge.svg"> 
+<img src="https://img.shields.io/github/languages/top/wooandrew/boomerang"> 
+<img src="https://img.shields.io/discord/769333702094225448?label=discord"> 
+<img src="https://img.shields.io/badge/license-Modified%20MIT-brightgreen"> 
 </div><br>
 The goal of Project Boomerang is to create a fun, open-source video game that draws on inspiration from games enjoyed by the developers.
 
@@ -25,12 +25,20 @@ Before contributing, please read the project [Code of Conduct](https://github.co
 
 ### Contacting a Collaborator
 Want to directly contact a collaborator? Send us an email with the following subject line:<br>
-:arrow_right: `[Project Boomerang] - OneWordProblem - Longer Description`<br>
-:arrow_right: `[Project Boomerang] - Question - How do I contact a collaborator?`
+➡️ `[Project Boomerang] - OneWordProblem - Longer Description`<br>
+➡️ `[Project Boomerang] - Question - How do I contact a collaborator?`
 
 You should sign your email with your name and a way for us to contact you.
 
 Our Emails:<br>
-`seungminleader@gmail.com` :arrow_right: Andrew Woo (Project Manager, Developer)<br>
-`pyertersquires@gmail.com` :arrow_right: Porter Squires (Developer)<br>
-`awrishkhan@gmail.com` :arrow_right: Awrish Khan (Developer)
+`seungminleader@gmail.com` ➡️ Andrew Woo (Project Manager, Developer)<br>
+`pyertersquires@gmail.com` ➡️ Porter Squires (Developer)<br>
+`awrishkhan@gmail.com` ➡️ Awrish Khan (Developer)
+
+
+## Credits
+Collaborators
+- <img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Andrew Woo`
+- <img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Brandon Yau`
+- <img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Porter Squires`
+- <img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Awrish Khan`
