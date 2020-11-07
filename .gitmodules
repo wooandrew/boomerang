@@ -4,4 +4,3 @@
 [submodule "includes/GLAD"]
 	path = includes/GLAD
 	url = https://github.com/wooandrew/glad.git
-	ignore = dirty
