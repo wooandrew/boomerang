@@ -1,3 +1,7 @@
 [submodule "includes/GLFW"]
 	path = includes/GLFW
 	url = https://github.com/glfw/glfw.git
+[submodule "includes/GLAD"]
+	path = includes/GLAD
+	url = https://github.com/wooandrew/glad.git
+	ignore = dirty
