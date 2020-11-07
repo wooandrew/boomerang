@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/input/keyboard.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,36 +21,33 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#include <iostream>
+#ifndef BOOMERANG_ENGINE_INPUT_KEYBOARD
+#define BOOMERANG_ENGINE_INPUT_KEYBOARD
 
-#include "engine/engine.hpp"
-#include "misc/logger.hpp"
+#include <GLFW/glfw3.h>
 
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+namespace Boomerang::Core::Input {
 
-int main() {
+    class Keyboard {
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+        // Callback to hardware: keyboard
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
+    public:
 
-    GAME_STATE state = GAME_STATE::RUN;
+        static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int modifiers);
 
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
+        static bool KeyDown(int key);
+        static bool KeyUp(int key);
+        static bool KeyIsPressed(int key);
 
-        engine.Update();
-    }
+    private:
 
-    return 0;
+        static bool Keys[];
+        static bool KeysDown[];
+        static bool KeysUp[];
+    };
 }
+
+#endif // !BOOMERANG_ENGINE_INPUT_KEYBOARD

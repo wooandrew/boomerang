@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : misc/logger.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,36 +21,39 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
+
+#ifndef BOOMERANG_MISC_LOGGER
+#define BOOMERANG_MISC_LOGGER
 
 #include <iostream>
+#include <mutex>
+#include <ostream>
+#include <fstream>
 
-#include "engine/engine.hpp"
-#include "misc/logger.hpp"
+#include "utilities.hpp"
 
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+namespace Boomerang::Misc::Logger {
 
-int main() {
+    // private namespace
+    namespace {
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+        static std::streambuf* stream_buffer_clog_default__ = std::clog.rdbuf();
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
-
-    GAME_STATE state = GAME_STATE::RUN;
-
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
-
-        engine.Update();
+        //static bool silenced = false;
+        static std::mutex mu;
     }
 
-    return 0;
+    void SetLogStream();
+    void SetLogStream(std::fstream& file);
+
+    template<typename ERRNUM, typename ERRMSG> void logger(ERRNUM errnum, ERRMSG errmsg) {
+
+        std::lock_guard<std::mutex> lock(mu);
+        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << errmsg << std::endl;
+    }
 }
+
+namespace logger = Boomerang::Misc::Logger;
+
+#endif // !BOOMERANG_MISC_LOGGER

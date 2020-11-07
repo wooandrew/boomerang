@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : misc/utilties.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,36 +21,27 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include "utilities.hpp"
 
-#include <iostream>
+#include <ctime>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
 
-#include "engine/engine.hpp"
-#include "misc/logger.hpp"
+namespace Boomerang::Misc::Utilities {
 
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+    std::string GetDateTime(std::string format) {
 
-int main() {
+        auto timeNow = std::chrono::system_clock::now();
+        time_t timeNow_t = std::chrono::system_clock::to_time_t(timeNow);
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+        std::ostringstream oss;
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
+        if (format == "ctd")
+            oss << std::ctime(&timeNow_t);
+        else
+            oss << std::put_time(std::localtime(&timeNow_t), format.c_str());
+
+        return oss.str();
     }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
-
-    GAME_STATE state = GAME_STATE::RUN;
-
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
-
-        engine.Update();
-    }
-
-    return 0;
 }

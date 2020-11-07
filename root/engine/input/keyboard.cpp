@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/input/keyboard.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,36 +21,49 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include "keyboard.hpp"
 
-#include <iostream>
+namespace Boomerang::Core::Input {
 
-#include "engine/engine.hpp"
-#include "misc/logger.hpp"
+	bool Keyboard::Keys[GLFW_KEY_LAST] = { 0 };
+	bool Keyboard::KeysDown[GLFW_KEY_LAST] = { 0 };
+	bool Keyboard::KeysUp[GLFW_KEY_LAST] = { 0 };
 
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+	void Keyboard::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int modifiers) {
 
-int main() {
+		if (key < 0)
+			return;
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+		if ((action != GLFW_RELEASE) && (!Keys[key])) {
+			KeysDown[key] = true;
+			KeysUp[key] = false;
+		}
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
+		if ((action == GLFW_RELEASE) && (Keys[key])) {
+			KeysDown[key] = false;
+			KeysUp[key] = true;
+		}
 
-    GAME_STATE state = GAME_STATE::RUN;
+		Keys[key] = (action != GLFW_RELEASE);
+	}
 
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
+	bool Keyboard::KeyDown(int key) {
 
-        engine.Update();
-    }
+		bool down = KeysDown[key];
+		KeysDown[key] = false;
 
-    return 0;
+		return down;
+	}
+
+	bool Keyboard::KeyUp(int key) {
+
+		bool up = KeysUp[key];
+		KeysUp[key] = false;
+
+		return up;
+	}
+
+	bool Keyboard::KeyIsPressed(int key) {
+		return Keys[key];
+	}
 }

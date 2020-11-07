@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : misc/utilties.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,36 +21,27 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#include <iostream>
+#ifndef BOOMERANG_MISC_UTILITIES
+#define BOOMERANG_MISC_UTILITIES
 
-#include "engine/engine.hpp"
-#include "misc/logger.hpp"
+#include <string>
+#include <type_traits>
 
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+namespace Boomerang::Misc::Utilities {
 
-int main() {
+    template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type> struct dimen2d {
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+        dimen2d() = default;
+        dimen2d(T _x, T _y) : x(_x), y(_y) { }
+        T x;
+        T y;
+    };
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
-
-    GAME_STATE state = GAME_STATE::RUN;
-
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
-
-        engine.Update();
-    }
-
-    return 0;
+    std::string GetDateTime(std::string format = "%Y%m%d _ %T");
 }
+
+namespace util = Boomerang::Misc::Utilities;
+
+#endif // !BOOMERANG_MISC_UTILITIES
