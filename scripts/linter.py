@@ -1,7 +1,7 @@
 import re
 
 #Opening the file
-file1 = open('main.cpp','r')
+file1 = open('test.cpp','r')
 Lines = file1.readlines()
 lineCount = 0
 
@@ -52,6 +52,20 @@ def checkOperator(oper,count,pattern,line):
         else :
             print("Bad spacing on line " + str(count) + " with the operator " + oper)
 
+def checkKeyword(count,line,Lines):
+    if (line.find("while") > - 1):
+        match = re.search(r'\s*while (.*) {[\s]*$',line)
+        if(match):
+            random = 0
+        else:
+            print("Spacing error on WHILE loop OR missing a bracket at end of while(...) { on line " + str(count)) 
+    if (line.find("for") > - 1):
+        match = re.search(r'\s*for (.*) {[\s]*$', line)
+        if(match):
+            random = 0
+        else:
+            print("Spacing error on FOR loop OR missing bracket at end of for(...) { on line " + str(count))
+
 for line in Lines:
     lineCount = lineCount + 1
     if(line.find("#") > -1) :
@@ -59,18 +73,18 @@ for line in Lines:
     if(line.find("//") > -1) : 
         line = line[0:line.find("//")] #parses comments
     
+    checkKeyword(lineCount,line,Lines)
     checkOperator('+',lineCount,pattPlus,line)
     checkOperator('-',lineCount,pattSub,line)
     checkOperator('*',lineCount,pattStar,line)
     checkOperator('%',lineCount,pattMod,line)
-    #checkOperator('>',lineCount,pattGreat,line)
-    #checkOperator('<',lineCount,pattLess,line) implement later :)
     checkOperator('=',lineCount,pattAssign,line)
     
    #NEED TO FIND WAY TO COUNT STRINGS OF LENGTH > 1
     checkOperator('<<',lineCount,pattCout,line)
     checkOperator('>>',lineCount,pattCin,line)
     checkOperator('==',lineCount,pattEqual,line)
+    #TODO >, < AND ++, -- OPERATORS
 
 
 
