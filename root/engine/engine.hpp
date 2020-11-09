@@ -41,7 +41,7 @@ namespace Boomerang::Core {
 
     class Engine {
 
-        // Project Boomerang Engine
+        /// Project Boomerang Engine
 
     public:
 
@@ -54,6 +54,7 @@ namespace Boomerang::Core {
         // Initialize Engine
         int init();
 
+        // Change metadata later to settings
         struct Metadata {       // This struct contains the metadata for the engine/glfwWindow. The data inside should be set BEFORE the engine is initialized.
 
             // Engine metadata
@@ -61,8 +62,8 @@ namespace Boomerang::Core {
             bool debugmode = false;             // Enable debug mode
             bool loggingEnabled = true;         // Enable logging
 
-            std::vector<float> clearcolor = { 1.f, 1.f, 1.f, 0.f }; // Render surface clear color
-            //RendererType rendermode = RendererType::Render_2D;      // Engine render mode
+            std::vector<float> clearcolor = { 1.f, 1.f, 1.f, 0.f };     // Render surface clear color
+            //RendererType rendermode = RendererType::Render_2D;        // Engine render mode
 
             //Version version;                                // Application version
 

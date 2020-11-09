@@ -1,4 +1,4 @@
-// Project Boomerang : engine/graphics/graphics.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/buffer.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,44 +21,41 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
-
-#ifndef BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
-#define BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
-
-// Include standard library
-#include <memory>
-
-// Include dependencies
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
-#include <GLM/glm/vec4.hpp>
-
-// Include boomerang libraries
-#include "vertex.hpp"
+#include "buffer.hpp"
 
 namespace Boomerang::Core::Graphics {
 
-    class Graphics {
+    BufferLayout::BufferLayout() {
+        stride = 0;
+    }
+    BufferLayout::BufferLayout(const std::initializer_list<BufferElement>& elements) : elements(elements) {
+        CalculateOffsetsAndStride();
+    }
 
-        /// Basic rendering class
+    std::vector<BufferElement>::iterator BufferLayout::begin() {
+        return elements.begin();
+    }
+    std::vector<BufferElement>::iterator BufferLayout::end() {
+        return elements.end();
+    }
+    std::vector<BufferElement>::const_iterator BufferLayout::begin() const {
+        return elements.begin();
+    }
+    std::vector<BufferElement>::const_iterator BufferLayout::end() const {
+        return elements.end();
+    }
 
-    public:
+    void BufferLayout::CalculateOffsetsAndStride() {
 
-        Graphics() = delete;
+        size_t offset = 0;
+        stride = 0;
 
-        static void init(const glm::vec4& color = glm::vec4(0));
-        static void shutdown();
+        for (auto& element : elements) {
+            
+            element.offset = offset;
 
-        static void SetViewPort(int x, int y, int width, int height);
-        static void SetClearColor(const glm::vec4& color);
-        static void Clear();
-
-        static void BeginRender();
-        static void EndRender(GLFWwindow* window);
-
-        static void DrawIndexed(const std::shared_ptr<Vertex>& vtxArray);
-    };
+            offset += element.size;
+            stride += element.size;
+        }
+    }
 }
-
-#endif // !BOOMERANG_ENGINE_GRAPHICS_GRAPHICS

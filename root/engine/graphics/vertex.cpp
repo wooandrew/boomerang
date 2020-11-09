@@ -1,4 +1,4 @@
-// Project Boomerang : engine/graphics/graphics.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/vertex.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,44 +21,4 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
-
-#ifndef BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
-#define BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
-
-// Include standard library
-#include <memory>
-
-// Include dependencies
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
-#include <GLM/glm/vec4.hpp>
-
-// Include boomerang libraries
 #include "vertex.hpp"
-
-namespace Boomerang::Core::Graphics {
-
-    class Graphics {
-
-        /// Basic rendering class
-
-    public:
-
-        Graphics() = delete;
-
-        static void init(const glm::vec4& color = glm::vec4(0));
-        static void shutdown();
-
-        static void SetViewPort(int x, int y, int width, int height);
-        static void SetClearColor(const glm::vec4& color);
-        static void Clear();
-
-        static void BeginRender();
-        static void EndRender(GLFWwindow* window);
-
-        static void DrawIndexed(const std::shared_ptr<Vertex>& vtxArray);
-    };
-}
-
-#endif // !BOOMERANG_ENGINE_GRAPHICS_GRAPHICS

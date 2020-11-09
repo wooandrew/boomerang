@@ -34,8 +34,14 @@ add_library(
     "engine/engine.cpp"
 
     # Input
-    "engine/input/mouse.hpp"            "engine/input/mouse.cpp"
-    "engine/input/keyboard.hpp"         "engine/input/keyboard.cpp"
+    "engine/input/mouse.hpp"                        "engine/input/mouse.cpp"
+    "engine/input/keyboard.hpp"                     "engine/input/keyboard.cpp"
+
+    # Graphics
+    "engine/graphics/graphics.hpp"                  "engine/graphics/graphics.cpp"
+    "engine/graphics/vertex.hpp"                    "engine/graphics/vertex.cpp"
+    "engine/graphics/buffer.hpp"                    "engine/graphics/buffer.cpp"
+    "engine/graphics/shaders/shaders.hpp"           "engine/graphics/shaders/shaders.cpp"
 )
 
 add_library(
@@ -55,3 +61,4 @@ target_link_libraries(main PRIVATE BoomerangMisc)
 # Link dependencies against project executable
 target_link_libraries(main PRIVATE glfw)                    # Link GLFW
 target_link_libraries(main PRIVATE glad)                    # Link GLAD
+# GLM is header only, no library to link                    # Link GLM

@@ -46,6 +46,7 @@ include_directories("${CMAKE_SOURCE_DIR}/includes/GLAD/include")
 include_directories("${CMAKE_SOURCE_DIR}/includes")
 add_subdirectory("includes/GLFW")
 add_subdirectory("includes/GLAD-master")
+add_subdirectory("includes/GLM")
 
 # Subdirectories
 add_subdirectory(root)

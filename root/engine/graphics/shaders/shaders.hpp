@@ -1,4 +1,4 @@
-// Project Boomerang : engine/graphics/graphics.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/shader/shaders.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,42 +23,33 @@
 
 #pragma once
 
-#ifndef BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
-#define BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
-
-// Include standard library
-#include <memory>
-
-// Include dependencies
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
-#include <GLM/glm/vec4.hpp>
-
-// Include boomerang libraries
-#include "vertex.hpp"
+#ifndef BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS
+#define BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS
 
 namespace Boomerang::Core::Graphics {
 
-    class Graphics {
+    // Shader data type
+    enum class ShaderDataType {
 
-        /// Basic rendering class
+        None = 0,
+        Float, Float2, Float3, Float4,          // Type Float
+        Mat3, Mat4,                             // Type Matrix
+        Int, Int2, Int3, Int4,                  // Type Int
+        Bool                                    // Type Bool
+    };
+
+    class Shaders {
+
+        /// Shader loader class
 
     public:
 
-        Graphics() = delete;
+        Shaders() = default;
+        ~Shaders();
 
-        static void init(const glm::vec4& color = glm::vec4(0));
-        static void shutdown();
+    private:
 
-        static void SetViewPort(int x, int y, int width, int height);
-        static void SetClearColor(const glm::vec4& color);
-        static void Clear();
-
-        static void BeginRender();
-        static void EndRender(GLFWwindow* window);
-
-        static void DrawIndexed(const std::shared_ptr<Vertex>& vtxArray);
     };
 }
 
-#endif // !BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
+#endif // !BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS

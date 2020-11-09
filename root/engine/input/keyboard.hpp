@@ -32,7 +32,7 @@ namespace Boomerang::Core::Input {
 
     class Keyboard {
 
-        // Callback to hardware: keyboard
+        /// Callback to hardware: keyboard
 
     public:
 

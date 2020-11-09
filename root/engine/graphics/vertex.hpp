@@ -1,4 +1,4 @@
-// Project Boomerang : engine/graphics/graphics.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/vertex.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,42 +23,34 @@
 
 #pragma once
 
-#ifndef BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
-#define BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
+#ifndef BOOMERANG_ENGINE_GRAPHICS_VERTEX
+#define BOOMERANG_ENGINE_GRAPHICS_VERTEX
 
 // Include standard library
 #include <memory>
 
-// Include dependencies
-#include <GLAD/glad.h>
-#include <GLFW/glfw3.h>
-#include <GLM/glm/vec4.hpp>
-
 // Include boomerang libraries
-#include "vertex.hpp"
+#include "buffer.hpp"
 
 namespace Boomerang::Core::Graphics {
 
-    class Graphics {
+    class Vertex {
 
-        /// Basic rendering class
+        /// Vertex array class
 
     public:
 
-        Graphics() = delete;
+        Vertex() = default;
+        ~Vertex();
 
-        static void init(const glm::vec4& color = glm::vec4(0));
-        static void shutdown();
+        void Bind() const;
+        void Unbind() const;
 
-        static void SetViewPort(int x, int y, int width, int height);
-        static void SetClearColor(const glm::vec4& color);
-        static void Clear();
+        void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vtxBuffer);
 
-        static void BeginRender();
-        static void EndRender(GLFWwindow* window);
+    private:
 
-        static void DrawIndexed(const std::shared_ptr<Vertex>& vtxArray);
     };
 }
 
-#endif // !BOOMERANG_ENGINE_GRAPHICS_GRAPHICS
+#endif // !BOOMERANG_ENGINE_GRAPHICS_VERTEX

@@ -36,7 +36,7 @@ namespace Boomerang::Core::Input {
 
     class Mouse {
 
-        // Callback to hardware: mouse
+        /// Callback to hardware: mouse
 
     public:
 
