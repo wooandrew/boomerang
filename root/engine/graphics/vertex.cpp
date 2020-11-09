@@ -22,3 +22,58 @@
 */
 
 #include "vertex.hpp"
+
+namespace Boomerang::Core::Graphics {
+
+    Vertex::Vertex() {
+        VertexBufferIndex = 0;
+        glad_glCreateVertexArrays(1, &RendererID);
+    }
+    Vertex::~Vertex() {
+        glad_glDeleteVertexArrays(1, &RendererID);
+    }
+
+    void Vertex::Bind() const {
+        glad_glBindVertexArray(RendererID);
+    }
+    void Vertex::Unbind() const {
+        glad_glBindVertexArray(0);
+    }
+
+    void Vertex::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vtxBuffer) {
+
+        if (vtxBuffer->GetLayout().GetElements().size() == 0) {
+            Boomerang::Misc::Logger::logger("VA001", "Error: Vertex Buffer has no layout.");
+            return;
+        }
+
+        glad_glBindVertexArray(RendererID);
+        vtxBuffer->Bind();
+
+        const auto& layout = vtxBuffer->GetLayout();
+        for (const auto& element : layout) {
+
+            glad_glEnableVertexAttribArray(VertexBufferIndex);
+            glad_glVertexAttribPointer(VertexBufferIndex, element.GetComponentCount(), ShaderTypeToGLBaseType(element.type),
+                                       element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.offset);
+            VertexBufferIndex++;
+        }
+
+        VertexBuffers.push_back(vtxBuffer);
+    }
+
+    void Vertex::SetIndexBuffer(const std::shared_ptr<Boomerang::Core::Graphics::IndexBuffer>& idxBuffer) {
+
+        glad_glBindVertexArray(RendererID);
+        idxBuffer->Bind();
+
+        IndexBuffer = idxBuffer;
+    }
+
+    const std::vector<std::shared_ptr<VertexBuffer>>& Vertex::GetVertexBuffers() const {
+        return VertexBuffers;
+    }
+    const std::shared_ptr<IndexBuffer>& Vertex::GetIndexBuffer() const {
+        return IndexBuffer;
+    }
+}

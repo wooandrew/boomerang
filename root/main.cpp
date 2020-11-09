@@ -25,8 +25,10 @@
 #include <iostream>
 
 #include "engine/engine.hpp"
+#include "engine/graphics/manager.hpp"
 #include "misc/logger.hpp"
 
+// Move to game manager
 enum class GAME_STATE {
     RUN,
     STOP
@@ -45,11 +47,19 @@ int main() {
     else
         logger::logger("  E  ", "Engine initialization success. All systems go!");
 
+    Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
+
     GAME_STATE state = GAME_STATE::RUN;
+
+
 
     while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
 
         engine.Update();
+
+        Boomerang::Core::Graphics::Manager::BeginRender();
+
+        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
     }
 
     return 0;

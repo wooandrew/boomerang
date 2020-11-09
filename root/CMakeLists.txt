@@ -38,7 +38,7 @@ add_library(
     "engine/input/keyboard.hpp"                     "engine/input/keyboard.cpp"
 
     # Graphics
-    "engine/graphics/graphics.hpp"                  "engine/graphics/graphics.cpp"
+    "engine/graphics/manager.hpp"                  "engine/graphics/manager.cpp"
     "engine/graphics/vertex.hpp"                    "engine/graphics/vertex.cpp"
     "engine/graphics/buffer.hpp"                    "engine/graphics/buffer.cpp"
     "engine/graphics/shaders/shaders.hpp"           "engine/graphics/shaders/shaders.cpp"

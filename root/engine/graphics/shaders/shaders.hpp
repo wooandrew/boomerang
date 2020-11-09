@@ -26,6 +26,10 @@
 #ifndef BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS
 #define BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS
 
+#include <GLAD/glad.h>
+
+#include "../../../misc/logger.hpp"
+
 namespace Boomerang::Core::Graphics {
 
     // Shader data type
@@ -37,6 +41,10 @@ namespace Boomerang::Core::Graphics {
         Int, Int2, Int3, Int4,                  // Type Int
         Bool                                    // Type Bool
     };
+
+    // Shader type to GL base type
+    int ShaderDataTypeSize(ShaderDataType type);
+    GLenum ShaderTypeToGLBaseType(ShaderDataType type);
 
     class Shaders {
 

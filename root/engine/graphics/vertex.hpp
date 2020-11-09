@@ -27,6 +27,7 @@
 #define BOOMERANG_ENGINE_GRAPHICS_VERTEX
 
 // Include standard library
+#include <vector>
 #include <memory>
 
 // Include boomerang libraries
@@ -40,16 +41,25 @@ namespace Boomerang::Core::Graphics {
 
     public:
 
-        Vertex() = default;
+        Vertex();
         ~Vertex();
 
         void Bind() const;
         void Unbind() const;
 
         void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vtxBuffer);
+        void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& idxBuffer);
+
+        const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const;
+        const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const;
 
     private:
 
+        unsigned int RendererID;
+        unsigned int VertexBufferIndex;
+
+        std::vector<std::shared_ptr<VertexBuffer>> VertexBuffers;
+        std::shared_ptr<IndexBuffer> IndexBuffer;
     };
 }
 

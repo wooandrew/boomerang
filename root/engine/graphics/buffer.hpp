@@ -45,6 +45,11 @@ namespace Boomerang::Core::Graphics {
         unsigned int size;
         size_t offset;
         bool normalized;
+
+        BufferElement() = default;
+        BufferElement(ShaderDataType _type, const std::string& _name, bool _normalized = false);
+
+        uint32_t GetComponentCount() const;
     };
 
     class BufferLayout {
@@ -89,12 +94,32 @@ namespace Boomerang::Core::Graphics {
         void Unbind() const;
 
         const BufferLayout& GetLayout() const;
-        void SetLayout(const BufferLayout& layout);
+        void SetLayout(const BufferLayout& _layout);
 
     private:
 
         unsigned int RendererID;
         BufferLayout layout;
+    };
+
+    class IndexBuffer {
+
+        /// Index buffer class
+
+    public:
+
+        IndexBuffer(unsigned int* indices, unsigned int _count);
+        ~IndexBuffer();
+
+        void Bind() const;
+        void Unbind() const;
+
+        unsigned int GetCount() const;
+
+    private:
+
+        unsigned int RendererID;
+        unsigned int count;
     };
 }
 
