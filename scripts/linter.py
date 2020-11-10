@@ -49,6 +49,7 @@ def countSymbol(string, symbol):
                 if i == symbol:
                     count = count + 1
             count = count - doubleSymbol
+            count = count - numOfArrow
         elif(symbol == '-'):
             match = re.findall('--',string)
             if (match): 
@@ -57,6 +58,7 @@ def countSymbol(string, symbol):
                 if i == symbol:
                     count = count + 1
             count = count - doubleSymbol
+            count = count - numOfArrow
         elif(symbol == '='):
             match = re.findall('==',string)
             if (match): 
@@ -70,7 +72,6 @@ def countSymbol(string, symbol):
         regex = symbol
         match = re.findall(symbol,string)
         count = countMatch(match)
-    count = count - numOfArrow
     return count
 
 #HELPER method to count number of matches
