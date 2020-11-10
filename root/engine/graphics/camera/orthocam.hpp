@@ -1,4 +1,4 @@
-// Project Boomerang : misc/logger.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/camera/orthocam.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,43 +23,27 @@
 
 #pragma once
 
-#ifndef BOOMERANG_MISC_LOGGER
-#define BOOMERANG_MISC_LOGGER
+#ifndef BOOMERANG_ENGINE_GRAPHICS_CAMERA_ORTHOCAM
+#define BOOMERANG_ENGINE_GRAPHICS_CAMERA_ORTHOCAM
 
-#include <iostream>
-#include <mutex>
-#include <ostream>
-#include <fstream>
+// Include dependencies
+#include <GLM/glm/gtc/matrix_transform.hpp>
 
-#include "utilities.hpp"
+namespace Boomerang::Core::Graphics {
 
-namespace Boomerang::Misc::Logger {
+    class Orthocam {
 
-    // private namespace
-    namespace {
+        /// Orthographic Camera System
 
-        static std::streambuf* stream_buffer_clog_default__ = std::clog.rdbuf();
+    public:
 
-        //static bool silenced = false;
-        static std::mutex mu;
-    }
+        Orthocam() = default;
+        //Orthocam(glm::ortho );
+        ~Orthocam();
 
-    void SetLogStream();
-    void SetLogStream(std::fstream& file);
+    private:
 
-    template<typename ERRNUM, typename...ERRMSG> void logger(ERRNUM errnum, ERRMSG...errmsg) {
-
-        std::lock_guard<std::mutex> lock(mu);
-        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << Boomerang::Misc::Utilities::VariadicAdd(errmsg...) << std::endl;
-    }
-
-    template<typename ERRNUM, typename ERRMSG> void logger(ERRNUM errnum, ERRMSG errmsg) {
-
-        std::lock_guard<std::mutex> lock(mu);
-        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << errmsg << std::endl;
-    }
+    };
 }
 
-namespace logger = Boomerang::Misc::Logger;
-
-#endif // !BOOMERANG_MISC_LOGGER
+#endif // !BOOMERANG_ENGINE_GRAPHICS_CAMERA_ORTHOCAM

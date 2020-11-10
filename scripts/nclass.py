@@ -21,11 +21,12 @@
 #  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # nclass.py creates new .cpp/.hpp class pair with proper copyright notice, license, pragma-header guard, namespace, and classname
-# version _ 11/08/2020 @ 10:55 PM
+# version _ 11/10/2020 @ 04:51 PM
 
 className = input('Enter class name: ')
 description = input('Enter class description: ')
 path = input('Enter path: root/')
+namespace = input("Enter namespace: Boomerang::")
 
 if path[-1] != '/':
     path += '/'
@@ -85,6 +86,10 @@ copyhead_cpp = f"""// Project Boomerang : {path}{className}.cpp (c) 2020 Andrew 
 */
 
 #include "{className}.hpp"
+
+namespace Boomerang::{namespace} {{
+
+}}
 """
 
 GUARD_SECTIONS = path.upper().split('/')
@@ -92,8 +97,6 @@ DEFINE_SECTIONS = ''
 
 for section in GUARD_SECTIONS:
     DEFINE_SECTIONS += '_' + section
-
-namespace = input("Enter namespace: Boomerang::")
 
 PRAGMA_GUARD = f"""#pragma once
 

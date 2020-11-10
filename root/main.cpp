@@ -51,7 +51,7 @@ int main() {
     // Initialize graphics renderer
     Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
 
-    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl");
+    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
 
 
     GAME_STATE state = GAME_STATE::RUN;

@@ -1,4 +1,4 @@
-// Project Boomerang : misc/logger.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/renderer.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,45 +21,4 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
-
-#ifndef BOOMERANG_MISC_LOGGER
-#define BOOMERANG_MISC_LOGGER
-
-#include <iostream>
-#include <mutex>
-#include <ostream>
-#include <fstream>
-
-#include "utilities.hpp"
-
-namespace Boomerang::Misc::Logger {
-
-    // private namespace
-    namespace {
-
-        static std::streambuf* stream_buffer_clog_default__ = std::clog.rdbuf();
-
-        //static bool silenced = false;
-        static std::mutex mu;
-    }
-
-    void SetLogStream();
-    void SetLogStream(std::fstream& file);
-
-    template<typename ERRNUM, typename...ERRMSG> void logger(ERRNUM errnum, ERRMSG...errmsg) {
-
-        std::lock_guard<std::mutex> lock(mu);
-        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << Boomerang::Misc::Utilities::VariadicAdd(errmsg...) << std::endl;
-    }
-
-    template<typename ERRNUM, typename ERRMSG> void logger(ERRNUM errnum, ERRMSG errmsg) {
-
-        std::lock_guard<std::mutex> lock(mu);
-        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << errmsg << std::endl;
-    }
-}
-
-namespace logger = Boomerang::Misc::Logger;
-
-#endif // !BOOMERANG_MISC_LOGGER
+#include "renderer.hpp"

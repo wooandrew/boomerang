@@ -31,6 +31,13 @@
 
 namespace Boomerang::Misc::Utilities {
 
+    template<typename T> T VariadicAdd(T value) {
+        return value;
+    }
+    template<typename T, typename...Args> T VariadicAdd(T value, Args...args) {
+        return value + VariadicAdd<T>(args...);
+    }
+
     template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type> struct dimen2d {
 
         dimen2d() = default;

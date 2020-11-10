@@ -41,7 +41,8 @@ add_library(
     "engine/graphics/manager.hpp"                   "engine/graphics/manager.cpp"
     "engine/graphics/vertex.hpp"                    "engine/graphics/vertex.cpp"
     "engine/graphics/buffer.hpp"                    "engine/graphics/buffer.cpp"
-    "engine/graphics/shaders/shaders.hpp"           "engine/graphics/shaders/shaders.cpp"
+    "engine/graphics/renderer.hpp"                  "engine/graphics/renderer.cpp"
+    "engine/graphics/shaders.hpp"                   "engine/graphics/shaders.cpp"
 )
 
 add_library(
@@ -56,7 +57,6 @@ add_library(
 # Link engine against main
 target_link_libraries(main PRIVATE BoomerangEngine)
 target_link_libraries(main PRIVATE BoomerangMisc)
-
 
 # Link dependencies against project executable
 target_link_libraries(main PRIVATE glfw)                    # Link GLFW

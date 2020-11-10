@@ -1,4 +1,4 @@
-// Project Boomerang : misc/logger.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/renderer.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,43 +23,31 @@
 
 #pragma once
 
-#ifndef BOOMERANG_MISC_LOGGER
-#define BOOMERANG_MISC_LOGGER
+#ifndef BOOMERANG_ENGINE_GRAPHICS_RENDERER
+#define BOOMERANG_ENGINE_GRAPHICS_RENDERER
 
-#include <iostream>
-#include <mutex>
-#include <ostream>
-#include <fstream>
+// Include dependencies
+#include <GLM/glm/glm.hpp>
 
-#include "utilities.hpp"
+namespace Boomerang::Core::Graphics {
 
-namespace Boomerang::Misc::Logger {
+    class Renderer {
 
-    // private namespace
-    namespace {
+        /// Static rendering functions
 
-        static std::streambuf* stream_buffer_clog_default__ = std::clog.rdbuf();
+    public:
 
-        //static bool silenced = false;
-        static std::mutex mu;
-    }
+        Renderer() = delete;
+        
+        static void init();
+        static void shutdown();
 
-    void SetLogStream();
-    void SetLogStream(std::fstream& file);
+        static void StartScene();
+        static void EndScene();
 
-    template<typename ERRNUM, typename...ERRMSG> void logger(ERRNUM errnum, ERRMSG...errmsg) {
-
-        std::lock_guard<std::mutex> lock(mu);
-        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << Boomerang::Misc::Utilities::VariadicAdd(errmsg...) << std::endl;
-    }
-
-    template<typename ERRNUM, typename ERRMSG> void logger(ERRNUM errnum, ERRMSG errmsg) {
-
-        std::lock_guard<std::mutex> lock(mu);
-        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << errmsg << std::endl;
-    }
+        static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
+        static void DrawQuad(const glm::vec3& _position, const glm::vec3& _size, const glm::vec4& _color);
+    };
 }
 
-namespace logger = Boomerang::Misc::Logger;
-
-#endif // !BOOMERANG_MISC_LOGGER
+#endif // !BOOMERANG_ENGINE_GRAPHICS_RENDERER

@@ -1,4 +1,4 @@
-// Project Boomerang : engine/graphics/shader/shaders.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/shaders.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,13 +23,13 @@
 
 #pragma once
 
-#ifndef BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS
-#define BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS
+#ifndef BOOMERANG_ENGINE_GRAPHICS_SHADERS
+#define BOOMERANG_ENGINE_GRAPHICS_SHADERS
 
 #include <GLAD/glad.h>
 #include <GLM/glm/glm.hpp>
 
-#include "../../../misc/logger.hpp"
+#include "../../misc/logger.hpp"
 
 namespace Boomerang::Core::Graphics {
 
@@ -64,19 +64,20 @@ namespace Boomerang::Core::Graphics {
         void SetInt(const std::string& _name, int _value);
         void SetFloat3(const std::string& _name, const glm::vec3& _value);
         void SetFloat4(const std::string& _name, const glm::vec4& _value);
-        void SetMat4(const std::string& _name, const glm::vec4&  _value);
-
-        std::string& GetName() const;
+        void SetMat4(const std::string& _name, const glm::mat4& _value);
 
         void UploadUniformInt(const std::string& _name, int _value);
 
-        void UploadUniformFloat(const std::string& name, float _value);
+        void UploadUniformFloat(const std::string& _name, float _value);
         void UploadUniformFloat2(const std::string& _name, const glm::vec2& _value);
         void UploadUniformFloat3(const std::string& _name, const glm::vec3& _value);
         void UploadUniformFloat4(const std::string& _name, const glm::vec4& _value);
 
         void UploadUniformMat3(const std::string& _name, const glm::mat3& _matrix);
         void UploadUniformMat4(const std::string& _name, const glm::mat4& _matrix);
+
+        // Getters
+        std::string GetName() const;
 
     private:
 
@@ -85,4 +86,4 @@ namespace Boomerang::Core::Graphics {
     };
 }
 
-#endif // !BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS
+#endif // !BOOMERANG_ENGINE_GRAPHICS_SHADERS
