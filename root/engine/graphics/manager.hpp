@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/manager.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,49 +21,44 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#include <iostream>
+#ifndef BOOMERANG_ENGINE_GRAPHICS_MANAGER
+#define BOOMERANG_ENGINE_GRAPHICS_MANAGER
 
-#include "engine/engine.hpp"
-#include "engine/graphics/manager.hpp"
-#include "engine/graphics/shaders/shaders.hpp"
-#include "misc/logger.hpp"
+// Include standard library
+#include <memory>
 
-// Move to game manager
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+// Include dependencies
+#include <GLAD/glad.h>
+#include <GLFW/glfw3.h>
+#include <GLM/glm/vec4.hpp>
 
-int main() {
+// Include boomerang libraries
+#include "vertex.hpp"
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+namespace Boomerang::Core::Graphics {
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
+    class Manager {
 
-    // Initialize graphics renderer
-    Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
+        /// Graphics manager
 
-    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
+    public:
 
+        Manager() = delete;
 
-    GAME_STATE state = GAME_STATE::RUN;
+        static void init(const glm::vec4& color = glm::vec4(0));
+        static void shutdown();
 
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
+        static void SetViewPort(int x, int y, int width, int height);
+        static void SetClearColor(const glm::vec4& color);
+        static void Clear();
 
-        engine.Update();
+        static void BeginRender();
+        static void EndRender(GLFWwindow* window);
 
-        Boomerang::Core::Graphics::Manager::BeginRender();
-
-        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
-    }
-
-    return 0;
+        static void DrawIndexed(const std::shared_ptr<Vertex>& vtxArray);
+    };
 }
+
+#endif // !BOOMERANG_ENGINE_GRAPHICS_MANAGER

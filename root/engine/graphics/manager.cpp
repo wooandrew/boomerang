@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/manager.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,49 +21,43 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include "manager.hpp"
 
-#include <iostream>
+namespace Boomerang::Core::Graphics {
 
-#include "engine/engine.hpp"
-#include "engine/graphics/manager.hpp"
-#include "engine/graphics/shaders/shaders.hpp"
-#include "misc/logger.hpp"
+    void Manager::init(const glm::vec4& color) {
 
-// Move to game manager
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+        glad_glEnable(GL_BLEND);
+        glad_glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-int main() {
+        glad_glEnable(GL_DEPTH_TEST);
 
-    logger::logger("     ", "Hello, Project Boomerang!");
-
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
+        SetClearColor(color);
     }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
+    void Manager::shutdown() {
 
-    // Initialize graphics renderer
-    Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
-
-    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
-
-
-    GAME_STATE state = GAME_STATE::RUN;
-
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
-
-        engine.Update();
-
-        Boomerang::Core::Graphics::Manager::BeginRender();
-
-        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
     }
 
-    return 0;
+    void Manager::SetViewPort(int x, int y, int width, int height) {
+        glad_glViewport(x, y, width, height);
+    }
+    void Manager::SetClearColor(const glm::vec4& color) {
+        glad_glClearColor(color.r, color.g, color.b, color.a);
+    }
+
+    void Manager::Clear() {
+        glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    void Manager::BeginRender() {
+        Clear();
+    }
+    void Manager::EndRender(GLFWwindow* window) {
+        glfwSwapBuffers(window);
+    }
+
+    void Manager::DrawIndexed(const std::shared_ptr<Vertex>& vtxArray) {
+        glad_glDrawElements(GL_TRIANGLES, vtxArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        glad_glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }

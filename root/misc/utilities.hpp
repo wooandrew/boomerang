@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : misc/utilties.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,49 +21,34 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#include <iostream>
+#ifndef BOOMERANG_MISC_UTILITIES
+#define BOOMERANG_MISC_UTILITIES
 
-#include "engine/engine.hpp"
-#include "engine/graphics/manager.hpp"
-#include "engine/graphics/shaders/shaders.hpp"
-#include "misc/logger.hpp"
+#include <string>
+#include <type_traits>
 
-// Move to game manager
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+namespace Boomerang::Misc::Utilities {
 
-int main() {
-
-    logger::logger("     ", "Hello, Project Boomerang!");
-
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
+    template<typename T> T VariadicAdd(T value) {
+        return value;
     }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
-
-    // Initialize graphics renderer
-    Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
-
-    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
-
-
-    GAME_STATE state = GAME_STATE::RUN;
-
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
-
-        engine.Update();
-
-        Boomerang::Core::Graphics::Manager::BeginRender();
-
-        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
+    template<typename T, typename...Args> T VariadicAdd(T value, Args...args) {
+        return value + VariadicAdd<T>(args...);
     }
 
-    return 0;
+    template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type> struct dimen2d {
+
+        dimen2d() = default;
+        dimen2d(T _x, T _y) : x(_x), y(_y) { }
+        T x;
+        T y;
+    };
+
+    std::string GetDateTime(std::string format = "%Y%m%d _ %T");
 }
+
+namespace util = Boomerang::Misc::Utilities;
+
+#endif // !BOOMERANG_MISC_UTILITIES

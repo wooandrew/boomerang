@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/input/mouse.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,49 +21,51 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#include <iostream>
+#ifndef BOOMERANG_ENGINE_INPUT_MOUSE
+#define BOOMERANG_ENGINE_INPUT_MOUSE
 
-#include "engine/engine.hpp"
-#include "engine/graphics/manager.hpp"
-#include "engine/graphics/shaders/shaders.hpp"
-#include "misc/logger.hpp"
+// Include standard library
+#include <utility>
 
-// Move to game manager
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+// Include dependencies
+#include <GLFW/glfw3.h>
 
-int main() {
+namespace Boomerang::Core::Input {
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+    class Mouse {
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
+        /// Callback to hardware: mouse
 
-    // Initialize graphics renderer
-    Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
+    public:
 
-    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
+        static void init(std::pair<int, int> _origin = std::make_pair(500, 309));
+        static void SetOrigin(std::pair<int, int> _origin);
 
+        // Callback functions
+        static void MousePositionCallback(GLFWwindow* window, double _x, double _y);
+        static void MouseButtonCallback(GLFWwindow* window, int button, int action, int modifiers);
 
-    GAME_STATE state = GAME_STATE::RUN;
+        // Getters
+        static double GetMouseX();
+        static double GetMouseY();
 
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
+        static bool ButtonDown(int button);
+        static bool ButtonUp(int button);
+        static bool ButtonIsPressed(int button);
 
-        engine.Update();
+    private:
 
-        Boomerang::Core::Graphics::Manager::BeginRender();
+        static double x;
+        static double y;
 
-        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
-    }
+        static bool Buttons[];
+        static bool ButtonsDown[];
+        static bool ButtonsUp[];
 
-    return 0;
+        static std::pair<int, int> origin;
+    };
 }
+
+#endif // !BOOMERANG_ENGINE_INPUT_MOUSE

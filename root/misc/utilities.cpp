@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : misc/utilties.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,49 +21,29 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma disable(warning : 4996)
 
-#include <iostream>
+#include "utilities.hpp"
 
-#include "engine/engine.hpp"
-#include "engine/graphics/manager.hpp"
-#include "engine/graphics/shaders/shaders.hpp"
-#include "misc/logger.hpp"
+#include <ctime>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
 
-// Move to game manager
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+namespace Boomerang::Misc::Utilities {
 
-int main() {
+    std::string GetDateTime(std::string format) {
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+        auto timeNow = std::chrono::system_clock::now();
+        time_t timeNow_t = std::chrono::system_clock::to_time_t(timeNow);
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
+        std::ostringstream oss;
+
+        if (format == "ctd")
+            oss << std::ctime(&timeNow_t);
+        else
+            oss << std::put_time(std::localtime(&timeNow_t), format.c_str());
+
+        return oss.str();
     }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
-
-    // Initialize graphics renderer
-    Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
-
-    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
-
-
-    GAME_STATE state = GAME_STATE::RUN;
-
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
-
-        engine.Update();
-
-        Boomerang::Core::Graphics::Manager::BeginRender();
-
-        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
-    }
-
-    return 0;
 }

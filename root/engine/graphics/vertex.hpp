@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/vertex.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,49 +21,46 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#include <iostream>
+#ifndef BOOMERANG_ENGINE_GRAPHICS_VERTEX
+#define BOOMERANG_ENGINE_GRAPHICS_VERTEX
 
-#include "engine/engine.hpp"
-#include "engine/graphics/manager.hpp"
-#include "engine/graphics/shaders/shaders.hpp"
-#include "misc/logger.hpp"
+// Include standard library
+#include <vector>
+#include <memory>
 
-// Move to game manager
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+// Include boomerang libraries
+#include "buffer.hpp"
 
-int main() {
+namespace Boomerang::Core::Graphics {
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+    class Vertex {
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
+        /// Vertex array class
 
-    // Initialize graphics renderer
-    Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
+    public:
 
-    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
+        Vertex();
+        ~Vertex();
 
+        void Bind() const;
+        void Unbind() const;
 
-    GAME_STATE state = GAME_STATE::RUN;
+        void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vtxBuffer);
+        void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& idxBuffer);
 
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
+        const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const;
+        const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const;
 
-        engine.Update();
+    private:
 
-        Boomerang::Core::Graphics::Manager::BeginRender();
+        unsigned int RendererID;
+        unsigned int VertexBufferIndex;
 
-        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
-    }
-
-    return 0;
+        std::vector<std::shared_ptr<VertexBuffer>> VertexBuffers;
+        std::shared_ptr<IndexBuffer> IndexBuffer;
+    };
 }
+
+#endif // !BOOMERANG_ENGINE_GRAPHICS_VERTEX

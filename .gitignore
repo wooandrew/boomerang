@@ -1,2 +1,5 @@
 .vs
 out
+includes/GLAD
+
+CMakeSettings.json

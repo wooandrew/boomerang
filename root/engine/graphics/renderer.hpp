@@ -1,4 +1,4 @@
-// Project Boomerang : main.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/renderer.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,49 +21,33 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#include <iostream>
+#ifndef BOOMERANG_ENGINE_GRAPHICS_RENDERER
+#define BOOMERANG_ENGINE_GRAPHICS_RENDERER
 
-#include "engine/engine.hpp"
-#include "engine/graphics/manager.hpp"
-#include "engine/graphics/shaders/shaders.hpp"
-#include "misc/logger.hpp"
+// Include dependencies
+#include <GLM/glm/glm.hpp>
 
-// Move to game manager
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
+namespace Boomerang::Core::Graphics {
 
-int main() {
+    class Renderer {
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+        /// Static rendering functions
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
+    public:
 
-    // Initialize graphics renderer
-    Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
+        Renderer() = delete;
+        
+        static void init();
+        static void shutdown();
 
-    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
+        static void StartScene();
+        static void EndScene();
 
-
-    GAME_STATE state = GAME_STATE::RUN;
-
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
-
-        engine.Update();
-
-        Boomerang::Core::Graphics::Manager::BeginRender();
-
-        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
-    }
-
-    return 0;
+        static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
+        static void DrawQuad(const glm::vec3& _position, const glm::vec3& _size, const glm::vec4& _color);
+    };
 }
+
+#endif // !BOOMERANG_ENGINE_GRAPHICS_RENDERER
