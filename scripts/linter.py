@@ -1,7 +1,7 @@
 import re
 
 #Opening the file
-file1 = open('test.cpp','r')
+file1 = open('../root/engine/engine.cpp','r')
 Lines = file1.readlines()
 lineCount = 0
 
@@ -16,11 +16,16 @@ pattGreat = ' > '
 pattLess = ' < '
 pattAssign = ' = '
 pattEqual = ' == ' #Need to come up with way to check for multiple occurences
+pattGenerics = '<.*>'
 
 #HELPER method to count number of symbols in a line
 def countSymbol(string, symbol):
     count = 0
     doubleSymbol = 0
+    numOfArrow = 0
+    numOfArrow = countPattern('->',string)
+    numOfGen = countPattern(pattGenerics,string)
+
     #This outer if statement returns the valid number of single 'symbol's differentiating betwen >, <, +, and -
     if (len(symbol) == 1):
         if(symbol == '+'):
@@ -39,6 +44,7 @@ def countSymbol(string, symbol):
                 if i == symbol:
                     count = count + 1
             count = count - doubleSymbol
+            count = count - numOfGen
         elif(symbol == '>'):
             match = re.findall('>>',string)
             if (match): 
@@ -47,6 +53,8 @@ def countSymbol(string, symbol):
                 if i == symbol:
                     count = count + 1
             count = count - doubleSymbol
+            count = count - numOfArrow
+            count = count - numOfGen
         elif(symbol == '-'):
             match = re.findall('--',string)
             if (match): 
@@ -55,6 +63,7 @@ def countSymbol(string, symbol):
                 if i == symbol:
                     count = count + 1
             count = count - doubleSymbol
+            count = count - numOfArrow
         elif(symbol == '='):
             match = re.findall('==',string)
             if (match): 
@@ -76,6 +85,13 @@ def countMatch(match):
     for ma in match:
         count = count + 1
     return count
+
+def countPattern(patt,line):
+    match = re.findall(patt,line)
+    num = 0
+    if(match):
+        num = countMatch(match)
+    return num
 
 #HELPER method to check for operators takes in Operator, LineCount, RegexPattern, Line
 def checkOperator(oper,count,pattern,line): 
@@ -115,31 +131,24 @@ for line in Lines:
         line = line[line.find("#")] #parses comments 
     if(line.find("//") > -1) : 
         line = line[0:line.find("//")] #parses comments
-
-    #checks Keywords like For While and one line Loops
-    checkKeyword(lineCount,line,Lines)
-    #checks binary operators
-    checkOperator('+',lineCount,pattPlus,line)
-    checkOperator('-',lineCount,pattSub,line)
-    checkOperator('*',lineCount,pattStar,line)
-    checkOperator('%',lineCount,pattMod,line)
-    checkOperator('=',lineCount,pattAssign,line)
-    checkOperator('<<',lineCount,pattCout,line)
-    checkOperator('>>',lineCount,pattCin,line)
-    checkOperator('==',lineCount,pattEqual,line)
-    #TODO >, < 
-    checkOperator('>',lineCount,pattGreat,line)
-    checkOperator('<',lineCount,pattLess,line)
+    if(line.find("/*") > -1):
+        random = 0
+    if(re.search("^\s\*",line)):
+        random = 0
+    else:
+        #checks Keywords like For While and one line Loops
+        checkKeyword(lineCount,line,Lines)
+        #checks binary operators
+        checkOperator('+',lineCount,pattPlus,line)
+        checkOperator('-',lineCount,pattSub,line)
+        checkOperator('*',lineCount,pattStar,line)
+        checkOperator('%',lineCount,pattMod,line)
+        checkOperator('=',lineCount,pattAssign,line)
+        checkOperator('<<',lineCount,pattCout,line)
+        checkOperator('>>',lineCount,pattCin,line)
+        checkOperator('==',lineCount,pattEqual,line)
+        #TODO >, < 
+        checkOperator('>',lineCount,pattGreat,line)
+        checkOperator('<',lineCount,pattLess,line)
     
-
-
-
-
-
- 
-
-
-
-
-
 
