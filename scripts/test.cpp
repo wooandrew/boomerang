@@ -32,8 +32,9 @@ int main() {
         count = count + 1;
     }
 
-    for (int i{0}; i < 30; i = i + 1) { 
-        std::cout << ("life is hard");
+    for (int i{0}; i < 30; i++) { 
+        bool go = 5 < 4;
+        std::cout << ("life is hard") << go;
     }
 
     return 0;

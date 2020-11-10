@@ -89,14 +89,19 @@ def checkOperator(oper,count,pattern,line):
             print("Bad spacing on line " + str(count) + " with the operator " + oper)
 
 #Makes sure that keywords have correct styling
-def checkKeyword(count,line,Lines):
+def checkKeyword(count,line,lines):
     if (line.find("while") > - 1):
         match = re.search(r'\s*while (.*) {[\s]*$',line)
         if(match):
             random = 0
         else:
             print("Spacing error on WHILE loop OR missing a bracket at end of while(...) { on line " + str(count)) 
-    if (line.find("for") > - 1):
+    if (re.search(r'\s*for (.*)\s*',line)):
+        if (re.search('\s*',lines[count + 2])):
+            random = 0
+        else:
+            print("For loops with one line SHOULD not have braces")
+    elif (line.find("for") > - 1):
         match = re.search(r'\s*for (.*) {[\s]*$', line)
         if(match):
             random = 0
