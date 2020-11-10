@@ -16,13 +16,16 @@ pattGreat = ' > '
 pattLess = ' < '
 pattAssign = ' = '
 pattEqual = ' == ' #Need to come up with way to check for multiple occurences
+pattGenerics = '<.*>'
 
 #HELPER method to count number of symbols in a line
 def countSymbol(string, symbol):
     count = 0
     doubleSymbol = 0
     numOfArrow = 0
-    numOfArrow = countArrow(string)
+    numOfArrow = countPattern('->',string)
+    numOfGen = countPattern(pattGenerics,string)
+
     #This outer if statement returns the valid number of single 'symbol's differentiating betwen >, <, +, and -
     if (len(symbol) == 1):
         if(symbol == '+'):
@@ -41,6 +44,7 @@ def countSymbol(string, symbol):
                 if i == symbol:
                     count = count + 1
             count = count - doubleSymbol
+            count = count - numOfGen
         elif(symbol == '>'):
             match = re.findall('>>',string)
             if (match): 
@@ -50,6 +54,7 @@ def countSymbol(string, symbol):
                     count = count + 1
             count = count - doubleSymbol
             count = count - numOfArrow
+            count = count - numOfGen
         elif(symbol == '-'):
             match = re.findall('--',string)
             if (match): 
@@ -81,9 +86,8 @@ def countMatch(match):
         count = count + 1
     return count
 
-def countArrow(line):
-    arrowSymbol = '->'
-    match = re.findall('->',line)
+def countPattern(patt,line):
+    match = re.findall(patt,line)
     num = 0
     if(match):
         num = countMatch(match)
