@@ -38,7 +38,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Uncomment this line before running if using Visual Studio's built-in CMake env.
-set(VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+# Set running directory to root
+# set(VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/root/)          # this crap doesnt work whyyyyyyyyyyy
 
 # Include directories
 include_directories("${CMAKE_SOURCE_DIR}/includes/GLFW/include")

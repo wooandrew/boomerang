@@ -26,6 +26,7 @@
 
 #include "engine/engine.hpp"
 #include "engine/graphics/manager.hpp"
+#include "engine/graphics/shaders/shaders.hpp"
 #include "misc/logger.hpp"
 
 // Move to game manager
@@ -47,11 +48,13 @@ int main() {
     else
         logger::logger("  E  ", "Engine initialization success. All systems go!");
 
+    // Initialize graphics renderer
     Boomerang::Core::Graphics::Manager::init({ 155, 255, 0, 0 });
 
+    Boomerang::Core::Graphics::Shader BasicShader("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl");
+
+
     GAME_STATE state = GAME_STATE::RUN;
-
-
 
     while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
 

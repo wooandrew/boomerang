@@ -27,6 +27,7 @@
 #define BOOMERANG_ENGINE_GRAPHICS_SHADER_SHADERS
 
 #include <GLAD/glad.h>
+#include <GLM/glm/glm.hpp>
 
 #include "../../../misc/logger.hpp"
 
@@ -46,17 +47,41 @@ namespace Boomerang::Core::Graphics {
     int ShaderDataTypeSize(ShaderDataType type);
     GLenum ShaderTypeToGLBaseType(ShaderDataType type);
 
-    class Shaders {
+    class Shader {
 
         /// Shader loader class
 
     public:
 
-        Shaders() = default;
-        ~Shaders();
+        Shader() = default;
+        Shader(const std::string& vtxPath, const std::string& frgPath);
+
+        void init(const std::string& vtxPath, const std::string& frgPath);
+
+        void Bind() const;
+        void Unbind() const;
+
+        void SetInt(const std::string& _name, int _value);
+        void SetFloat3(const std::string& _name, const glm::vec3& _value);
+        void SetFloat4(const std::string& _name, const glm::vec4& _value);
+        void SetMat4(const std::string& _name, const glm::vec4&  _value);
+
+        std::string& GetName() const;
+
+        void UploadUniformInt(const std::string& _name, int _value);
+
+        void UploadUniformFloat(const std::string& name, float _value);
+        void UploadUniformFloat2(const std::string& _name, const glm::vec2& _value);
+        void UploadUniformFloat3(const std::string& _name, const glm::vec3& _value);
+        void UploadUniformFloat4(const std::string& _name, const glm::vec4& _value);
+
+        void UploadUniformMat3(const std::string& _name, const glm::mat3& _matrix);
+        void UploadUniformMat4(const std::string& _name, const glm::mat4& _matrix);
 
     private:
 
+        unsigned int RendererID;
+        std::string name;
     };
 }
 

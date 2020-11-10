@@ -23,6 +23,8 @@
 
 #include "shaders.hpp"
 
+#include <fstream>
+
 namespace Boomerang::Core::Graphics {
 
     int ShaderDataTypeSize(ShaderDataType type) {
@@ -40,6 +42,7 @@ namespace Boomerang::Core::Graphics {
         case ShaderDataType::Int3:          return 4 * 3;
         case ShaderDataType::Int4:          return 4 * 4;
         case ShaderDataType::Bool:          return 1;
+
         default:
 
             Boomerang::Misc::Logger::logger("S0000", "Error: Unknown shader data type.");
@@ -62,11 +65,40 @@ namespace Boomerang::Core::Graphics {
         case ShaderDataType::Int3:          return GL_INT;
         case ShaderDataType::Int4:          return GL_INT;
         case ShaderDataType::Bool:          return GL_INT;
+
         default:
 
             Boomerang::Misc::Logger::logger("S0001", "Error: Unknown shader data type.");
 
             return 0;
         }
+    }
+
+    Shader::Shader(const std::string& vtxPath, const std::string& frgPath) {
+        init(vtxPath, frgPath);
+    }
+
+    void Shader::init(const std::string& vtxPath, const std::string& frgPath) {
+
+        std::string vtxSource;
+        std::string frgSource;
+
+        auto read = [](std::string path, std::string& source) {
+
+            // Read Vertex Shader Source
+            std::ifstream input(path, std::ios::in | std::ios::binary);
+            if (input) {
+
+                input.seekg(0, std::ios::end);
+                source.resize(input.tellg());
+
+                input.seekg(0, std::ios::beg);
+                input.read(&source[0], source.size());
+                input.close();
+            }
+        };
+
+        read(vtxPath, std::ref(vtxSource));  // Read Vertex Shader
+        read(frgPath, std::ref(frgSource));  // Read Fragment Shader
     }
 }
