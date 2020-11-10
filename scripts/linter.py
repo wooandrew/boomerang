@@ -20,14 +20,50 @@ pattEqual = ' == ' #Need to come up with way to check for multiple occurences
 #HELPER method to count number of symbols in a line
 def countSymbol(string, symbol):
     count = 0
-    if(len(symbol) == 1):
-        if(symbol == '<'):
-            later = "do this later"
+    doubleSymbol = 0
+    #This outer if statement returns the valid number of single 'symbol's differentiating betwen >, <, +, and -
+    if (len(symbol) == 1):
+        if(symbol == '+'):
+            match = re.findall('\+\+',string)
+            if (match): 
+                doubleSymbol = countMatch(match) * 2
+            for i in string:
+                if i == symbol:
+                    count = count + 1
+            count = count - doubleSymbol
+        elif(symbol == '<'):
+            match = re.findall('<<',string)
+            if (match): 
+                doubleSymbol = countMatch(match) * 2
+            for i in string:
+                if i == symbol:
+                    count = count + 1
+            count = count - doubleSymbol
         elif(symbol == '>'):
-            later = "do this later too"
-        for i in string:
-            if i == symbol:
-                count = count + 1
+            match = re.findall('>>',string)
+            if (match): 
+                doubleSymbol = countMatch(match) * 2
+            for i in string:
+                if i == symbol:
+                    count = count + 1
+            count = count - doubleSymbol
+        elif(symbol == '-'):
+            match = re.findall('--',string)
+            if (match): 
+                doubleSymbol = countMatch(match) * 2
+            for i in string:
+                if i == symbol:
+                    count = count + 1
+            count = count - doubleSymbol
+        elif(symbol == '='):
+            match = re.findall('==',string)
+            if (match): 
+                doubleSymbol = countMatch(match) * 2
+            for i in string:
+                if i == symbol:
+                    count = count + 1
+            count = count - doubleSymbol
+    #checks for > 1 length symbols like ++, ==, --,         
     else:
         regex = symbol
         match = re.findall(symbol,string)
@@ -44,14 +80,15 @@ def countMatch(match):
 #HELPER method to check for operators takes in Operator, LineCount, RegexPattern, Line
 def checkOperator(oper,count,pattern,line): 
     if (line.find(oper) > - 1) :
-        match = re.finditer(pattern,line)
-        numOfSymbol = countSymbol(line,oper)
-        numOfMatch = countMatch(match)
+        match = re.finditer(pattern,line) #takes in regex pattern, and given line
+        numOfSymbol = countSymbol(line,oper) #takes in given line, and operator SYMBOL so '+' or '<'
+        numOfMatch = countMatch(match) #counts number regex patterns found in line
         if(match and numOfSymbol == numOfMatch) : 
             random = 0
         else :
             print("Bad spacing on line " + str(count) + " with the operator " + oper)
 
+#Makes sure that keywords have correct styling
 def checkKeyword(count,line,Lines):
     if (line.find("while") > - 1):
         match = re.search(r'\s*while (.*) {[\s]*$',line)
@@ -66,26 +103,29 @@ def checkKeyword(count,line,Lines):
         else:
             print("Spacing error on FOR loop OR missing bracket at end of for(...) { on line " + str(count))
 
+#Loop that checkstyles each line
 for line in Lines:
     lineCount = lineCount + 1
     if(line.find("#") > -1) :
         line = line[line.find("#")] #parses comments 
     if(line.find("//") > -1) : 
         line = line[0:line.find("//")] #parses comments
-    
+
+    #checks Keywords like For While and one line Loops
     checkKeyword(lineCount,line,Lines)
+    #checks binary operators
     checkOperator('+',lineCount,pattPlus,line)
     checkOperator('-',lineCount,pattSub,line)
     checkOperator('*',lineCount,pattStar,line)
     checkOperator('%',lineCount,pattMod,line)
     checkOperator('=',lineCount,pattAssign,line)
-    
-   #NEED TO FIND WAY TO COUNT STRINGS OF LENGTH > 1
     checkOperator('<<',lineCount,pattCout,line)
     checkOperator('>>',lineCount,pattCin,line)
     checkOperator('==',lineCount,pattEqual,line)
-    #TODO >, < AND ++, -- OPERATORS
-
+    #TODO >, < 
+    checkOperator('>',lineCount,pattGreat,line)
+    checkOperator('<',lineCount,pattLess,line)
+    
 
 
 
