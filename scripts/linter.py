@@ -21,6 +21,8 @@ pattEqual = ' == ' #Need to come up with way to check for multiple occurences
 def countSymbol(string, symbol):
     count = 0
     doubleSymbol = 0
+    numOfArrow = 0
+    numOfArrow = countArrow(string)
     #This outer if statement returns the valid number of single 'symbol's differentiating betwen >, <, +, and -
     if (len(symbol) == 1):
         if(symbol == '+'):
@@ -68,6 +70,7 @@ def countSymbol(string, symbol):
         regex = symbol
         match = re.findall(symbol,string)
         count = countMatch(match)
+    count = count - numOfArrow
     return count
 
 #HELPER method to count number of matches
@@ -76,6 +79,14 @@ def countMatch(match):
     for ma in match:
         count = count + 1
     return count
+
+def countArrow(line):
+    arrowSymbol = '->'
+    match = re.findall('->',line)
+    num = 0
+    if(match):
+        num = countMatch(match)
+    return num
 
 #HELPER method to check for operators takes in Operator, LineCount, RegexPattern, Line
 def checkOperator(oper,count,pattern,line): 
@@ -135,15 +146,4 @@ for line in Lines:
         checkOperator('>',lineCount,pattGreat,line)
         checkOperator('<',lineCount,pattLess,line)
     
-
-
-
-
-
- 
-
-
-
-
-
 
