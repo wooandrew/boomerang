@@ -1,7 +1,7 @@
 import re
 
 #Opening the file
-file1 = open('test.cpp','r')
+file1 = open('../root/engine/engine.cpp','r')
 Lines = file1.readlines()
 lineCount = 0
 
@@ -115,21 +115,25 @@ for line in Lines:
         line = line[line.find("#")] #parses comments 
     if(line.find("//") > -1) : 
         line = line[0:line.find("//")] #parses comments
-
-    #checks Keywords like For While and one line Loops
-    checkKeyword(lineCount,line,Lines)
-    #checks binary operators
-    checkOperator('+',lineCount,pattPlus,line)
-    checkOperator('-',lineCount,pattSub,line)
-    checkOperator('*',lineCount,pattStar,line)
-    checkOperator('%',lineCount,pattMod,line)
-    checkOperator('=',lineCount,pattAssign,line)
-    checkOperator('<<',lineCount,pattCout,line)
-    checkOperator('>>',lineCount,pattCin,line)
-    checkOperator('==',lineCount,pattEqual,line)
-    #TODO >, < 
-    checkOperator('>',lineCount,pattGreat,line)
-    checkOperator('<',lineCount,pattLess,line)
+    if(line.find("/*") > -1):
+        random = 0
+    if(re.search("^\s\*",line)):
+        random = 0
+    else:
+        #checks Keywords like For While and one line Loops
+        checkKeyword(lineCount,line,Lines)
+        #checks binary operators
+        checkOperator('+',lineCount,pattPlus,line)
+        checkOperator('-',lineCount,pattSub,line)
+        checkOperator('*',lineCount,pattStar,line)
+        checkOperator('%',lineCount,pattMod,line)
+        checkOperator('=',lineCount,pattAssign,line)
+        checkOperator('<<',lineCount,pattCout,line)
+        checkOperator('>>',lineCount,pattCin,line)
+        checkOperator('==',lineCount,pattEqual,line)
+        #TODO >, < 
+        checkOperator('>',lineCount,pattGreat,line)
+        checkOperator('<',lineCount,pattLess,line)
     
 
 
