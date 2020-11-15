@@ -34,7 +34,7 @@
 #include <initializer_list>
 
 // Include boomerang libraries
-#include "shaders/shaders.hpp"
+#include "shaders.hpp"
 
 namespace Boomerang::Core::Graphics {
 

@@ -7,3 +7,6 @@
 [submodule "includes/GLM"]
 	path = includes/GLM
 	url = https://github.com/g-truc/glm.git
+[submodule "includes/STB"]
+	path = includes/STB
+	url = https://github.com/nothings/stb.git

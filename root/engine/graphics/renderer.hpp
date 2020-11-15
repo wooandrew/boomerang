@@ -29,6 +29,9 @@
 // Include dependencies
 #include <GLM/glm/glm.hpp>
 
+// Include boomerang libraries
+#include "camera/orthocam.hpp"
+
 namespace Boomerang::Core::Graphics {
 
     class Renderer {
@@ -42,11 +45,11 @@ namespace Boomerang::Core::Graphics {
         static void init();
         static void shutdown();
 
-        static void StartScene();
+        static void StartScene(const OrthoCam& camera);
         static void EndScene();
 
         static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
-        static void DrawQuad(const glm::vec3& _position, const glm::vec3& _size, const glm::vec4& _color);
+        static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
     };
 }
 
