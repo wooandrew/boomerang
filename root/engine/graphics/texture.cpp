@@ -48,6 +48,8 @@ namespace Boomerang::Core::Graphics {
 
         dimensions = util::dimen2d<int>();
 
+        RendererID = 0;
+
         InternalFormat = 0;
         DataFormat = 0;
 
@@ -65,8 +67,12 @@ namespace Boomerang::Core::Graphics {
             GLenum iFormat = 0;     // Temp Internal Format
             GLenum dFormat = 0;     // Temp Data Format
 
-            if (channels == 4 || channels == 3) {
+            if (channels == 4) {
                 iFormat = GL_RGBA8;
+                dFormat = GL_RGBA;
+            }
+            else if (channels == 3) {
+                iFormat = GL_RGB8;
                 dFormat = GL_RGB;
             }
             else

@@ -24,7 +24,6 @@
 #include "renderer.hpp"
 
 #include <vector>
-#include <memory>
 
 #include <GLM/glm/gtc/matrix_transform.hpp>
 
@@ -91,6 +90,26 @@ namespace Boomerang::Core::Graphics {
 
     void Renderer::EndScene() { }
 
+    // Render texture functions
+    void Renderer::RenderTexture(const glm::vec2& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
+        RenderTexture({ _position.x, _position.y, 0.0f }, _scale, _texture);
+    }
+    void Renderer::RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
+
+        RenderData->__shader->SetFloat4("u_Color", glm::vec4(1.0f));
+        _texture->Bind();
+
+        float t_Width = static_cast<float>(_texture->GetDimensions().x) * _scale.x;
+        float t_Height = static_cast<float>(_texture->GetDimensions().y) * _scale.y;
+
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+        RenderData->__shader->SetMat4("u_Transform", transform);
+
+        RenderData->__quad_vtx_array->Bind();
+        Manager::DrawIndexed(RenderData->__quad_vtx_array);
+    }
+
+    // Static Quad Render functions
     void Renderer::DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color) {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _color);
     }

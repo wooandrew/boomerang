@@ -26,10 +26,14 @@
 #ifndef BOOMERANG_ENGINE_GRAPHICS_RENDERER
 #define BOOMERANG_ENGINE_GRAPHICS_RENDERER
 
+// Include standard library
+#include <memory>
+
 // Include dependencies
 #include <GLM/glm/glm.hpp>
 
 // Include boomerang libraries
+#include "texture.hpp"
 #include "camera/orthocam.hpp"
 
 namespace Boomerang::Core::Graphics {
@@ -48,6 +52,11 @@ namespace Boomerang::Core::Graphics {
         static void StartScene(const OrthoCam& camera);
         static void EndScene();
 
+        // Texture Render
+        static void RenderTexture(const glm::vec2& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
+        static void RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
+
+        // Static Quad Render
         static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
         static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
     };

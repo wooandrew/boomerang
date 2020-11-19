@@ -59,10 +59,14 @@ int main() {
     Boomerang::Core::Input::Mouse::init();
     Boomerang::Core::Graphics::Manager::init();
     Boomerang::Core::Graphics::Renderer::init();
+
+    //Boomerang::Core::Graphics::Manager::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
     
     // Initialize Primary Orthographic Camera
     Boomerang::Core::Graphics::OrthoCam __camera_1(glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
                                                               -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
+
+    std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/demo.png");
 
     GAME_STATE state = GAME_STATE::RUN;
 
@@ -73,7 +77,8 @@ int main() {
         Boomerang::Core::Graphics::Manager::BeginRender();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0 }, { 300, 300 }, { 0, 120, 120, 1.f });
+        //Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0 }, { 100, 100 }, { 1.f, 1.f, 1.f, 1.f });
+        Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0 }, { 1.f, 1.f }, demo);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
