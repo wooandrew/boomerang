@@ -34,7 +34,9 @@
 #include "engine/graphics/shaders.hpp"
 #include "engine/graphics/renderer.hpp"
 #include "engine/graphics/camera/orthocam.hpp"
+
 #include "misc/logger.hpp"
+#include "misc/utilities.hpp"
 
 // Move to game manager
 enum class GAME_STATE {
@@ -56,6 +58,8 @@ int main() {
         logger::logger("  E  ", "Engine initialization success. All systems go!");
 
     // Initialize Engine components
+    Boomerang::Misc::Utilities::DeltaTime dt;
+
     Boomerang::Core::Input::Mouse::init();
     Boomerang::Core::Graphics::Manager::init();
     Boomerang::Core::Graphics::Renderer::init();
@@ -73,6 +77,9 @@ int main() {
     while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
 
         engine.Update();
+        dt.update();
+
+        __camera_1.UpdateCamera(dt.dt());
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 

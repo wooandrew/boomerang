@@ -27,6 +27,7 @@
 #define BOOMERANG_MISC_UTILITIES
 
 #include <string>
+#include <chrono>
 #include <type_traits>
 
 namespace Boomerang::Misc::Utilities {
@@ -48,6 +49,23 @@ namespace Boomerang::Misc::Utilities {
     };
 
     std::string GetDateTime(std::string format = "%Y%m%d _ %T");
+
+    struct DeltaTime {
+
+        DeltaTime();
+        void update(bool reset = false);
+        double dt();
+
+    private:
+
+        std::chrono::time_point<std::chrono::steady_clock> start;
+        std::chrono::time_point<std::chrono::steady_clock> stop;
+
+        double deltaTime;
+        double lastTime;
+
+        bool firstCall;
+    };
 }
 
 namespace util = Boomerang::Misc::Utilities;

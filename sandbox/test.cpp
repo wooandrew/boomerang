@@ -1,4 +1,4 @@
-// Project Boomerang(c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : test.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 // Modified MIT License
 // 
@@ -23,9 +23,15 @@
 
 #include <iostream>
 
+template<typename R> R VariadicAdd(R r) {
+    return r;
+}
+template<typename T, typename...Args> void VariadicAdd(T value, Args...args) {
+    std::cout << value << VariadicAdd<T>(args...) << " ";
+}
 int main() {
 
-    std::cout << "Hello, Project Boomerang sandbox!" << std::endl;
+    VariadicAdd("100", "200", "300");
 
     return 0;
 }
