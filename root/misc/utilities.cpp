@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma disable(warning : 4996)
+#pragma warning(disable : 4996)
 
 #include "utilities.hpp"
 

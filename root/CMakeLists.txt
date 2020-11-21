@@ -24,6 +24,8 @@ cmake_minimum_required (VERSION 3.8)
 
 add_executable(main main.cpp)
 
+# Add project dependencies
+
 add_library(
     
     # Add Engine
@@ -62,8 +64,7 @@ add_library(
 target_link_libraries(main PRIVATE BoomerangEngine)
 target_link_libraries(main PRIVATE BoomerangMisc)
 
-# Add project dependencies
-add_dependencies(main glfw glad)
+add_dependencies(BoomerangEngine glfw glad)
 
 # Link dependencies against project executable
 target_link_libraries(main PRIVATE glfw)                    # Link GLFW
