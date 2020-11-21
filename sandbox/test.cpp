@@ -23,15 +23,9 @@
 
 #include <iostream>
 
-template<typename R> R VariadicAdd(R r) {
-    return r;
-}
-template<typename T, typename...Args> void VariadicAdd(T value, Args...args) {
-    std::cout << value << VariadicAdd<T>(args...) << " ";
-}
 int main() {
-
-    VariadicAdd("100", "200", "300");
+    
+    std::cout << "Hello World" << std::endl;
 
     return 0;
 }
