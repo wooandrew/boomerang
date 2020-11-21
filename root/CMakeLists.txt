@@ -62,6 +62,9 @@ add_library(
 target_link_libraries(main PRIVATE BoomerangEngine)
 target_link_libraries(main PRIVATE BoomerangMisc)
 
+# Add project dependencies
+add_dependencies(main glfw glad)
+
 # Link dependencies against project executable
 target_link_libraries(main PRIVATE glfw)                    # Link GLFW
 target_link_libraries(main PRIVATE glad)                    # Link GLAD
