@@ -104,7 +104,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // dt = delta time
-    void OrthoCam::UpdateCamera(float dt) {
+    void OrthoCam::update(float dt) {
 
         if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W)) {               // UP
             position.x += -std::sin(glm::radians(rotation)) * speed * dt;

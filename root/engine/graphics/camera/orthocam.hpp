@@ -61,7 +61,7 @@ namespace Boomerang::Core::Graphics {
         const glm::mat4& GetViewProjectionMatrix() const;
 
         // dt = delta time
-        virtual void UpdateCamera(float dt);
+        virtual void update(float dt);
 
     private:
 

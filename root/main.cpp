@@ -21,9 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <STB/stb_image.h>
-
 #include <iostream>
 
 #include <GLM/glm/gtc/matrix_transform.hpp>
@@ -79,7 +76,7 @@ int main() {
         engine.Update();
         dt.update();
 
-        __camera_1.UpdateCamera(dt.dt());
+        __camera_1.update(dt.dt());
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
