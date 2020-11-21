@@ -1,4 +1,4 @@
-// Project Boomerang : test.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang(c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 // Modified MIT License
 // 
@@ -24,8 +24,18 @@
 #include <iostream>
 
 int main() {
-    
-    std::cout << "Hello World" << std::endl;
+
+    std::cout << "Hello, Project Boomerang!" << 5 + 5 << std::endl;
+    int count = 0;
+    while (count < 10) {       
+        std::cout << ("It's working");
+        count = count + 1;
+    }
+
+    for (int i{0}; i < 30; i++) { 
+        bool go = 5 < 4;
+        std::cout << ("life is hard") << go;
+    }
 
     return 0;
 }

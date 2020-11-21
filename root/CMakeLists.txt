@@ -23,3 +23,50 @@
 cmake_minimum_required (VERSION 3.8)
 
 add_executable(main main.cpp)
+
+# Add project dependencies
+
+add_library(
+    
+    # Add Engine
+    BoomerangEngine STATIC
+
+    # Main
+    "engine/engine.hpp"
+    "engine/engine.cpp"
+
+    # Input
+    "engine/input/mouse.hpp"                        "engine/input/mouse.cpp"
+    "engine/input/keyboard.hpp"                     "engine/input/keyboard.cpp"
+
+    # Graphics
+    "engine/graphics/manager.hpp"                   "engine/graphics/manager.cpp"
+    "engine/graphics/vertex.hpp"                    "engine/graphics/vertex.cpp"
+    "engine/graphics/buffer.hpp"                    "engine/graphics/buffer.cpp"
+    "engine/graphics/renderer.hpp"                  "engine/graphics/renderer.cpp"
+    "engine/graphics/shaders.hpp"                   "engine/graphics/shaders.cpp"
+    "engine/graphics/texture.hpp"                   "engine/graphics/texture.cpp"
+
+    # Graphics / Camera
+    "engine/graphics/camera/orthocam.hpp"           "engine/graphics/camera/orthocam.cpp"
+)
+
+add_library(
+    
+    # Add misc
+    BoomerangMisc STATIC
+
+    # files
+    "misc/utilities.hpp"            "misc/utilities.cpp"
+    "misc/logger.hpp"               "misc/logger.cpp"
+)
+# Link engine against main
+target_link_libraries(main PRIVATE BoomerangEngine)
+target_link_libraries(main PRIVATE BoomerangMisc)
+
+add_dependencies(BoomerangEngine glfw glad)
+
+# Link dependencies against project executable
+target_link_libraries(main PRIVATE glfw)                    # Link GLFW
+target_link_libraries(main PRIVATE glad)                    # Link GLAD
+# GLM is header only, no library to link                    # Link GLM
