@@ -1,4 +1,4 @@
-// Project Boomerang(c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : test.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 // Modified MIT License
 // 
@@ -24,8 +24,8 @@
 #include <iostream>
 
 int main() {
-
-    std::cout << "Hello, Project Boomerang sandbox!" << std::endl;
+    
+    std::cout << "Hello World" << std::endl;
 
     return 0;
 }

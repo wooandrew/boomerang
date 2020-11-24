@@ -124,10 +124,10 @@ namespace Boomerang::Core::Graphics {
 
         for (auto& source : sources) {
 
-            //GLenum type = source.first;
+            GLenum type = source.first;
             const std::string& tmpSrc = source.second;
 
-            GLuint shader = glad_glCreateShader(source.first);
+            GLuint shader = glad_glCreateShader(type);
 
             const GLchar* srcCStr = tmpSrc.c_str();
             glad_glShaderSource(shader, 1, &srcCStr, 0);

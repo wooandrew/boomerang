@@ -78,6 +78,7 @@ namespace Boomerang::Core {
 
         // Getters
         GLFWwindow* GetWindow();
+        const util::dimen2d<int> GetWindowDimensions() const;
 
     private:
 

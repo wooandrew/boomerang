@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma disable(warning : 4996)
+#pragma warning(disable : 4996)
 
 #include "utilities.hpp"
 
@@ -45,5 +45,37 @@ namespace Boomerang::Misc::Utilities {
             oss << std::put_time(std::localtime(&timeNow_t), format.c_str());
 
         return oss.str();
+    }
+
+    DeltaTime::DeltaTime() {
+
+        std::chrono::high_resolution_clock dtimer;
+
+        start = dtimer.now();
+        stop = dtimer.now();
+
+        deltaTime = 0;
+        lastTime = 0;
+        firstCall = true;
+    }
+
+    void DeltaTime::update(bool reset) {
+
+        std::chrono::high_resolution_clock dtimer;
+
+        if (firstCall || reset) {
+            start = dtimer.now();
+            firstCall = false;
+        }
+
+        stop = dtimer.now();
+
+        deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(stop - start).count() / 1000;
+
+        start = stop;
+    }
+
+    double DeltaTime::dt() {
+        return deltaTime;
     }
 }

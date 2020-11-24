@@ -27,22 +27,55 @@
 #define BOOMERANG_ENGINE_GRAPHICS_CAMERA_ORTHOCAM
 
 // Include dependencies
-#include <GLM/glm/gtc/matrix_transform.hpp>
+#include <GLM/glm/glm.hpp>
+
+// Include boomerang libraries
+#include "../../../misc/utilities.hpp"
 
 namespace Boomerang::Core::Graphics {
 
-    class Orthocam {
+    class OrthoCam {
 
         /// Orthographic Camera System
 
     public:
 
-        Orthocam() = default;
-        //Orthocam(glm::ortho );
-        ~Orthocam();
+        // Constructors
+        OrthoCam() = default;
+        OrthoCam(glm::mat4& _ProjectionMat, float _speed = 0);
+        
+        // Setters
+        void SetZoom(float _zoom, const util::dimen2d<int>& windowSize);
+        void SetSpeed(float _speed);
+        void SetRotation(float _rotation);
+        void SetPosition(glm::vec3& _position);
+
+        void SetProjection(glm::mat4& _projection);
+
+        // Getters
+        const float GetSpeed() const;
+        const glm::vec3& GetPosition() const;
+
+        const glm::mat4& GetViewMatrix() const;
+        const glm::mat4& GetProjectionMatrix() const;
+        const glm::mat4& GetViewProjectionMatrix() const;
+
+        // dt = delta time
+        virtual void update(float dt);
 
     private:
 
+        void RecalculateMatrix();
+
+        float zoom;
+        float speed;
+        float rotation;
+
+        glm::vec3 position;
+
+        glm::mat4 ViewMatrix;
+        glm::mat4 ProjectionMatrix;
+        glm::mat4 ViewProjectionMatrix;
     };
 }
 

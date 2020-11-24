@@ -51,7 +51,7 @@ namespace Boomerang::Core {
         }
 
         // Set the window hints using engine metadata. Defaulted to (GLFW_CLIENT_API, GLFW_OPENGL_API) and (GLFW_RESIZABLE, GLFW_FALSE).                    
-        for (const auto hint : metadata.windowHints)
+        for (const auto& hint : metadata.windowHints)
             glfwWindowHint(hint.first, hint.second);
 
         // Create Window
@@ -110,5 +110,9 @@ namespace Boomerang::Core {
     // Getters
     GLFWwindow* Engine::GetWindow() {
         return window;
+    }
+
+    const util::dimen2d<int> Engine::GetWindowDimensions() const {
+        return WindowDimensions;
     }
 }

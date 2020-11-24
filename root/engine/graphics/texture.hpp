@@ -1,4 +1,4 @@
-// Project Boomerang : misc/utilties.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/texture.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,51 +23,46 @@
 
 #pragma once
 
-#ifndef BOOMERANG_MISC_UTILITIES
-#define BOOMERANG_MISC_UTILITIES
+#ifndef BOOMERANG_ENGINE_GRAPHICS_TEXTURE
+#define BOOMERANG_ENGINE_GRAPHICS_TEXTURE
 
+// Include standard library
 #include <string>
-#include <chrono>
-#include <type_traits>
 
-namespace Boomerang::Misc::Utilities {
+// Include dependencies
+#include <GLAD/glad.h>
 
-    template<typename T> T VariadicAdd(T value) {
-        return value;
-    }
-    template<typename T, typename...Args> T VariadicAdd(T value, Args...args) {
-        return value + VariadicAdd<T>(args...);
-    }
+// Include boomerang libraries
+#include "../../misc/utilities.hpp"
 
-    template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type> struct dimen2d {
+namespace Boomerang::Core::Graphics {
 
-        dimen2d() : x(0), y(0) { }
-        dimen2d(T _u) : x(_u), y(_u) { }
-        dimen2d(T _x, T _y) : x(_x), y(_y) { }
-        T x;
-        T y;
-    };
+    class Texture {
 
-    std::string GetDateTime(std::string format = "%Y%m%d _ %T");
+        /// Basic texture loader & mapper
 
-    struct DeltaTime {
+    public:
 
-        DeltaTime();
-        void update(bool reset = false);
-        double dt();
+        Texture() = default;
+        Texture(const util::dimen2d<int> _dimensions);
+        Texture(const std::string& _path);
+        ~Texture();
+
+        const util::dimen2d<int>& GetDimensions() const;
+
+        void SetData(void* _data, unsigned int _size);
+        void Bind(unsigned int slot = 0) const;
 
     private:
 
-        std::chrono::time_point<std::chrono::steady_clock> start;
-        std::chrono::time_point<std::chrono::steady_clock> stop;
+        std::string path;
+        util::dimen2d<int> dimensions;
 
-        double deltaTime;
-        double lastTime;
+        unsigned int RendererID;
 
-        bool firstCall;
+        GLenum InternalFormat;
+        GLenum DataFormat;
     };
 }
 
-namespace util = Boomerang::Misc::Utilities;
-
-#endif // !BOOMERANG_MISC_UTILITIES
+#endif // !BOOMERANG_ENGINE_GRAPHICS_TEXTURE
