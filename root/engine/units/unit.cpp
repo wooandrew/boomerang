@@ -24,10 +24,99 @@
 #include <GLM/glm/glm.hpp>
 #include "../graphics/texture.hpp"
 #include <vector>
+#include <memory>
 
-namespace Boomerang::Core { 
+namespace Boomerang::Core::Units { 
 
+	// Constructor
+    unit(glm::vec2 _position, glm::vec2 _size, glm::vec4 color, std::shared_ptr<Texture> _texture) {
+        position = _position;
+        size = _size;
+        color = _color;
+        texture = _texture;
+        rotation = 0.0;
 
+        displayer = nullptr;
+        manipulator = nullptr;
+
+        // initialize the children and vertices vectors to empty vectors
+        parent = nullptr;
+
+        // for now
+        vertices = nullptr;
+    }
+
+    // Getters
+    std::shared_ptr<vector<unit>> unit::GetChildren() {
+        return children;
+    }
+
+    std::shared_ptr<unit> unit::GetParent() {
+        return parent;
+    }
+
+    bool unit::GetVisible() {
+        return visible;
+    }
+
+    bool unit::GetShouldDisplay() {
+        return shouldDisplay;
+    }
+
+    glm::vec2 unit::GetPosition() {
+        return position;
+    }
+
+    glm::vec2 unit::GetSize() {
+        return size;
+    }
+
+    glm::vec4 unit::GetColor() {
+        return color;
+    }
+
+    // Setters
+    void unit::AddChild(std::shared_ptr<unit> _unit) {
+        children.push_back(_unit);
+        _unit.SetParent(this);
+    }
+
+    void unit::RemoveChild(std::shared_ptr<unit> _unit) {
+		for (int i = 0; i < children.size(); i++) {
+            if (children[i] == unit) {
+                children[i] = children[children.size() - 1];
+                children.pop_back();
+                break;
+            }
+        }
+    }
+
+    void unit::SetParent(std::shared_ptr<unit> _parent) {
+        parent = _parent;
+    }
+
+    void unit::SetVisible(bool _visible) {
+        visible = _visible;
+    }
+
+    void unit::SetShouldDisplay(bool _shouldDisplay) {
+        shouldDisplay = _shouldDisplay;
+    }
+
+    // Functions
+
+    void unit::Update() {
+        manipulator.Update(this);
+    }
+
+    void unit::Display() {
+        if (visible && shouldDisplay) {
+            displayer.Display();
+            for (unit _unit : children) {
+                _unit.Display();
+            }
+        }
+    }
     
 }
 
