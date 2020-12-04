@@ -37,7 +37,7 @@ int main(int argc, const char* argv[])
     long size;
     unsigned char* fontBuffer;
 
-    FILE* fontFile = fopen("raleway.ttf", "rb");
+    FILE* fontFile = fopen("assets/fonts/raleway.ttf", "rb");
     fseek(fontFile, 0, SEEK_END);
     size = ftell(fontFile); /* how long is the file ? */
     fseek(fontFile, 0, SEEK_SET); /* reset */

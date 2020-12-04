@@ -25,34 +25,102 @@
 
 // Include standard library
 #include <iostream>
+#include <fstream>
+
+#include <stdlib.h>
 
 // Include dependencies
+#define STB_TRUETYPE_IMPLEMENTATION
+#include <STB/stb_truetype.h>
 
 // Include boomerang libraries
 #include "../../misc/logger.hpp"
 
 namespace Boomerang::Core::Graphics {
 
-    Font::Font(std::string _FontName, std::string _FontPath) {
-
-        FontName = _FontName;
-        FontPath = _FontPath;   
+    Font::Font() {
+        FontSize = 48;
+        info = { };
     }
     Font::~Font() {
 
     };
 
-    int Font::init() {
+    int Font::init(std::string _FontName, std::string _FontPath) {
+
+        FontName = _FontName;
+        FontPath = _FontPath;
+
+        /*
+        std::string bin;
+
+        std::ifstream font(_FontPath, std::ios::in | std::ios::binary);
+        if (font) {
+
+            font.seekg(0, std::ios::end);
+            bin.resize(font.tellg());
+
+            font.seekg(0, std::ios::beg);
+            font.read(&bin[0], bin.size());
+            font.close();
+        }*/
+
+        /* load font file */
+        long size;
+        unsigned char* fontBuffer;
+
+        FILE* fontFile = fopen("assets/fonts/raleway.ttf", "rb");
+        fseek(fontFile, 0, SEEK_END);
+        size = ftell(fontFile); /* how long is the file ? */
+        fseek(fontFile, 0, SEEK_SET); /* reset */
+
+        fontBuffer = (unsigned char*) malloc(size);
+
+        fread(fontBuffer, size, 1, fontFile);
+        fclose(fontFile);
+
+        if (!stbtt_InitFont(&info, fontBuffer, 0)) {
+            Boomerang::Misc::Logger::logger<std::string, std::string>("F0000", "Fatal Error: Failed to initialize font [", _FontPath, "].");
+            return 1;
+        }
 
         return 0;
     }
 
-    void Font::cleanup() {
+    int Font::GetStringLength(std::shared_ptr<Font> _font, std::string _string) {
 
+        int length = 0;
+        stbtt_ScaleForPixelHeight(&_font->GetFontInfo(), static_cast<float>(_font->GetFontSize()));
+
+        for (std::string::iterator i = _string.begin(); i != _string.end(); i++) {
+
+            int advance;
+            int lsb;
+
+            stbtt_GetCodepointHMetrics(&_font->GetFontInfo(), *i, &advance, &lsb);
+
+            length += advance;
+        }
+
+        return length;
+    }
+
+    unsigned char* Font::GetTextureData() {
+
+        unsigned char* ret = (unsigned char*)"A";
+        
+        return ret;
     }
 
     void Font::SetFontSize(int _FontSize) {
         FontSize = _FontSize;
     }
 
+    // Getters
+    const int Font::GetFontSize() const {
+        return FontSize;
+    }
+    const stbtt_fontinfo& Font::GetFontInfo() const {
+        return info;
+    }
 }

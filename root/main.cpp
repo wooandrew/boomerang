@@ -30,6 +30,7 @@
 #include "engine/graphics/manager.hpp"
 #include "engine/graphics/shaders.hpp"
 #include "engine/graphics/renderer.hpp"
+#include "engine/graphics/font.hpp"
 #include "engine/graphics/camera/orthocam.hpp"
 
 #include "misc/logger.hpp"
@@ -68,6 +69,10 @@ int main() {
                                                               -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
 
     std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/demo.png");
+    std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
+    font->init("raleway", "assets/fonts/raleway.ttf");
+
+    std::cout << Boomerang::Core::Graphics::Font::GetStringLength(font, "Hello World") << std::endl;
 
     GAME_STATE state = GAME_STATE::RUN;
 

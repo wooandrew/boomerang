@@ -46,6 +46,7 @@ add_library(
     "engine/graphics/renderer.hpp"                  "engine/graphics/renderer.cpp"
     "engine/graphics/shaders.hpp"                   "engine/graphics/shaders.cpp"
     "engine/graphics/texture.hpp"                   "engine/graphics/texture.cpp"
+    "engine/graphics/font.hpp"                      "engine/graphics/font.cpp"
 
     # Graphics / Camera
     "engine/graphics/camera/orthocam.hpp"           "engine/graphics/camera/orthocam.cpp"
