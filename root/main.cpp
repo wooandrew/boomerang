@@ -72,7 +72,8 @@ int main() {
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
     font->init("raleway", "assets/fonts/raleway.ttf");
 
-    std::cout << Boomerang::Core::Graphics::Font::GetStringLength(font, "Hello World") << std::endl;
+    // std::cout << Boomerang::Core::Graphics::Font::GetStringLength(font, "Hello World") << std::endl;
+    Boomerang::Core::Graphics::Font::MakeTextureData(font, "Hello World");
 
     GAME_STATE state = GAME_STATE::RUN;
 

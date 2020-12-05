@@ -49,7 +49,7 @@ namespace Boomerang::Core::Graphics {
         int init(std::string _FontName, std::string _FontPath);
         
         static int GetStringLength(std::shared_ptr<Font> _font, std::string _string);
-        static unsigned char* GetTextureData();
+        static unsigned char* MakeTextureData(std::shared_ptr<Font> _font, std::string _string);
 
         void SetFontSize(int _FontSize);
 

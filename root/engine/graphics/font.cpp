@@ -33,6 +33,9 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include <STB/stb_truetype.h>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "STB/stb_image_write.h" /* http://nothings.org/stb/stb_image_write.h */
+
 // Include boomerang libraries
 #include "../../misc/logger.hpp"
 
@@ -51,35 +54,22 @@ namespace Boomerang::Core::Graphics {
         FontName = _FontName;
         FontPath = _FontPath;
 
-        /*
-        std::string bin;
+        unsigned char* bin = nullptr;
 
-        std::ifstream font(_FontPath, std::ios::in | std::ios::binary);
+        std::basic_ifstream<unsigned char> font(_FontPath, std::ios::in | std::ios::binary);
         if (font) {
 
             font.seekg(0, std::ios::end);
-            bin.resize(font.tellg());
-
+            long size = font.tellg();
             font.seekg(0, std::ios::beg);
-            font.read(&bin[0], bin.size());
+
+            bin = new unsigned char[size];      // This memory is never handled!
+
+            font.read(&bin[0], size);
             font.close();
-        }*/
+        }
 
-        /* load font file */
-        long size;
-        unsigned char* fontBuffer;
-
-        FILE* fontFile = fopen("assets/fonts/raleway.ttf", "rb");
-        fseek(fontFile, 0, SEEK_END);
-        size = ftell(fontFile); /* how long is the file ? */
-        fseek(fontFile, 0, SEEK_SET); /* reset */
-
-        fontBuffer = (unsigned char*) malloc(size);
-
-        fread(fontBuffer, size, 1, fontFile);
-        fclose(fontFile);
-
-        if (!stbtt_InitFont(&info, fontBuffer, 0)) {
+        if (!stbtt_InitFont(&info, bin, 0)) {
             Boomerang::Misc::Logger::logger<std::string, std::string>("F0000", "Fatal Error: Failed to initialize font [", _FontPath, "].");
             return 1;
         }
@@ -90,7 +80,7 @@ namespace Boomerang::Core::Graphics {
     int Font::GetStringLength(std::shared_ptr<Font> _font, std::string _string) {
 
         int length = 0;
-        stbtt_ScaleForPixelHeight(&_font->GetFontInfo(), static_cast<float>(_font->GetFontSize()));
+        float scale = stbtt_ScaleForPixelHeight(&_font->GetFontInfo(), static_cast<float>(_font->GetFontSize()));
 
         for (std::string::iterator i = _string.begin(); i != _string.end(); i++) {
 
@@ -102,13 +92,55 @@ namespace Boomerang::Core::Graphics {
             length += advance;
         }
 
-        return length;
+        return length * scale;
     }
 
-    unsigned char* Font::GetTextureData() {
+    unsigned char* Font::MakeTextureData(std::shared_ptr<Font> _font, std::string _string) {
 
-        unsigned char* ret = (unsigned char*)"A";
+        int ascent, descent, lineGap;
+        stbtt_GetFontVMetrics(&_font->GetFontInfo(), &ascent, &descent, &lineGap);
+        float scale = stbtt_ScaleForPixelHeight(&_font->GetFontInfo(), _font->GetFontSize());
+
+        int b_w = GetStringLength(_font, _string);      // Bitmap width
+        int b_h = ascent;                               // Bitmap height
+
+        ascent = static_cast<int>(ascent * scale);
+        descent = static_cast<int>(descent * scale);
+
+        unsigned char* ret = new unsigned char[b_w * b_h];
         
+        int x = 0;
+
+        for (std::string::iterator i = _string.begin(); i != _string.end(); i++)
+        {
+            /* how wide is this character */
+            int ax;
+            int lsb;
+            stbtt_GetCodepointHMetrics(&_font->GetFontInfo(), *i, &ax, &lsb);
+
+            /* get bounding box for character (may be offset to account for chars that dip above or below the line */
+            int c_x1, c_y1, c_x2, c_y2;
+            stbtt_GetCodepointBitmapBox(&_font->GetFontInfo(), *i, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+
+            /* compute y (different characters have different heights */
+            int y = ascent + c_y1;
+
+            /* render character (stride and offset is important here) */
+            int byteOffset = x + roundf(lsb * scale) + (y * b_w);
+            stbtt_MakeCodepointBitmap(&_font->GetFontInfo(), ret + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, *i);
+
+            /* advance x */
+            x += roundf(ax * scale);
+
+            /* add kerning */
+            int kern;
+            kern = stbtt_GetCodepointKernAdvance(&_font->GetFontInfo(), *i, *i+1);
+            x += roundf(kern * scale);
+        }
+
+        /* save out a 1 channel image */
+        stbi_write_png("out.png", b_w, b_h, 1, ret, b_w);
+
         return ret;
     }
 
