@@ -1,4 +1,4 @@
-// Project Boomerang : engine/engine.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : unit/unit.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -20,26 +20,28 @@
  * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#include "unit.hpp"
-#include <GLM/glm/glm.hpp>
-#include "../graphics/texture.hpp"
+
 #include <vector>
 #include <memory>
+
+#include <GLM/glm/glm.hpp>
+
+#include "../graphics/texture.hpp"
+#include "../graphics/vertex.hpp"
+#include "../graphics/renderer.hpp"
+#include "unit.hpp"
 
 namespace Boomerang::Core::Units { 
 
 	// Constructor
-    unit(glm::vec2 _position, glm::vec2 _size, glm::vec4 color, std::shared_ptr<Texture> _texture) {
+    Unit(glm::vec3 _position, glm::vec2 _size, glm::vec4 color, std::shared_ptr<Texture> _texture) {
         position = _position;
         size = _size;
         color = _color;
         texture = _texture;
         rotation = 0.0;
 
-        displayer = nullptr;
-        manipulator = nullptr;
-
-        // initialize the children and vertices vectors to empty vectors
+		// initialize the children and vertices vectors to empty vectors
         parent = nullptr;
 
         // for now
@@ -47,41 +49,41 @@ namespace Boomerang::Core::Units {
     }
 
     // Getters
-    std::shared_ptr<vector<unit>> unit::GetChildren() {
+    std::vector<std::shared_ptr<Unit>> Unit::GetChildren() {
         return children;
     }
 
-    std::shared_ptr<unit> unit::GetParent() {
+    std::shared_ptr<Unit> Unit::GetParent() {
         return parent;
     }
 
-    bool unit::GetVisible() {
+    bool Unit::GetVisible() {
         return visible;
     }
 
-    bool unit::GetShouldDisplay() {
+    bool Unit::GetShouldDisplay() {
         return shouldDisplay;
     }
 
-    glm::vec2 unit::GetPosition() {
+    glm::vec3 Unit::GetPosition() {
         return position;
     }
 
-    glm::vec2 unit::GetSize() {
+    glm::vec2 Unit::GetSize() {
         return size;
     }
 
-    glm::vec4 unit::GetColor() {
+    glm::vec4 Unit::GetColor() {
         return color;
     }
 
     // Setters
-    void unit::AddChild(std::shared_ptr<unit> _unit) {
+	void Unit::AddChild(std::shared_ptr<Unit> _unit) {
         children.push_back(_unit);
         _unit.SetParent(this);
     }
 
-    void unit::RemoveChild(std::shared_ptr<unit> _unit) {
+    void Unit::RemoveChild(std::shared_ptr<Unit> _unit) {
 		for (int i = 0; i < children.size(); i++) {
             if (children[i] == unit) {
                 children[i] = children[children.size() - 1];
@@ -91,29 +93,42 @@ namespace Boomerang::Core::Units {
         }
     }
 
-    void unit::SetParent(std::shared_ptr<unit> _parent) {
+    void Unit::SetParent(std::shared_ptr<Unit> _parent) {
         parent = _parent;
     }
 
-    void unit::SetVisible(bool _visible) {
+    void Unit::SetVisible(bool _visible) {
         visible = _visible;
     }
 
-    void unit::SetShouldDisplay(bool _shouldDisplay) {
+    void Unit::SetShouldDisplay(bool _shouldDisplay) {
         shouldDisplay = _shouldDisplay;
     }
-
-    // Functions
-
-    void unit::Update() {
-        manipulator.Update(this);
+	
+	// Functions
+	
+	virtual void Unit::Update() {
+		// do cool update things
     }
 
-    void unit::Display() {
+    virtual void Unit::Display() {
         if (visible && shouldDisplay) {
-            displayer.Display();
-            for (unit _unit : children) {
-                _unit.Display();
+
+			// do cool display things
+            if (displayVertices) {
+                
+                // because we're only working with quads for now, we draw quad
+                Renderer::DrawQuad(position, size, color);
+            }
+
+            if (texture != nullptr) {
+
+                // now we draw the texture if it's declared
+                Renderer::DrawTexture(position, size, texture);
+            }
+
+            for (std::shared_ptr<Unit> _unit : children) {
+                _unit->Display();
             }
         }
     }
