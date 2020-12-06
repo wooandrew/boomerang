@@ -66,10 +66,11 @@ target_link_libraries(main PRIVATE BoomerangEngine)
 target_link_libraries(main PRIVATE BoomerangMisc)
 
 # Make Engine depend on GLFW, GLAD
-add_dependencies(BoomerangEngine glfw glad)
+add_dependencies(BoomerangEngine glfw glad freetype)
 
 # Link dependencies against project executable
 target_link_libraries(main PRIVATE glfw)                    # Link GLFW
 target_link_libraries(main PRIVATE glad)                    # Link GLAD
 # GLM is header only, no library to link                    # Link GLM
 # STB is header only, no library to link                    # Link STB
+target_link_libraries(main PRIVATE freetype)                # Link FreeType2

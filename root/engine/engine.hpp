@@ -74,7 +74,7 @@ namespace Boomerang::Core {
         }; Metadata metadata;
 
         // Engine Functions
-        void Update() const;            // Update engine
+        void update() const;            // Update engine
 
         // Getters
         GLFWwindow* GetWindow();

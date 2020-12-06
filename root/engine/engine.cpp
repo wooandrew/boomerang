@@ -103,7 +103,7 @@ namespace Boomerang::Core {
     }
 
     // Update Engine
-    void Engine::Update() const {
+    void Engine::update() const {
         glfwPollEvents();
     }
 

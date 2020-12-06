@@ -35,21 +35,21 @@ namespace Boomerang::Core::Graphics {
         InternalFormat = GL_RGBA8;
         DataFormat = GL_RGBA;
 
-        glad_glCreateTextures(GL_TEXTURE_2D, 1, &RendererID);
-        glad_glTextureStorage2D(RendererID, 1, InternalFormat, dimensions.x, dimensions.y);
+        glad_glCreateTextures(GL_TEXTURE_2D, 1, &TextureID);
+        glad_glTextureStorage2D(TextureID, 1, InternalFormat, dimensions.x, dimensions.y);
 
-        glad_glTextureParameteri(RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glad_glTextureParameteri(RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glad_glTextureParameteri(TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glad_glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        glad_glTextureParameteri(RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glad_glTextureParameteri(RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
     Texture::Texture(const std::string& _path) : path(_path) {
 
         dimensions = util::dimen2d<int>();
 
-        RendererID = 0;
+        TextureID = 0;
 
         InternalFormat = 0;
         DataFormat = 0;
@@ -82,16 +82,16 @@ namespace Boomerang::Core::Graphics {
             InternalFormat = iFormat;
             DataFormat = dFormat;
 
-            glad_glCreateTextures(GL_TEXTURE_2D, 1, &RendererID);
-            glad_glTextureStorage2D(RendererID, 1, InternalFormat, dimensions.x, dimensions.y);
+            glad_glCreateTextures(GL_TEXTURE_2D, 1, &TextureID);
+            glad_glTextureStorage2D(TextureID, 1, InternalFormat, dimensions.x, dimensions.y);
 
-            glad_glTextureParameteri(RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glad_glTextureParameteri(RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-            glad_glTextureParameteri(RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glad_glTextureParameteri(RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glad_glTextureParameteri(TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glad_glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-            glad_glTextureSubImage2D(RendererID, 0, 0, 0, dimensions.x, dimensions.y, DataFormat, GL_UNSIGNED_BYTE, data);
+            glad_glTextureSubImage2D(TextureID, 0, 0, 0, dimensions.x, dimensions.y, DataFormat, GL_UNSIGNED_BYTE, data);
         }
         else
             Boomerang::Misc::Logger::logger<std::string, std::string>("T0002", "Error: Failed to load image -> !stbi_load() [", path, "].");
@@ -100,7 +100,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     Texture::~Texture() {
-        glad_glDeleteTextures(1, &RendererID);
+        glad_glDeleteTextures(1, &TextureID);
     }
 
     const util::dimen2d<int>& Texture::GetDimensions() const {
@@ -114,10 +114,10 @@ namespace Boomerang::Core::Graphics {
         if (_size != dimensions.x * dimensions.y * bpp)
             Boomerang::Misc::Logger::logger("T0003", "Error: Size does not match.");
 
-        glad_glTextureSubImage2D(RendererID, 0, 0, 0, dimensions.x, dimensions.y, DataFormat, GL_UNSIGNED_BYTE, _data);
+        glad_glTextureSubImage2D(TextureID, 0, 0, 0, dimensions.x, dimensions.y, DataFormat, GL_UNSIGNED_BYTE, _data);
     }
 
     void Texture::Bind(unsigned int _slot) const {
-        glad_glBindTextureUnit(_slot, RendererID);
+        glad_glBindTextureUnit(_slot, TextureID);
     }
 }

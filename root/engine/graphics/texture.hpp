@@ -58,7 +58,7 @@ namespace Boomerang::Core::Graphics {
         std::string path;
         util::dimen2d<int> dimensions;
 
-        unsigned int RendererID;
+        unsigned int TextureID;
 
         GLenum InternalFormat;
         GLenum DataFormat;
