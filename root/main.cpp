@@ -62,7 +62,7 @@ int main() {
     Boomerang::Core::Graphics::Manager::init();
     Boomerang::Core::Graphics::Renderer::init();
 
-    //Boomerang::Core::Graphics::Manager::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
+    Boomerang::Core::Graphics::Manager::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
     
     // Initialize Primary Orthographic Camera
     Boomerang::Core::Graphics::OrthoCam __camera_1(glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
@@ -72,14 +72,13 @@ int main() {
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
     font->init("raleway", "assets/fonts/raleway.ttf");
 
-    // std::cout << Boomerang::Core::Graphics::Font::GetStringLength(font, "Hello World") << std::endl;
-    Boomerang::Core::Graphics::Font::MakeTextureData(font, "Hello World");
+
 
     GAME_STATE state = GAME_STATE::RUN;
 
     while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
 
-        engine.Update();
+        engine.update();
         dt.update();
 
         __camera_1.update(dt.dt());
@@ -88,7 +87,8 @@ int main() {
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
         //Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0 }, { 100, 100 }, { 1.f, 1.f, 1.f, 1.f });
-        Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0 }, { 1.f, 1.f }, demo);
+        Boomerang::Core::Graphics::Renderer::RenderText("Hello World", { 0, 10, 0 }, { 1.f, 1.f }, font);
+        //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0 }, { 1.f, 1.f }, demo);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());

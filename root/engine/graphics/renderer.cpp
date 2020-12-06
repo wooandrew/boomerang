@@ -26,11 +26,11 @@
 #include <vector>
 
 #include <GLM/glm/gtc/matrix_transform.hpp>
+#include <GLM/glm/gtc/color_space.hpp>
 
 #include "manager.hpp"
-#include "vertex.hpp"
-#include "texture.hpp"
 #include "shaders.hpp"
+#include "vertex.hpp"
 
 #include "../../misc/utilities.hpp"
 
@@ -42,7 +42,8 @@ namespace Boomerang::Core::Graphics {
 
         //std::shared_ptr<Vertex>
         std::shared_ptr<Vertex> __quad_vtx_array;
-        std::shared_ptr<Shader> __shader;
+        std::shared_ptr<Shader> __basic_shader;
+        std::shared_ptr<Shader> __text_shader;
         std::shared_ptr<Texture> __white;
     };
 
@@ -74,9 +75,13 @@ namespace Boomerang::Core::Graphics {
         uint32_t __white_data = 0xffffffff;
         RenderData->__white->SetData(&__white_data, sizeof(uint32_t));
 
-        RenderData->__shader = std::make_shared<Shader>("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
-        RenderData->__shader->Bind();
-        RenderData->__shader->SetInt("u_Texture", 0);
+        RenderData->__basic_shader = std::make_shared<Shader>("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
+        RenderData->__basic_shader->Bind();
+        RenderData->__basic_shader->SetInt("u_Texture", 0);
+
+        RenderData->__text_shader = std::make_shared<Shader>("assets/shaders/text-vert.glsl", "assets/shaders/text-frag.glsl");
+        RenderData->__text_shader->Bind();
+        RenderData->__text_shader->SetInt("u_Texture", 0);
     }
 
     void Renderer::shutdown() {
@@ -84,8 +89,12 @@ namespace Boomerang::Core::Graphics {
     }
 
     void Renderer::StartScene(const OrthoCam& camera) {
-        RenderData->__shader->Bind();
-        RenderData->__shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+
+        RenderData->__basic_shader->Bind();
+        RenderData->__basic_shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+        
+        RenderData->__text_shader->Bind();
+        RenderData->__text_shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
     }
 
     void Renderer::EndScene() { }
@@ -96,30 +105,65 @@ namespace Boomerang::Core::Graphics {
     }
     void Renderer::RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
 
-        RenderData->__shader->SetFloat4("u_Color", glm::vec4(1.0f));
+        RenderData->__basic_shader->Bind();
+
+        RenderData->__basic_shader->SetFloat4("u_Color", glm::vec4(1.0f));
         _texture->Bind();
 
         float t_Width = static_cast<float>(_texture->GetDimensions().x) * _scale.x;
         float t_Height = static_cast<float>(_texture->GetDimensions().y) * _scale.y;
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
-        RenderData->__shader->SetMat4("u_Transform", transform);
+        RenderData->__basic_shader->SetMat4("u_Transform", transform);
 
         RenderData->__quad_vtx_array->Bind();
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }
 
-    // Static Quad Render functions
+    // Render text functions
+    void Renderer::RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const std::shared_ptr<Font>& _font) {
+        RenderText(_string, { _position.x, _position.y, 0.0f }, _scale, _font);
+    }
+    void Renderer::RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const std::shared_ptr<Font>& _font) {
+
+        RenderData->__text_shader->Bind();
+
+        RenderData->__text_shader->SetFloat4("u_Color", glm::vec4(1.f));
+
+        for (std::string::const_iterator i = _string.begin(); i != _string.end(); i++) {
+
+            Character ch = _font->GetCharacters()[*i];
+            ch.Bind();
+
+            float xPos = _position.x + ch.bearing.x * _scale.x;
+            float yPos = _position.y - (ch.size.y - ch.bearing.y) * _scale.y;
+
+            float w = ch.size.x * _scale.x;
+            float h = ch.size.y * _scale.y;
+
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, 0 }) * glm::scale(glm::mat4(1.0f), { w, h, 1.0f });
+            RenderData->__text_shader->SetMat4("u_Transform", transform);
+
+            RenderData->__quad_vtx_array->Bind();
+            Manager::DrawIndexed(RenderData->__quad_vtx_array);
+
+            _position.x += (ch.advance >> 6) * _scale.x;
+        }
+    }
+
+    // Render static quad functions
     void Renderer::DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color) {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _color);
     }
     void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color) {
         
-        RenderData->__shader->SetFloat4("u_Color", _color);
+        RenderData->__basic_shader->Bind();
+
+        RenderData->__basic_shader->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), { _size.x, _size.y, 1.0f });
-        RenderData->__shader->SetMat4("u_Transform", transform);
+        RenderData->__basic_shader->SetMat4("u_Transform", transform);
         RenderData->__quad_vtx_array->Bind();
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);

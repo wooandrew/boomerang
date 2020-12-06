@@ -27,23 +27,20 @@
 #include <iostream>
 #include <fstream>
 
-#include <stdlib.h>
-
 // Include dependencies
-#define STB_TRUETYPE_IMPLEMENTATION
-#include <STB/stb_truetype.h>
-
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "STB/stb_image_write.h" /* http://nothings.org/stb/stb_image_write.h */
+#include <GLAD/glad.h>
 
 // Include boomerang libraries
 #include "../../misc/logger.hpp"
 
 namespace Boomerang::Core::Graphics {
 
+    void Character::Bind(unsigned int _slot) const {
+        glad_glBindTextureUnit(_slot, TextureID);
+    }
+
     Font::Font() {
-        FontSize = 48;
-        info = { };
+        FontSize = 172;
     }
     Font::~Font() {
 
@@ -53,106 +50,66 @@ namespace Boomerang::Core::Graphics {
 
         FontName = _FontName;
         FontPath = _FontPath;
-
-        unsigned char* bin = nullptr;
-
-        std::basic_ifstream<unsigned char> font(_FontPath, std::ios::in | std::ios::binary);
-        if (font) {
-
-            font.seekg(0, std::ios::end);
-            long size = font.tellg();
-            font.seekg(0, std::ios::beg);
-
-            bin = new unsigned char[size];      // This memory is never handled!
-
-            font.read(&bin[0], size);
-            font.close();
-        }
-
-        if (!stbtt_InitFont(&info, bin, 0)) {
-            Boomerang::Misc::Logger::logger<std::string, std::string>("F0000", "Fatal Error: Failed to initialize font [", _FontPath, "].");
+        
+        FT_Library library;
+        if (FT_Init_FreeType(&library)) {
+            Boomerang::Misc::Logger::logger("F0000", "Error: Failed to initialize FreeType2.");
             return 1;
         }
+
+        FT_Face face;
+        if (FT_New_Face(library, _FontPath.c_str(), 0, &face)) {
+            Boomerang::Misc::Logger::logger<std::string, std::string>("F0001", "Error: Failed to load font face [", _FontPath, "].");
+            return 2;
+        }
+
+        // Set Font size
+        FT_Set_Pixel_Sizes(face, 0, FontSize);
+
+        // Disable byte-alignment restriction
+        glad_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        for (unsigned char c = 0; c < 128; c++) {
+
+            // Load glyph 
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+                Boomerang::Misc::Logger::logger<std::string, std::string>("F0002", "Error: Failed to load glyph [", std::to_string(c), "].");
+                continue;
+            }
+
+            // Generate texture
+            unsigned int texture;
+            glad_glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+            glad_glTextureStorage2D(texture, 1, GL_R8, face->glyph->bitmap.width, face->glyph->bitmap.rows);
+            glad_glTextureSubImage2D(texture, 0, 0, 0, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+            //glTexImage2D(texture, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+
+            // Set texture options
+            glad_glTexParameteri(texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glad_glTexParameteri(texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            glad_glTexParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glad_glTexParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            // Store character for later use
+            Character character = {
+                texture,
+                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                face->glyph->advance.x
+            };
+
+            characters.insert(std::pair<char, Character>(c, character));
+        }
+
+        FT_Done_Face(face);
+        FT_Done_FreeType(library);
 
         return 0;
     }
 
-    int Font::GetStringLength(std::shared_ptr<Font> _font, std::string _string) {
-
-        int length = 0;
-        float scale = stbtt_ScaleForPixelHeight(&_font->GetFontInfo(), static_cast<float>(_font->GetFontSize()));
-
-        for (std::string::iterator i = _string.begin(); i != _string.end(); i++) {
-
-            int advance;
-            int lsb;
-
-            stbtt_GetCodepointHMetrics(&_font->GetFontInfo(), *i, &advance, &lsb);
-
-            length += advance;
-        }
-
-        return length * scale;
-    }
-
-    unsigned char* Font::MakeTextureData(std::shared_ptr<Font> _font, std::string _string) {
-
-        int ascent, descent, lineGap;
-        stbtt_GetFontVMetrics(&_font->GetFontInfo(), &ascent, &descent, &lineGap);
-        float scale = stbtt_ScaleForPixelHeight(&_font->GetFontInfo(), _font->GetFontSize());
-
-        int b_w = GetStringLength(_font, _string);      // Bitmap width
-        int b_h = ascent;                               // Bitmap height
-
-        ascent = static_cast<int>(ascent * scale);
-        descent = static_cast<int>(descent * scale);
-
-        unsigned char* ret = new unsigned char[b_w * b_h];
-        
-        int x = 0;
-
-        for (std::string::iterator i = _string.begin(); i != _string.end(); i++)
-        {
-            /* how wide is this character */
-            int ax;
-            int lsb;
-            stbtt_GetCodepointHMetrics(&_font->GetFontInfo(), *i, &ax, &lsb);
-
-            /* get bounding box for character (may be offset to account for chars that dip above or below the line */
-            int c_x1, c_y1, c_x2, c_y2;
-            stbtt_GetCodepointBitmapBox(&_font->GetFontInfo(), *i, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
-
-            /* compute y (different characters have different heights */
-            int y = ascent + c_y1;
-
-            /* render character (stride and offset is important here) */
-            int byteOffset = x + roundf(lsb * scale) + (y * b_w);
-            stbtt_MakeCodepointBitmap(&_font->GetFontInfo(), ret + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, *i);
-
-            /* advance x */
-            x += roundf(ax * scale);
-
-            /* add kerning */
-            int kern;
-            kern = stbtt_GetCodepointKernAdvance(&_font->GetFontInfo(), *i, *i+1);
-            x += roundf(kern * scale);
-        }
-
-        /* save out a 1 channel image */
-        stbi_write_png("out.png", b_w, b_h, 1, ret, b_w);
-
-        return ret;
-    }
-
-    void Font::SetFontSize(int _FontSize) {
-        FontSize = _FontSize;
-    }
-
     // Getters
-    const int Font::GetFontSize() const {
-        return FontSize;
-    }
-    const stbtt_fontinfo& Font::GetFontInfo() const {
-        return info;
+    std::map<char, Character> Font::GetCharacters() const {
+        return characters;
     }
 }

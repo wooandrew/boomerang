@@ -27,15 +27,25 @@
 #define BOOMERANG_ENGINE_GRAPHICS_FONT
 
 // Include standard library
-#include <memory>
 #include <string>
 #include <map>
 
 // Include dependencies
-#include <STB/stb_truetype.h>
 #include <GLM/glm/glm.hpp>
+#include <FREETYPE/include/ft2build.h>
+#include FT_FREETYPE_H
 
 namespace Boomerang::Core::Graphics {
+
+    struct Character {
+
+        unsigned int TextureID;
+        glm::ivec2 size;
+        glm::ivec2 bearing;
+        signed long advance;
+
+        void Bind(unsigned int slot = 0) const;
+    };
 
     class Font {
 
@@ -47,15 +57,9 @@ namespace Boomerang::Core::Graphics {
         ~Font();
 
         int init(std::string _FontName, std::string _FontPath);
-        
-        static int GetStringLength(std::shared_ptr<Font> _font, std::string _string);
-        static unsigned char* MakeTextureData(std::shared_ptr<Font> _font, std::string _string);
-
-        void SetFontSize(int _FontSize);
 
         // Getters
-        const int GetFontSize() const;
-        const stbtt_fontinfo& GetFontInfo() const;
+        std::map<char, Character> GetCharacters() const;
 
     private:
 
@@ -64,7 +68,7 @@ namespace Boomerang::Core::Graphics {
 
         int FontSize;
 
-        stbtt_fontinfo info;
+        std::map<char, Character> characters;
     };
 }
 
