@@ -42,6 +42,15 @@ enum class GAME_STATE {
     STOP
 };
 
+// Move to render manager
+namespace RENDER_LAYER {
+
+    constexpr float LAYER0 = 0.0f;
+    constexpr float LAYER1 = 0.1f;
+    constexpr float LAYER2 = 0.2f;
+    constexpr float LAYER3 = 0.3f;
+}
+
 int main() {
 
     logger::logger("     ", "Hello, Project Boomerang!");
@@ -62,7 +71,7 @@ int main() {
     Boomerang::Core::Graphics::Manager::init();
     Boomerang::Core::Graphics::Renderer::init();
 
-    Boomerang::Core::Graphics::Manager::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
+    //Boomerang::Core::Graphics::Manager::SetClearColor({ 0.f, 0.f, 1.f, 1.f });
     
     // Initialize Primary Orthographic Camera
     Boomerang::Core::Graphics::OrthoCam __camera_1(glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
@@ -70,25 +79,24 @@ int main() {
 
     std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/demo.png");
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
-    font->init("raleway", "assets/fonts/raleway.ttf");
-
-
+    font->init("raleway", "assets/fonts/raleway.ttf", 48);
 
     GAME_STATE state = GAME_STATE::RUN;
+
 
     while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
 
         engine.update();
         dt.update();
 
-        __camera_1.update(dt.dt());
+        __camera_1.update(static_cast<float>(dt.dt()));
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
-        //Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0 }, { 100, 100 }, { 1.f, 1.f, 1.f, 1.f });
-        Boomerang::Core::Graphics::Renderer::RenderText("Hello World", { 0, 10, 0 }, { 1.f, 1.f }, font);
-        //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0 }, { 1.f, 1.f }, demo);
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0 }, { 100, 100 }, { 1.f, 1.f, 1.f, 1.f });
+        //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 1.f, 0.f, 0.f }, font);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());

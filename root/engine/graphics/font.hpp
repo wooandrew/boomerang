@@ -37,11 +37,12 @@
 
 namespace Boomerang::Core::Graphics {
 
+    // TODO: overload Texture to create Character
     struct Character {
 
         unsigned int TextureID;
-        glm::ivec2 size;
-        glm::ivec2 bearing;
+        glm::ivec2 size;            // Need to switch to our own convention
+        glm::ivec2 bearing;         // Need to switch to our own convention
         signed long advance;
 
         void Bind(unsigned int slot = 0) const;
@@ -56,10 +57,11 @@ namespace Boomerang::Core::Graphics {
         Font();
         ~Font();
 
-        int init(std::string _FontName, std::string _FontPath);
+        int init(std::string _FontName, std::string _FontPath, int _FontSize = 48);
 
         // Getters
         std::map<char, Character> GetCharacters() const;
+        const int GetSize() const;
 
     private:
 

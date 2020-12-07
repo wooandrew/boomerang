@@ -121,33 +121,33 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Render text functions
-    void Renderer::RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const std::shared_ptr<Font>& _font) {
-        RenderText(_string, { _position.x, _position.y, 0.0f }, _scale, _font);
+    void Renderer::RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
+        RenderText(_string, { _position.x, _position.y, 0.0f }, _scale, _color, _font);
     }
-    void Renderer::RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const std::shared_ptr<Font>& _font) {
+    void Renderer::RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
 
         RenderData->__text_shader->Bind();
 
-        RenderData->__text_shader->SetFloat4("u_Color", glm::vec4(1.f));
+        RenderData->__text_shader->SetFloat3("u_Color", _color);
 
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); i++) {
 
             Character ch = _font->GetCharacters()[*i];
             ch.Bind();
 
-            float xPos = _position.x + ch.bearing.x * _scale.x;
-            float yPos = _position.y - (ch.size.y - ch.bearing.y) * _scale.y;
+            float xPos = _position.x + ch.size.x + ch.bearing.x * _scale.x;
+            float yPos = _position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font->GetSize() / 2.f) * 0.75f;
 
-            float w = ch.size.x * _scale.x;
-            float h = ch.size.y * _scale.y;
+            float t_Width = static_cast<float>(ch.size.x) * _scale.x;
+            float t_Height = static_cast<float>(ch.size.y) * _scale.y;
 
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, 0 }) * glm::scale(glm::mat4(1.0f), { w, h, 1.0f });
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, _position.z += 0.00001 }) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
             RenderData->__text_shader->SetMat4("u_Transform", transform);
 
             RenderData->__quad_vtx_array->Bind();
             Manager::DrawIndexed(RenderData->__quad_vtx_array);
 
-            _position.x += (ch.advance >> 6) * _scale.x;
+            _position.x = xPos;
         }
     }
 

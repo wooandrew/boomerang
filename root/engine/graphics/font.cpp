@@ -40,16 +40,17 @@ namespace Boomerang::Core::Graphics {
     }
 
     Font::Font() {
-        FontSize = 172;
+        FontSize = 48;
     }
     Font::~Font() {
 
     };
 
-    int Font::init(std::string _FontName, std::string _FontPath) {
+    int Font::init(std::string _FontName, std::string _FontPath, int _FontSize) {
 
         FontName = _FontName;
         FontPath = _FontPath;
+        FontSize = _FontSize;
         
         FT_Library library;
         if (FT_Init_FreeType(&library)) {
@@ -79,17 +80,16 @@ namespace Boomerang::Core::Graphics {
 
             // Generate texture
             unsigned int texture;
-            glad_glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-            glad_glTextureStorage2D(texture, 1, GL_R8, face->glyph->bitmap.width, face->glyph->bitmap.rows);
-            glad_glTextureSubImage2D(texture, 0, 0, 0, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
-            //glTexImage2D(texture, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+            glad_glGenTextures(1, &texture);
+            glad_glBindTexture(GL_TEXTURE_2D, texture);
+            glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 
             // Set texture options
-            glad_glTexParameteri(texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glad_glTexParameteri(texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-            glad_glTexParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glad_glTexParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             // Store character for later use
             Character character = {
@@ -111,5 +111,9 @@ namespace Boomerang::Core::Graphics {
     // Getters
     std::map<char, Character> Font::GetCharacters() const {
         return characters;
+    }
+
+    const int Font::GetSize() const {
+        return FontSize;
     }
 }
