@@ -38,7 +38,10 @@ Our Emails:<br>
 
 ## Credits
 Collaborators
-- <img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Andrew Woo`
-- <img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Brandon Yau`
-- <img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Porter Squires`
-- <img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Awrish Khan`
+- <img src="https://img.shields.io/badge/-story-yellow?style=flat-square"><img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Andrew Woo`
+- <img src="https://img.shields.io/badge/-story-yellow?style=flat-square"><img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Brandon Yau`
+- <img src="https://img.shields.io/badge/-story-yellow?style=flat-square"><img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Porter Squires`
+- <img src="https://img.shields.io/badge/-story-yellow?style=flat-square"><img src="https://img.shields.io/badge/-dev-brightgreen?style=flat-square"> `Awrish Khan`
+
+Contributors
+- <img src="https://img.shields.io/badge/-story-yellow?style=flat-square"> `Bhaven Desai`
