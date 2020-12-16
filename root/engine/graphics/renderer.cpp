@@ -122,12 +122,11 @@ namespace Boomerang::Core::Graphics {
 
     // Render text functions
     void Renderer::RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
-        RenderText(_string, { _position.x, _position.y, 0.0f }, _scale, _color, _font);
+        RenderText(_string, glm::vec3(_position, 0), _scale, _color, _font);
     }
     void Renderer::RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
 
         RenderData->__text_shader->Bind();
-
         RenderData->__text_shader->SetFloat3("u_Color", _color);
 
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); i++) {
@@ -135,7 +134,7 @@ namespace Boomerang::Core::Graphics {
             Character ch = _font->GetCharacters()[*i];
             ch.Bind();
 
-            float xPos = _position.x + ch.size.x + ch.bearing.x * _scale.x;
+            float xPos = _position.x + ch.bearing.x + ch.size.x / 2.f;
             float yPos = _position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font->GetSize() / 2.f) * 0.75f;
 
             float t_Width = static_cast<float>(ch.size.x) * _scale.x;
@@ -147,7 +146,7 @@ namespace Boomerang::Core::Graphics {
             RenderData->__quad_vtx_array->Bind();
             Manager::DrawIndexed(RenderData->__quad_vtx_array);
 
-            _position.x = xPos;
+            _position.x += ((ch.advance >> 6) - (ch.bearing.x / 2.f)) * _scale.x;
         }
     }
 

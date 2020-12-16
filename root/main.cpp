@@ -79,7 +79,7 @@ int main() {
 
     std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/demo.png");
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
-    font->init("raleway", "assets/fonts/raleway.ttf", 48);
+    font->init("raleway", "assets/fonts/raleway.ttf", 100);
 
     GAME_STATE state = GAME_STATE::RUN;
 
@@ -96,7 +96,7 @@ int main() {
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
         Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0 }, { 100, 100 }, { 1.f, 1.f, 1.f, 1.f });
         //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 1.f, 0.f, 0.f }, font);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 0.f }, font);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
