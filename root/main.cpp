@@ -74,12 +74,17 @@ int main() {
     //Boomerang::Core::Graphics::Manager::SetClearColor({ 0.f, 0.f, 1.f, 1.f });
     
     // Initialize Primary Orthographic Camera
-    Boomerang::Core::Graphics::OrthoCam __camera_1(glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
-                                                              -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
+    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_1 = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(
+                                                                      glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
+                                                                                 -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
 
-    std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/demo.png");
+    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_f = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(
+                                                                      glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
+                                                                                 -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
+
+    std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/projectboomerang.png");
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
-    font->init("raleway", "assets/fonts/raleway.ttf", 100);
+    font->init("raleway", "assets/fonts/raleway.ttf", 24);
 
     GAME_STATE state = GAME_STATE::RUN;
 
@@ -89,14 +94,16 @@ int main() {
         engine.update();
         dt.update();
 
-        __camera_1.update(static_cast<float>(dt.dt()));
+        __camera_1->update(static_cast<float>(dt.dt()));
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0 }, { 100, 100 }, { 1.f, 1.f, 1.f, 1.f });
-        //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 0.f }, font);
+        Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
+        Boomerang::Core::Graphics::Renderer::EndScene();
+
+        Boomerang::Core::Graphics::Renderer::StartScene(__camera_f);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { -495, 295, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 1.f, 1.f, 1.f }, font);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());

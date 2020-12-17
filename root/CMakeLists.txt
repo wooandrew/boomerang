@@ -32,8 +32,8 @@ add_library(
     BoomerangEngine STATIC
 
     # Main
-    "engine/engine.hpp"
-    "engine/engine.cpp"
+    "engine/engine.hpp"         "engine/engine.cpp"
+    "engine/manager.hpp"        "engine/manager.cpp"
 
     # Input
     "engine/input/mouse.hpp"                        "engine/input/mouse.cpp"

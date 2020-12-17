@@ -88,13 +88,13 @@ namespace Boomerang::Core::Graphics {
         delete RenderData;
     }
 
-    void Renderer::StartScene(const OrthoCam& camera) {
+    void Renderer::StartScene(const std::shared_ptr<OrthoCam>& camera) {
 
         RenderData->__basic_shader->Bind();
-        RenderData->__basic_shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+        RenderData->__basic_shader->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
         
         RenderData->__text_shader->Bind();
-        RenderData->__text_shader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+        RenderData->__text_shader->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
     }
 
     void Renderer::EndScene() { }

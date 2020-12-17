@@ -51,7 +51,7 @@ namespace Boomerang::Core::Graphics {
         static void init();
         static void shutdown();
 
-        static void StartScene(const OrthoCam& camera);
+        static void StartScene(const std::shared_ptr<OrthoCam>& camera);
         static void EndScene();
 
         // Render Texture
