@@ -26,6 +26,12 @@
 #ifndef BOOMERANG_ENGINE_MANAGER
 #define BOOMERANG_ENGINE_MANAGER
 
+// Include dependencies
+#include <GLFW/glfw3.h>
+
+// Include boomerang libraries
+#include "../misc/utilities.hpp"
+
 namespace Boomerang::Core {
 
     class Manager {
@@ -34,11 +40,22 @@ namespace Boomerang::Core {
 
     public:
 
-        Manager() = default;
+        Manager();
         ~Manager();
+
+        enum class GAME_STATE {
+            RUN,
+            STOP
+        }; GAME_STATE state;
+
+        const bool run(GLFWwindow* window) const;
+        void update();
+
+        const float dt();
 
     private:
 
+        Boomerang::Misc::Utilities::DeltaTime DeltaTime;
     };
 }
 

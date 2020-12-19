@@ -26,7 +26,8 @@
 #include <GLM/glm/gtc/matrix_transform.hpp>
 
 #include "engine/engine.hpp"
-#include "engine//input/mouse.hpp"
+#include "engine/manager.hpp"
+#include "engine/input/mouse.hpp"
 #include "engine/graphics/manager.hpp"
 #include "engine/graphics/shaders.hpp"
 #include "engine/graphics/renderer.hpp"
@@ -35,12 +36,6 @@
 
 #include "misc/logger.hpp"
 #include "misc/utilities.hpp"
-
-// Move to game manager
-enum class GAME_STATE {
-    RUN,
-    STOP
-};
 
 // Move to render manager
 namespace RENDER_LAYER {
@@ -65,7 +60,7 @@ int main() {
         logger::logger("  E  ", "Engine initialization success. All systems go!");
 
     // Initialize Engine components
-    Boomerang::Misc::Utilities::DeltaTime dt;
+    Boomerang::Core::Manager manager;
 
     Boomerang::Core::Input::Mouse::init();
     Boomerang::Core::Graphics::Manager::init();
@@ -86,15 +81,13 @@ int main() {
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
     font->init("raleway", "assets/fonts/raleway.ttf", 24);
 
-    GAME_STATE state = GAME_STATE::RUN;
 
-
-    while (!glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN) {
+    while (manager.run(engine.GetWindow())) {
 
         engine.update();
-        dt.update();
+        manager.update();
 
-        __camera_1->update(static_cast<float>(dt.dt()));
+        __camera_1->update(static_cast<float>(manager.dt()));
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 

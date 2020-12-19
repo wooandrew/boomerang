@@ -25,4 +25,23 @@
 
 namespace Boomerang::Core {
 
+    Manager::Manager() {
+        state = GAME_STATE::RUN;
+    }
+
+    Manager::~Manager() {
+        state = GAME_STATE::STOP;
+    }
+
+    const bool Manager::run(GLFWwindow* window) const {
+        return !glfwWindowShouldClose(window) && state == GAME_STATE::RUN;
+    }
+
+    void Manager::update() {
+        DeltaTime.update();
+    }
+
+    const float Manager::dt() {
+        return static_cast<float>(DeltaTime.dt());
+    }
 }
