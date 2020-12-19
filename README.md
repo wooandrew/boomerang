@@ -51,10 +51,13 @@ Here are some positions that we could use collaborators (not contributers):
 
 ## Credits
 Collaborators
-- ![dev] `Andrew Woo`
-- ![dev] `Brandon Yau`
-- ![dev] `Porter Squires`
-- ![dev] `Awrish Khan`
+- ![story] ![dev] `Andrew Woo`
+- ![story] ![dev] `Brandon Yau`
+- ![story] ![dev] `Porter Squires`
+- ![story] ![dev] `Awrish Khan`
+
+<br>Contributors
+- ![story] `Bhaven Desai`
 
 ## License
 ```
@@ -81,3 +84,4 @@ Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 
  [dev]: https://img.shields.io/badge/-dev-brightgreen?style=flat-square
+ [story]: https://img.shields.io/badge/-story-yellow?style=flat-square

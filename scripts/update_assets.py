@@ -1,4 +1,4 @@
-# Project Boomerang (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+# Project Boomerang : scripts/update_assets.py (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 # Modified MIT License
 # 
@@ -20,38 +20,10 @@
 #  * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 3.8)
+# update_assets.py updates assets folder in bin folder
+# version _ 12/05/2020 @ 04:50 PM
 
-# Set project variables
-set(PROJECT_VERSION "0.1.0")
-set(PROJECT_DESCRIPTION "Project Boomerang is an open-source, yet-to-be-titled video game project collaboration started by four college dudes.")
+import shutil
 
-# Set up Project
-project(boomerang VERSION ${PROJECT_VERSION} DESCRIPTION ${PROJECT_DESCRIPTION})
-
-# Include OpenGL
-find_package(OpenGL REQUIRED)
-
-# Set up defaults
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-# Uncomment this line before running if using Visual Studio's built-in CMake env.
-# Set running directory to root
-# set(VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/root/)          # this crap doesnt work whyyyyyyyyyyy
-
-# Include directories
-include_directories("${CMAKE_SOURCE_DIR}/includes/GLFW/include")
-include_directories("${CMAKE_SOURCE_DIR}/includes/GLAD/include")
-include_directories("${CMAKE_SOURCE_DIR}/includes/FREETYPE/include")
-include_directories("${CMAKE_SOURCE_DIR}/includes")
-
-add_subdirectory("includes/GLFW")
-add_subdirectory("includes/GLAD-master")
-add_subdirectory("includes/GLM")
-add_subdirectory("includes/FREETYPE")
-
-# Subdirectories
-add_subdirectory(root)
-add_subdirectory(sandbox)
+shutil.rmtree('../out/build/x64-Debug/bin/assets')
+shutil.copytree('../root/assets', '../out/build/x64-Debug/bin/assets')

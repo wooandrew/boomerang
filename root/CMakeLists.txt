@@ -32,8 +32,8 @@ add_library(
     BoomerangEngine STATIC
 
     # Main
-    "engine/engine.hpp"
-    "engine/engine.cpp"
+    "engine/engine.hpp"         "engine/engine.cpp"
+    "engine/manager.hpp"        "engine/manager.cpp"
 
     # Input
     "engine/input/mouse.hpp"                        "engine/input/mouse.cpp"
@@ -46,6 +46,7 @@ add_library(
     "engine/graphics/renderer.hpp"                  "engine/graphics/renderer.cpp"
     "engine/graphics/shaders.hpp"                   "engine/graphics/shaders.cpp"
     "engine/graphics/texture.hpp"                   "engine/graphics/texture.cpp"
+    "engine/graphics/font.hpp"                      "engine/graphics/font.cpp"
 
     # Graphics / Camera
     "engine/graphics/camera/orthocam.hpp"           "engine/graphics/camera/orthocam.cpp"
@@ -64,9 +65,12 @@ add_library(
 target_link_libraries(main PRIVATE BoomerangEngine)
 target_link_libraries(main PRIVATE BoomerangMisc)
 
-add_dependencies(BoomerangEngine glfw glad)
+# Make Engine depend on GLFW, GLAD
+add_dependencies(BoomerangEngine glfw glad freetype)
 
 # Link dependencies against project executable
 target_link_libraries(main PRIVATE glfw)                    # Link GLFW
 target_link_libraries(main PRIVATE glad)                    # Link GLAD
 # GLM is header only, no library to link                    # Link GLM
+# STB is header only, no library to link                    # Link STB
+target_link_libraries(main PRIVATE freetype)                # Link FreeType2

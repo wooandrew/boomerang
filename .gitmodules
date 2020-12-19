@@ -10,3 +10,6 @@
 [submodule "includes/STB"]
 	path = includes/STB
 	url = https://github.com/nothings/stb.git
+[submodule "includes/FREETYPE"]
+	path = includes/FREETYPE
+	url = https://github.com/freetype/freetype2.git

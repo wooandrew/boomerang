@@ -32,11 +32,13 @@
 
 namespace Boomerang::Core::Graphics {
 
-    OrthoCam::OrthoCam(glm::mat4& _ProjectionMat, float _speed) {
+    OrthoCam::OrthoCam(glm::mat4& _ProjectionMat, float _speed, bool _lock) {
 
         zoom = 1.f;
         speed = _speed;
         rotation = 0;
+
+        lock = _lock;
 
         position = glm::vec3(0);
 
@@ -68,6 +70,10 @@ namespace Boomerang::Core::Graphics {
     }
     void OrthoCam::SetPosition(glm::vec3& _position) {
         position = _position;
+    }
+
+    void OrthoCam::SetLock(bool _lock) {
+        lock = _lock;
     }
 
     void OrthoCam::SetProjection(glm::mat4& _projection) {
@@ -106,24 +112,27 @@ namespace Boomerang::Core::Graphics {
     // dt = delta time
     void OrthoCam::update(float dt) {
 
-        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W)) {               // UP
-            position.x += -std::sin(glm::radians(rotation)) * speed * dt;
-            position.y += std::cos(glm::radians(rotation)) * speed * dt;
-        }
-        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S)) {          // DOWN
-            position.x -= -std::sin(glm::radians(rotation)) * speed * dt;
-            position.y -= std::cos(glm::radians(rotation)) * speed * dt;
-        }
+        if (!lock) {
 
-        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A)) {               // LEFT
-            position.x -= std::cos(glm::radians(rotation)) * speed * dt;
-            position.y -= std::sin(glm::radians(rotation)) * speed * dt;
-        }
-        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D)) {          // RIGHT
-            position.x += std::cos(glm::radians(rotation)) * speed * dt;
-            position.y += std::sin(glm::radians(rotation)) * speed * dt;
-        }
+            if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W)) {               // UP
+                position.x -= std::sin(glm::radians(rotation)) * speed * dt;
+                position.y += std::cos(glm::radians(rotation)) * speed * dt;
+            }
+            else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S)) {          // DOWN
+                position.x += std::sin(glm::radians(rotation)) * speed * dt;
+                position.y -= std::cos(glm::radians(rotation)) * speed * dt;
+            }
 
-        RecalculateMatrix();
+            if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A)) {               // LEFT
+                position.x -= std::cos(glm::radians(rotation)) * speed * dt;
+                position.y -= std::sin(glm::radians(rotation)) * speed * dt;
+            }
+            else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D)) {          // RIGHT
+                position.x += std::cos(glm::radians(rotation)) * speed * dt;
+                position.y += std::sin(glm::radians(rotation)) * speed * dt;
+            }
+
+            RecalculateMatrix();
+        }
     }
 }

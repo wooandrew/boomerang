@@ -22,4 +22,6 @@
 
 cmake_minimum_required (VERSION 3.8)
 
-add_executable(sandbox test.cpp)
+add_executable(sandbox_cpp test.cpp)
+add_executable(sandbox_c test.c)
+

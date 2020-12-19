@@ -1,4 +1,4 @@
-// Project Boomerang : engine/graphics/renderer.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/font.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,49 +23,55 @@
 
 #pragma once
 
-#ifndef BOOMERANG_ENGINE_GRAPHICS_RENDERER
-#define BOOMERANG_ENGINE_GRAPHICS_RENDERER
+#ifndef BOOMERANG_ENGINE_GRAPHICS_FONT
+#define BOOMERANG_ENGINE_GRAPHICS_FONT
 
 // Include standard library
 #include <string>
-#include <memory>
+#include <map>
 
 // Include dependencies
 #include <GLM/glm/glm.hpp>
-
-// Include boomerang libraries
-#include "font.hpp"
-#include "texture.hpp"
-#include "camera/orthocam.hpp"
+#include <FREETYPE/include/ft2build.h>
+#include FT_FREETYPE_H
 
 namespace Boomerang::Core::Graphics {
 
-    class Renderer {
+    // TODO: overload Texture to create Character
+    struct Character {
 
-        /// Static rendering functions
+        unsigned int TextureID;
+        glm::ivec2 size;            // Need to switch to our own convention
+        glm::ivec2 bearing;         // Need to switch to our own convention
+        signed long advance;
+
+        void Bind(unsigned int slot = 0) const;
+    };
+
+    class Font {
+
+        /// Font objects & rendering
 
     public:
 
-        Renderer() = delete;
-        
-        static void init();
-        static void shutdown();
+        Font();
+        ~Font();
 
-        static void StartScene(const std::shared_ptr<OrthoCam>& camera);
-        static void EndScene();
+        int init(std::string _FontName, std::string _FontPath, int _FontSize = 48);
 
-        // Render Texture
-        static void RenderTexture(const glm::vec2& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
-        static void RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
+        // Getters
+        std::map<char, Character> GetCharacters() const;
+        const int GetSize() const;
 
-        // Render Text
-        static void RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
-        static void RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
+    private:
 
-        // Render Static Quad
-        static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
-        static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
+        std::string FontName;
+        std::string FontPath;
+
+        int FontSize;
+
+        std::map<char, Character> characters;
     };
 }
 
-#endif // !BOOMERANG_ENGINE_GRAPHICS_RENDERER
+#endif // !BOOMERANG_ENGINE_GRAPHICS_FONT
