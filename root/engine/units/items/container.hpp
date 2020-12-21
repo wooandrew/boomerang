@@ -21,6 +21,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include "../item.hpp"
+
 namespace Boomerang::Core::Units::Items {
 
+	class Container:public Item {
+
+	};
 }
