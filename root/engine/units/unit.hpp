@@ -49,6 +49,7 @@ namespace Boomerang::Core::Units {
         glm::vec3 GetPosition();
         glm::vec2 GetSize();
         glm::vec4 GetColor();
+        std::vector<std::shared_ptr<std::string>> GetTags();
 
         // Setters
 		void AddChild(std::shared_ptr<Unit> _unit);
@@ -76,5 +77,9 @@ namespace Boomerang::Core::Units {
         bool visible;
         bool shouldDisplay;
         bool displayVertices;
+
+        std::string ID; // this_cool_item
+        std::string displayName; // This Cool Item
+        vector<shared_ptr<std::string>> tags;
     };
 }

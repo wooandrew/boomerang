@@ -77,6 +77,11 @@ namespace Boomerang::Core::Units {
         return color;
     }
 
+    std::vector<std::shared_ptr<std::string>> Unit::GetTags()
+    {
+        return tags;
+    }
+
     // Setters
 	void Unit::AddChild(std::shared_ptr<Unit> _unit) {
         children.push_back(_unit);
