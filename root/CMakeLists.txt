@@ -34,6 +34,7 @@ add_library(
     # Main
     "engine/engine.hpp"         "engine/engine.cpp"
     "engine/manager.hpp"        "engine/manager.cpp"
+    "engine/settings.hpp"       "engine/settings.cpp"
 
     # Input
     "engine/input/mouse.hpp"                        "engine/input/mouse.cpp"

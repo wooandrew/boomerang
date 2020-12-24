@@ -1,4 +1,4 @@
-// Project Boomerang : engine/manager.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/settings.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,41 +23,25 @@
 
 #pragma once
 
-#ifndef BOOMERANG_ENGINE_MANAGER
-#define BOOMERANG_ENGINE_MANAGER
-
-// Include dependencies
-#include <GLFW/glfw3.h>
-
-// Include boomerang libraries
-#include "../misc/utilities.hpp"
+#ifndef BOOMERANG_ENGINE_SETTINGS
+#define BOOMERANG_ENGINE_SETTINGS
 
 namespace Boomerang::Core {
 
-    class Manager {
+    class Settings {
 
-        /// This class manages background tasks for the game.
+        /// Game Settings
 
     public:
 
-        Manager();
-        ~Manager();
-
-        enum class GAME_STATE {
-            RUN,
-            STOP
-        }; GAME_STATE state;
-
-        const bool run(GLFWwindow* window) const;
-        void update();
-
-        // Getters
-        const float dt();
+        Settings() = delete;
+        
+        static int set();
+        static int save();
 
     private:
 
-        Boomerang::Misc::Utilities::DeltaTime DeltaTime;
     };
 }
 
-#endif // !BOOMERANG_ENGINE_MANAGER
+#endif // !BOOMERANG_ENGINE_SETTINGS

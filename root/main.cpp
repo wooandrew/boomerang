@@ -81,13 +81,15 @@ int main() {
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
     font->init("raleway", "assets/fonts/raleway.ttf", 24);
 
+    Boomerang::Misc::Utilities::ReadFile("nopath", std::ios::binary);
+
 
     while (manager.run(engine.GetWindow())) {
 
         engine.update();
         manager.update();
 
-        __camera_1->update(static_cast<float>(manager.dt()));
+        __camera_1->update(manager.dt());
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 

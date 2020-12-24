@@ -30,7 +30,29 @@
 #include <sstream>
 #include <iomanip>
 
+#include "logger.hpp"
+
 namespace Boomerang::Misc::Utilities {
+
+    std::string ReadFile(const std::string& _path, std::ios::_Openmode _openMode) {
+
+        std::string data = "";
+
+        std::ifstream input(_path, _openMode);
+        if (input) {
+
+            input.seekg(0, std::ios::end);
+            data.resize(input.tellg());
+
+            input.seekg(0, std::ios::beg);
+            input.read(&data[0], data.size());
+            input.close();
+        }
+        else
+            logger::logger<std::string, std::string>("     ", "Error reading file at ", _path);
+
+        return data;
+    }
 
     std::string GetDateTime(std::string format) {
 

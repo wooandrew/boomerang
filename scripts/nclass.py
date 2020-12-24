@@ -21,9 +21,9 @@
 #  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # nclass.py creates new .cpp/.hpp class pair with proper copyright notice, license, pragma-header guard, namespace, and classname
-# version _ 11/10/2020 @ 04:51 PM
+# version _ 12/21/2020 @ 10:40 PM
 
-className = input('Enter class name: ')
+className = input('Enter class name: ').lower()
 description = input('Enter class description: ')
 path = input('Enter path: root/')
 namespace = input("Enter namespace: Boomerang::")

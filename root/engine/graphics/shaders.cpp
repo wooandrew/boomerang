@@ -88,29 +88,8 @@ namespace Boomerang::Core::Graphics {
 
     void Shader::init(const std::string& vtxPath, const std::string& frgPath) {
 
-        std::string vtxSource;
-        std::string frgSource;
-
-        // Lambda to read vtxSource & frgSource
-        auto read = [](std::string path, std::string& source) {
-
-            // Read Vertex Shader Source
-            std::ifstream input(path, std::ios::in | std::ios::binary);
-            if (input) {
-
-                input.seekg(0, std::ios::end);
-                source.resize(input.tellg());
-
-                input.seekg(0, std::ios::beg);
-                input.read(&source[0], source.size());
-                input.close();
-            }
-        };
-
-        // TODO: Check for read errors
-        read(vtxPath, std::ref(vtxSource));  // Read Vertex Shader
-        read(frgPath, std::ref(frgSource));  // Read Fragment Shader
-
+        std::string vtxSource = Boomerang::Misc::Utilities::ReadFile(vtxPath, std::ios::binary);  // Read Vertex Shader
+        std::string frgSource = Boomerang::Misc::Utilities::ReadFile(frgPath, std::ios::binary);  // Read Fragment Shader
 
         // --- Shader processing
         std::unordered_map<GLenum, std::string> sources;

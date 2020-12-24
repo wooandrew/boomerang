@@ -28,6 +28,7 @@
 
 #include <string>
 #include <chrono>
+#include <fstream>
 #include <type_traits>
 
 namespace Boomerang::Misc::Utilities {
@@ -47,6 +48,8 @@ namespace Boomerang::Misc::Utilities {
         T x;
         T y;
     };
+
+    std::string ReadFile(const std::string& _path, std::ios::_Openmode _openMode);
 
     std::string GetDateTime(std::string format = "%Y%m%d _ %T");
 
