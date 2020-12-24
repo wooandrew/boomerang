@@ -1,4 +1,4 @@
-// Project Boomerang : engine/graphics/camera/orthocam.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/manager.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -23,64 +23,40 @@
 
 #pragma once
 
-#ifndef BOOMERANG_ENGINE_GRAPHICS_CAMERA_ORTHOCAM
-#define BOOMERANG_ENGINE_GRAPHICS_CAMERA_ORTHOCAM
+#ifndef BOOMERANG_ENGINE_MANAGER
+#define BOOMERANG_ENGINE_MANAGER
 
 // Include dependencies
-#include <GLM/glm/glm.hpp>
+#include <GLFW/glfw3.h>
 
 // Include boomerang libraries
-#include "../../../misc/utilities.hpp"
+#include "../misc/utilities.hpp"
 
-namespace Boomerang::Core::Graphics {
+namespace Boomerang::Core {
 
-    class OrthoCam {
+    class Manager {
 
-        /// Orthographic Camera System
+        /// This class manages background tasks for the game.
 
     public:
 
-        // Constructors
-        OrthoCam() = default;
-        OrthoCam(glm::mat4& _ProjectionMat, float _speed = 0, bool _lock = false);
-        
-        // Setters
-        void SetZoom(float _zoom, const util::dimen2d<int>& windowSize);
-        void SetSpeed(float _speed);
-        void SetRotation(float _rotation);
-        void SetPosition(glm::vec3& _position);
+        Manager();
+        ~Manager();
 
-        void SetLock(bool _lock);
+        enum class GAME_STATE {
+            RUN,
+            STOP
+        }; GAME_STATE state;
 
-        void SetProjection(glm::mat4& _projection);
+        const bool run(GLFWwindow* window) const;
+        void update();
 
-        // Getters
-        const float GetSpeed() const;
-        const glm::vec3& GetPosition() const;
-
-        const glm::mat4& GetViewMatrix() const;
-        const glm::mat4& GetProjectionMatrix() const;
-        const glm::mat4& GetViewProjectionMatrix() const;
-
-        // dt = delta time
-        virtual void update(float dt);
+        const float dt();
 
     private:
 
-        void RecalculateMatrix();
-
-        float zoom;
-        float speed;
-        float rotation;
-
-        bool lock;
-
-        glm::vec3 position;
-
-        glm::mat4 ViewMatrix;
-        glm::mat4 ProjectionMatrix;
-        glm::mat4 ViewProjectionMatrix;
+        Boomerang::Misc::Utilities::DeltaTime DeltaTime;
     };
 }
 
-#endif // !BOOMERANG_ENGINE_GRAPHICS_CAMERA_ORTHOCAM
+#endif // !BOOMERANG_ENGINE_MANAGER

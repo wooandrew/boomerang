@@ -1,4 +1,4 @@
-// Project Boomerang : engine/graphics/texture.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/manager.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,48 +21,27 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
+#include "manager.hpp"
 
-#ifndef BOOMERANG_ENGINE_GRAPHICS_TEXTURE
-#define BOOMERANG_ENGINE_GRAPHICS_TEXTURE
+namespace Boomerang::Core {
 
-// Include standard library
-#include <string>
+    Manager::Manager() {
+        state = GAME_STATE::RUN;
+    }
 
-// Include dependencies
-#include <GLAD/glad.h>
+    Manager::~Manager() {
+        state = GAME_STATE::STOP;
+    }
 
-// Include boomerang libraries
-#include "../../misc/utilities.hpp"
+    const bool Manager::run(GLFWwindow* window) const {
+        return !glfwWindowShouldClose(window) && state == GAME_STATE::RUN;
+    }
 
-namespace Boomerang::Core::Graphics {
+    void Manager::update() {
+        DeltaTime.update();
+    }
 
-    class Texture {
-
-        /// Basic texture loader & mapper
-
-    public:
-
-        Texture() = default;
-        Texture(const util::dimen2d<int> _dimensions);
-        Texture(const std::string& _path);
-        ~Texture();
-
-        const util::dimen2d<int>& GetDimensions() const;
-
-        void SetData(void* _data, unsigned int _size);
-        void Bind(unsigned int slot = 0) const;
-
-    private:
-
-        std::string path;
-        util::dimen2d<int> dimensions;
-
-        unsigned int TextureID;
-
-        GLenum InternalFormat;
-        GLenum DataFormat;
-    };
+    const float Manager::dt() {
+        return static_cast<float>(DeltaTime.dt());
+    }
 }
-
-#endif // !BOOMERANG_ENGINE_GRAPHICS_TEXTURE
