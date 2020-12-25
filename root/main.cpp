@@ -47,6 +47,7 @@ namespace RENDER_LAYER {
     constexpr float LAYER1 = 0.1f;
     constexpr float LAYER2 = 0.2f;
     constexpr float LAYER3 = 0.3f;
+    constexpr float LAYER4 = 0.4f;
 }
 
 int main() {
@@ -103,23 +104,15 @@ int main() {
         glm::vec3 position = r2.GetPosition();
         static float rotation = 0;
 
-        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W)) {               // UP
-            position.x -= std::sin(glm::radians(0.f)) * 300 * manager.dt();
-            position.y += std::cos(glm::radians(0.f)) * 300 * manager.dt();
-        }
-        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S)) {          // DOWN
-            position.x += std::sin(glm::radians(0.f)) * 300 * manager.dt();
-            position.y -= std::cos(glm::radians(0.f)) * 300 * manager.dt();
-        }
+        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W))                 // UP
+            position.y += 300 * manager.dt();
+        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S))            // DOWN
+            position.y -= 300 * manager.dt();
 
-        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A)) {               // LEFT
-            position.x -= std::cos(glm::radians(0.f)) * 300 * manager.dt();
-            position.y -= std::sin(glm::radians(0.f)) * 300 * manager.dt();
-        }
-        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D)) {          // RIGHT
-            position.x += std::cos(glm::radians(0.f)) * 300 * manager.dt();
-            position.y += std::sin(glm::radians(0.f)) * 300 * manager.dt();
-        }
+        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A))                 // LEFT
+            position.x -= 300 * manager.dt();
+        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D))            // RIGHT
+            position.x += 300 * manager.dt();
 
         if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_Q))                 // ROTATE LEFT
             rotation += 100 * manager.dt();
@@ -140,10 +133,11 @@ int main() {
         Boomerang::Core::Graphics::Renderer::DrawQuad(r1.GetPosition(), r1.GetSize(), { 1.f, 1.f, 1.f, 1.f });
         Boomerang::Core::Graphics::Renderer::DrawQuad(r2.GetPosition(), r2.GetSize(), rotation, color);
 
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperLeftVertex.x, r2.UpperLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, {0.f, 1.f, 1.f, 1.f});
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperRightVertex.x, r2.UpperRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 1.f, 1.f });
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerLeftVertex.x, r2.LowerLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 0.f, 1.f });
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerRightVertex.x, r2.LowerRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 0.f, 0.f, 1.f, 1.f });
+        // Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperLeftVertex.x, r2.UpperLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, {0.f, 1.f, 1.f, 1.f});
+        // Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperRightVertex.x, r2.UpperRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 1.f, 1.f });
+        // Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerLeftVertex.x, r2.LowerLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 0.f, 1.f });
+        // Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerRightVertex.x, r2.LowerRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 0.f, 0.f, 1.f, 1.f });
+
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f);

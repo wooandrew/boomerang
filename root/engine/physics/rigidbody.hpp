@@ -59,8 +59,10 @@ namespace Boomerang::Core::Physics {
         // Debug functions
         void SetDisplayMode(bool _display);
 
-    //protected:
 
+    private:
+
+        // ***** Variables to be used by collision system *****
         friend class Collision;
 
         float x;        // x position
@@ -72,8 +74,7 @@ namespace Boomerang::Core::Physics {
         glm::vec3 LowerLeftVertex;
         glm::vec3 UpperRightVertex;
         glm::vec3 LowerRightVertex;
-        
-    private:
+        // ***** Variables to be used by collision system *****
 
         void UpdateVertices();
 

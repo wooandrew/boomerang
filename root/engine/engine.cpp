@@ -50,7 +50,7 @@ namespace Boomerang::Core {
             return 1;
         }
 
-        // Set the window hints using engine metadata. Defaulted to (GLFW_CLIENT_API, GLFW_OPENGL_API) and (GLFW_RESIZABLE, GLFW_FALSE).                    
+        // Set the window hints using engine metadata. Defaulted to (GLFW_CLIENT_API, GLFW_OPENGL_API), (GLFW_RESIZABLE, GLFW_FALSE), and (GLFW_SAMPLES, 4).
         for (const auto& hint : metadata.windowHints)
             glfwWindowHint(hint.first, hint.second);
 

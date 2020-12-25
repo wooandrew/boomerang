@@ -31,6 +31,7 @@ namespace Boomerang::Core::Graphics {
         glad_glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glad_glEnable(GL_DEPTH_TEST);
+        glad_glEnable(GL_MULTISAMPLE);
 
         SetClearColor(color);
     }
