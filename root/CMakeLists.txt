@@ -51,6 +51,14 @@ add_library(
 
     # Graphics / Camera
     "engine/graphics/camera/orthocam.hpp"           "engine/graphics/camera/orthocam.cpp"
+
+    # Math
+    "engine/math/math.hpp"                          "engine/math/math.cpp"
+
+    # Physics
+    "engine/physics/object.hpp"                     "engine/physics/object.cpp"
+    "engine/physics/rigidbody.hpp"                  "engine/physics/rigidbody.cpp"
+    "engine/physics/collision.hpp"                  "engine/physics/collision.cpp"
 )
 
 add_library(

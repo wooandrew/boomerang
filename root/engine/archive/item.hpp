@@ -21,43 +21,20 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "GLFW"
+// ARCHIVED FOR FUTURE USE
 
-#include "unit.hpp"
-
-namespace Boomerang::Core::Units::Characters {
-
-	
-	// make serializable
-	struct CharacterData{
-		float hp;
-		float armor;
-		float moveSpeed;
-	};
-
-
-	enum CharacterInput {
-		GORIGHT,
-		GOLEFT,
-		GODOWN,
-		GOUP,
-		INTERACT
-	};
+namespace Boomerang::Core::Units::Items {
 
 	// are we inheriting this? hopefully
 	// Andrew, please help, we're stupid
 	/*
-	* This class represents all mobile characters in the game, such as NPCs, Mobs, and the player.
+	* This class represents any item that might go into a player's inventory or some other container.
 	 */
-	class Character :public Unit {
+	class Item :public Unit {
 	public:
 
-		void DoInput(CharacterInput input);
-		// Move in a given direction by the moveSpeed value of character
-		// direction - a rotation value, in radians
-		bool TryMove(float direction);
 	private:
-		CharacterData data;
+
 	};
 
 }

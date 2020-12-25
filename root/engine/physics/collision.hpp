@@ -1,4 +1,4 @@
-// Project Boomerang : unit/unit.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/physics/collision.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,11 +21,42 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "../item.hpp"
+#pragma once
 
-namespace Boomerang::Core::Units::Items {
+#ifndef BOOMERANG_ENGINE_PHYSICS_COLLISION
+#define BOOMERANG_ENGINE_PHYSICS_COLLISION
 
-	class Container:public Item {
+// Include dependencies
+#include <GLM/glm/glm.hpp>
 
-	};
+// Include boomerang libraries
+#include "rigidbody.hpp"
+#include "../math/math.hpp"
+
+namespace Boomerang::Core::Physics {
+
+    class Collision {
+
+        /// Static collision detection functions
+
+    public:
+
+        Collision() = delete;
+
+        // Axis Aligned Bounding Box    -> Usage: for fast collision detection between parallel quads
+        template<typename T, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr> 
+        static bool AABB(T x, T y, T w, T h, T x2, T y2, T w2, T h2) {
+
+            if (x < x2 + w2 && x + w > x2 && y < y2 + h2 && y + h > y2)
+                return true;
+
+            return false;
+        }
+        static bool AABB(const Rigidbody& left, const Rigidbody& right);
+
+        // Separating Axis Theorem      -> Usage: for collision detection between rotated n-gons
+        static bool SAT(const Rigidbody& left, const Rigidbody& right);
+    };
 }
+
+#endif // !BOOMERANG_ENGINE_PHYSICS_COLLISION

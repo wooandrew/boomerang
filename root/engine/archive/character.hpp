@@ -21,12 +21,29 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Boomerang::Core::Units::Interactables {
+// ARCHIVED FOR FUTURE USE
 
-	// this struct is a delegate used to represent actions (such as interactable exploding on players)
-	// in most scenarios, the player/character will be the actor
-	struct Action {
-		void DoAction(Unit actor, Unit actee);
+#include "GLFW"
+
+#include "unit.hpp"
+
+namespace Boomerang::Core::Units::Characters {
+
+	
+	// make serializable
+	struct CharacterData{
+		float hp;
+		float armor;
+		float moveSpeed;
+	};
+
+
+	enum CharacterInput {
+		GORIGHT,
+		GOLEFT,
+		GODOWN,
+		GOUP,
+		INTERACT
 	};
 
 	// are we inheriting this? hopefully
@@ -34,11 +51,15 @@ namespace Boomerang::Core::Units::Interactables {
 	/*
 	* This class represents all mobile characters in the game, such as NPCs, Mobs, and the player.
 	 */
-	class Interactable :public Unit {
+	class Character : public Unit {
 	public:
-		virtual void Interact(Character interacter);
+
+		void DoInput(CharacterInput input);
+		// Move in a given direction by the moveSpeed value of character
+		// direction - a rotation value, in radians
+		bool TryMove(float direction);
 	private:
-		Action onInteract;
+		CharacterData data;
 	};
 
 }

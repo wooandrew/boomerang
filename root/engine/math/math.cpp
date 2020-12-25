@@ -1,4 +1,4 @@
-// Project Boomerang : engine/settings.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/math/math.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,36 +21,28 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
+#include "math.hpp"
 
-#ifndef BOOMERANG_ENGINE_SETTINGS
-#define BOOMERANG_ENGINE_SETTINGS
+#include <cmath>
 
-namespace Boomerang::Core::Settings {
+namespace Boomerang::Core::Math {
 
-    /*
-        Game settings will be stored directly within the settings namespace
-        thereby avoiding unecessary memory overhead by not instantiating
-        a settings object. Since settings is global across the game, this 
-        solution should be effective.
-    */
-    
-    extern constexpr bool DEBUG_MODE = true;
+    const glm::vec3& RotatePoint(glm::vec3& point, const glm::vec3& pivot, float rotation, AngleType type) {
 
-    /*class Settings {
+        if (type == AngleType::DEGREES)
+            rotation = ConvertToRadians<float>(rotation);
 
-        /// Game Settings
+        float sin_r = std::sin(rotation);
+        float cos_r = std::cos(rotation);
 
-    public:
+        point -= pivot;
 
-        Settings() = delete;
-        
-        static int set();
-        static int save();
+        float new_x = (point.x * cos_r) - (point.y * sin_r);
+        float new_y = (point.x * sin_r) + (point.y * cos_r);
 
-    private:
+        point.x = new_x + pivot.x;
+        point.y = new_y + pivot.y;
 
-    };*/
+        return point;
+    }
 }
-
-#endif // !BOOMERANG_ENGINE_SETTINGS

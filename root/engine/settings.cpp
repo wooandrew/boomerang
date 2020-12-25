@@ -23,13 +23,6 @@
 
 #include "settings.hpp"
 
-namespace Boomerang::Core {
+namespace Boomerang::Core::Settings {
 
-    int Settings::set() {
-
-    }
-
-    int Settings::save() {
-
-    }
 }

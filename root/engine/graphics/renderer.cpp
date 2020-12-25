@@ -167,4 +167,21 @@ namespace Boomerang::Core::Graphics {
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }
+    void Renderer::DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
+        DrawQuad({ _position.x, _position.y, 0.0f }, _size, _rotation, _color);
+    }
+    void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
+
+        RenderData->__basic_shader->Bind();
+
+        RenderData->__basic_shader->SetFloat4("u_Color", _color);
+        RenderData->__white->Bind();
+
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), { _size.x, _size.y, 1.0f });
+        transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
+        RenderData->__basic_shader->SetMat4("u_Transform", transform);
+        RenderData->__quad_vtx_array->Bind();
+
+        Manager::DrawIndexed(RenderData->__quad_vtx_array);
+    }
 }

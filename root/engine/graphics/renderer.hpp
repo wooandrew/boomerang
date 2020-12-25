@@ -65,6 +65,8 @@ namespace Boomerang::Core::Graphics {
         // Render Static Quad
         static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
         static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
+        static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
+        static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
     };
 }
 

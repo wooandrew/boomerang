@@ -1,4 +1,4 @@
-// Project Boomerang : engine/settings.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : unit/unit.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,36 +21,26 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
+// ARCHIVED FOR FUTURE USE
 
-#ifndef BOOMERANG_ENGINE_SETTINGS
-#define BOOMERANG_ENGINE_SETTINGS
+namespace Boomerang::Core::Units::Interactables {
 
-namespace Boomerang::Core::Settings {
+	// this struct is a delegate used to represent actions (such as interactable exploding on players)
+	// in most scenarios, the player/character will be the actor
+	struct Action {
+		void DoAction(Unit actor, Unit actee);
+	};
 
-    /*
-        Game settings will be stored directly within the settings namespace
-        thereby avoiding unecessary memory overhead by not instantiating
-        a settings object. Since settings is global across the game, this 
-        solution should be effective.
-    */
-    
-    extern constexpr bool DEBUG_MODE = true;
+	// are we inheriting this? hopefully
+	// Andrew, please help, we're stupid
+	/*
+	* This class represents all mobile characters in the game, such as NPCs, Mobs, and the player.
+	 */
+	class Interactable :public Unit {
+	public:
+		virtual void Interact(Character interacter);
+	private:
+		Action onInteract;
+	};
 
-    /*class Settings {
-
-        /// Game Settings
-
-    public:
-
-        Settings() = delete;
-        
-        static int set();
-        static int save();
-
-    private:
-
-    };*/
 }
-
-#endif // !BOOMERANG_ENGINE_SETTINGS

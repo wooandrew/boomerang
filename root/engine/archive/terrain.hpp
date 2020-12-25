@@ -21,6 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+// ARCHIVED FOR FUTURE USE
+
 namespace Boomerang::Core::Units::Terrain {
 
 	// are we inheriting this? hopefully

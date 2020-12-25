@@ -1,4 +1,4 @@
-// Project Boomerang : unit/unit.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/physics/object.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -29,12 +29,13 @@
 #include "../graphics/texture.hpp"
 #include "../graphics/vertex.hpp"
 #include "../graphics/renderer.hpp"
-#include "unit.hpp"
+#include "object.hpp"
 
-namespace Boomerang::Core::Units { 
+namespace Boomerang::Core::Physics { 
 
 	// Constructor
-    Unit(glm::vec3 _position, glm::vec2 _size, glm::vec4 color, std::shared_ptr<Texture> _texture) {
+    Object::Object(glm::vec3& _position, glm::vec2& _size, glm::vec4& _color, std::shared_ptr<Graphics::Texture> _texture) {
+
         position = _position;
         size = _size;
         color = _color;
@@ -42,99 +43,94 @@ namespace Boomerang::Core::Units {
         rotation = 0.0;
 
 		// initialize the children and vertices vectors to empty vectors
-        parent = nullptr;
+        //parent = nullptr;
 
         // for now
-        vertices = nullptr;
+        //vertices = nullptr;
     }
 
     // Getters
-    std::vector<std::shared_ptr<Unit>> Unit::GetChildren() {
-        return children;
-    }
+    //std::vector<std::shared_ptr<Unit>> Unit::GetChildren() {
+    //    return children;
+    //}
+    //
+    //std::shared_ptr<Unit> Unit::GetParent() {
+    //    return parent;
+    //}
 
-    std::shared_ptr<Unit> Unit::GetParent() {
-        return parent;
-    }
-
-    bool Unit::GetVisible() {
+    const bool Object::GetVisible() const {
         return visible;
     }
 
-    bool Unit::GetShouldDisplay() {
-        return shouldDisplay;
-    }
-
-    glm::vec3 Unit::GetPosition() {
+    const glm::vec3& Object::GetPosition() const {
         return position;
     }
 
-    glm::vec2 Unit::GetSize() {
+    const glm::vec2& Object::GetSize() const {
         return size;
     }
 
-    glm::vec4 Unit::GetColor() {
+    const glm::vec4& Object::GetColor() const {
         return color;
     }
 
-    std::vector<std::shared_ptr<std::string>> Unit::GetTags()
-    {
+    const std::vector<std::string>& Object::GetTags() const {
         return tags;
     }
 
     // Setters
-	void Unit::AddChild(std::shared_ptr<Unit> _unit) {
-        children.push_back(_unit);
-        _unit.SetParent(this);
-    }
+	//void Unit::AddChild(std::shared_ptr<Unit> _unit) {
+    //    children.push_back(_unit);
+    //    _unit.SetParent(this);
+    //}
+    //
+    //void Unit::RemoveChild(std::shared_ptr<Unit> _unit) {
+	//	for (int i = 0; i < children.size(); i++) {
+    //        if (children[i] == unit) {
+    //            children[i] = children[children.size() - 1];
+    //            children.pop_back();
+    //            break;
+    //        }
+    //    }
+    //}
 
-    void Unit::RemoveChild(std::shared_ptr<Unit> _unit) {
-		for (int i = 0; i < children.size(); i++) {
-            if (children[i] == unit) {
-                children[i] = children[children.size() - 1];
-                children.pop_back();
-                break;
-            }
-        }
-    }
+    //void Unit::SetParent(std::shared_ptr<Unit> _parent) {
+    //    parent = _parent;
+    //}
 
-    void Unit::SetParent(std::shared_ptr<Unit> _parent) {
-        parent = _parent;
-    }
-
-    void Unit::SetVisible(bool _visible) {
+    void Object::SetVisible(bool _visible) {
         visible = _visible;
     }
 
-    void Unit::SetShouldDisplay(bool _shouldDisplay) {
-        shouldDisplay = _shouldDisplay;
+    void Object::SetShouldDisplay(bool _shouldDisplay) {
+        ShouldDisplay = _shouldDisplay;
     }
 	
 	// Functions
 	
-	virtual void Unit::Update() {
+	void Object::Update() {
 		// do cool update things
     }
 
-    virtual void Unit::Display() {
-        if (visible && shouldDisplay) {
+    void Object::Display() {
+        if (visible && ShouldDisplay) {
 
 			// do cool display things
-            if (displayVertices) {
+            if (DisplayVertices) {
                 
                 // because we're only working with quads for now, we draw quad
-                Renderer::DrawQuad(position, size, color);
+                //Renderer::DrawQuad(position, size, color);
             }
 
             if (texture != nullptr) {
 
                 // now we draw the texture if it's declared
-                Renderer::DrawTexture(position, size, texture);
+                //Renderer::DrawTexture(position, size, texture);
             }
 
-            for (std::shared_ptr<Unit> _unit : children) {
-                _unit->Display();
-            }
+            //for (std::shared_ptr<Unit> _unit : children) {
+            //    _unit->Display();
+            //}
         }
     }
     

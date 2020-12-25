@@ -1,4 +1,4 @@
-// Project Boomerang : unit/unit.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/math/math.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,18 +21,33 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Boomerang::Core::Units::Items {
+#pragma once
 
-	// are we inheriting this? hopefully
-	// Andrew, please help, we're stupid
-	/*
-	* This class represents any item that might go into a player's inventory or some other container.
-	 */
-	class Item :public Unit {
-	public:
+#ifndef BOOMERANG_ENGINE_MATH_MATH
+#define BOOMERANG_ENGINE_MATH_MATH
 
-	private:
+// Include dependencies
+#include <GLM/glm/glm.hpp>
+#include <GLM/glm/gtc/constants.hpp>
 
-	};
+namespace Boomerang::Core::Math {
 
+    enum class AngleType {
+        DEGREES,
+        RADIANS
+    };
+
+    template<typename T, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
+    T ConvertToRadians(const T degrees) {
+        return (degrees * glm::pi<T>()) / static_cast<T>(180);
+    }
+
+    template<typename T, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
+    T ConvertToDegrees(const T radians) {
+        return (radians * static_cast<T>(180)) / glm::pi<T>();
+    }
+
+    const glm::vec3& RotatePoint(glm::vec3& point, const glm::vec3& pivot, float rotation, AngleType type = AngleType::DEGREES);
 }
+
+#endif // !BOOMERANG_ENGINE_MATH_MATH

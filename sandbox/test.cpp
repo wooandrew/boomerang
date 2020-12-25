@@ -22,10 +22,31 @@
 
 
 #include <iostream>
+#include <fstream>
+#include <string>
+
+class Serialize {
+
+public:
+
+    virtual void write() {
+
+        std::ofstream file("out.txt", std::ios::binary);
+        file << id << '\n' << name;
+        file.close();
+    }
+
+private:
+
+    int id = 3;
+    std::string name = "Hello World";
+};
 
 int main() {
+
+    Serialize ser;
     
-    std::cout << "Hello World" << std::endl;
+    ser.write();
 
     return 0;
 }

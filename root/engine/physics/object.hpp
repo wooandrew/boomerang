@@ -1,4 +1,4 @@
-// Project Boomerang : unit/unit.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/physics/object.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,6 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
+
 #include <vector>
 #include <memory>
 
@@ -29,57 +31,61 @@
 #include "../graphics/texture.hpp"
 #include "../graphics/vertex.hpp"
 
-#ifndef BOOMERANG_ENGINE_UNIT_UNIT
-#define BOOMERANG_ENGINE_UNIT_UNIT
-// For now, this unit represents a quad object that can hold other units as children
-// To do: update the unit to holds a vector of vertices to outline the unit and replace size
-namespace Boomerang::Core::Units {
+#ifndef BOOMERANG_ENGINE_PHYSICS_OBJECT
+#define BOOMERANG_ENGINE_PHYSICS_OBJECT
 
-    class Unit {
+namespace Boomerang::Core::Physics {
+
+    class Object {
 
     public:
 
         // Constructor
-        Unit(glm::vec3 _position, glm::vec2 _size, glm::vec4 color, std::shared_ptr<Texture> _texture);
+        Object(glm::vec3& _position, glm::vec2& _size, glm::vec4& _color, std::shared_ptr<Graphics::Texture> _texture);
 
         // Getters
-        std::vector<std::shared_ptr<Unit>> GetChildren();
-        std::shared_ptr<Unit> GetParent();
-        bool GetVisible();
-        glm::vec3 GetPosition();
-        glm::vec2 GetSize();
-        glm::vec4 GetColor();
-        std::vector<std::shared_ptr<std::string>> GetTags();
+        //std::vector<std::shared_ptr<Unit>> GetChildren();
+        //std::shared_ptr<Unit> GetParent();
+        const bool GetVisible() const;
+        const glm::vec3& GetPosition() const;
+        const glm::vec2& GetSize() const;
+        const glm::vec4& GetColor() const;
+        const std::vector<std::string>& GetTags() const;
 
         // Setters
-		void AddChild(std::shared_ptr<Unit> _unit);
-        void RemoveChild(std::shared_ptr<Unit> _unit)
+		//void AddChild(std::shared_ptr<Unit> _unit);
+        //void RemoveChild(std::shared_ptr<Unit> _unit);
+        //void SetParent(std::shared_ptr<Unit> _parent);
         void SetVisible(bool _visible);
-        void SetParent(std::shared_ptr<Unit> _parent);
         void SetShouldDisplay(bool _shouldDisplay);
 		
 		// Functions
 		virtual void Update();
 		virtual void Display();
+
+        virtual void serialize();
 		
-    private:
-        glm::vec4 color; // (r, g, b, a)
-        glm::vec3 position; // (x, y, z)
-        glm::vec2 size; // (width, height)
-        double rotation; // in radians
+    protected:
 
-        std::vector<std::shared_ptr<vertex>> vertices;
-        std::shared_ptr<Texture> texture;
+        float rotation;         // in degrees
+        glm::vec2 size;         // { w, h }
+        glm::vec3 position;     // { x, y, z }
+        glm::vec4 color;        // { r, g, b, a }
 
-        std::vector<std::shared_ptr<Unit>> children;
-        std::shared_ptr<Unit> parent;
+        // std::vector<std::shared_ptr<vertex>> vertices;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> texture;
+
+        //std::vector<std::shared_ptr<Unit>> children;
+        //std::shared_ptr<Unit> parent;
 
         bool visible;
-        bool shouldDisplay;
-        bool displayVertices;
+        bool ShouldDisplay;
+        bool DisplayVertices;
 
-        std::string ID; // this_cool_item
-        std::string displayName; // This Cool Item
-        vector<shared_ptr<std::string>> tags;
+        int id; // this_cool_item
+        std::string DisplayName; // This Cool Item
+        std::vector<std::string> tags;     // ??? What dis?
     };
 }
+
+#endif // !BOOMERANG_ENGINE_PHYSICS_OBJECT

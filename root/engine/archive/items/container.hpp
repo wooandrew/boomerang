@@ -1,4 +1,4 @@
-// Project Boomerang : engine/settings.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : unit/unit.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,36 +21,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
+// ARCHIVED FOR FUTURE USE
 
-#ifndef BOOMERANG_ENGINE_SETTINGS
-#define BOOMERANG_ENGINE_SETTINGS
+#include "../item.hpp"
 
-namespace Boomerang::Core::Settings {
+namespace Boomerang::Core::Units::Items {
 
-    /*
-        Game settings will be stored directly within the settings namespace
-        thereby avoiding unecessary memory overhead by not instantiating
-        a settings object. Since settings is global across the game, this 
-        solution should be effective.
-    */
-    
-    extern constexpr bool DEBUG_MODE = true;
+	class Container:public Item {
 
-    /*class Settings {
-
-        /// Game Settings
-
-    public:
-
-        Settings() = delete;
-        
-        static int set();
-        static int save();
-
-    private:
-
-    };*/
+	};
 }
-
-#endif // !BOOMERANG_ENGINE_SETTINGS

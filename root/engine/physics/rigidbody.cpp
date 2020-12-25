@@ -1,0 +1,113 @@
+// Project Boomerang : engine/physics/rigidbody.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+
+/* Modified MIT License
+ *
+ * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * Restrictions:
+ >  The Software may not be sold unless significant, mechanics changing modifications are made by the seller, or unless the buyer
+ >  understands an unmodified version of the Software is available elsewhere free of charge, and agrees to buy the Software given
+ >  this knowledge.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+#include "rigidbody.hpp"
+
+#include "../math/math.hpp"
+
+namespace Boomerang::Core::Physics {
+
+    Rigidbody::Rigidbody(const glm::vec3& _position, const glm::vec2& _size, const glm::vec2& _scale) {
+
+        position = _position;
+        size = _size;
+        scale = _scale;
+
+        LastRotation = 0;
+
+        x = position.x - ((size.x * scale.x) / 2.f);
+        y = position.y - ((size.y * scale.y) / 2.f);
+        w = size.x * scale.x;
+        h = size.y * scale.y;
+
+        UpdateVertices();
+    }
+
+    Rigidbody::~Rigidbody() {
+
+    }
+
+    void Rigidbody::UpdateVertices() {
+
+        x = position.x - ((size.x * scale.x) / 2.f);
+        y = position.y - ((size.y * scale.y) / 2.f);
+        w = size.x * scale.x;
+        h = size.y * scale.y;
+
+        UpperLeftVertex = glm::vec3(position.x - ((size.x * scale.x) / 2.f), position.y + ((size.y * scale.y) / 2.f), 0);
+        LowerLeftVertex = glm::vec3(position.x - ((size.x * scale.x) / 2.f), position.y - ((size.y * scale.y) / 2.f), 0);;
+        UpperRightVertex = glm::vec3(position.x + ((size.x * scale.x) / 2.f), position.y + ((size.y * scale.y) / 2.f), 0);;
+        LowerRightVertex = glm::vec3(position.x + ((size.x * scale.x) / 2.f), position.y - ((size.y * scale.y) / 2.f), 0);;
+
+        UpperLeftVertex = Math::RotatePoint(UpperLeftVertex, position, LastRotation);
+        LowerLeftVertex = Math::RotatePoint(LowerLeftVertex, position, LastRotation);
+        UpperRightVertex = Math::RotatePoint(UpperRightVertex, position, LastRotation);
+        LowerRightVertex = Math::RotatePoint(LowerRightVertex, position, LastRotation);
+    }
+
+    void Rigidbody::update(const glm::vec3& _position, float _rotation) {
+        
+        SetPosition(_position);
+
+        if (LastRotation != _rotation) {
+
+            UpperLeftVertex = Math::RotatePoint(UpperLeftVertex, position, _rotation - LastRotation);
+            LowerLeftVertex = Math::RotatePoint(LowerLeftVertex, position, _rotation - LastRotation);
+            UpperRightVertex = Math::RotatePoint(UpperRightVertex, position, _rotation - LastRotation);
+            LowerRightVertex = Math::RotatePoint(LowerRightVertex, position, _rotation - LastRotation);
+
+            LastRotation = _rotation;
+        }
+    }
+
+
+    // Setters
+    void Rigidbody::SetScale(const glm::vec2& _scale) {
+        scale = _scale;
+        UpdateVertices();
+    }
+    void Rigidbody::SetPosition(const glm::vec3& _position) {
+        position = _position;
+        UpdateVertices();
+    }
+    void Rigidbody::AdvancePositionBy(const glm::vec3& _advance) {
+        position += _advance;
+        UpdateVertices();
+    }
+
+    // Getters
+    const glm::vec3& Rigidbody::GetPosition() const {
+        return position;
+    }
+    const glm::vec2& Rigidbody::GetSize() const {
+        return size;
+    }
+    const glm::vec2& Rigidbody::GetScale() const {
+        return scale;
+    }
+
+    // Debug Functions
+    void Rigidbody::SetDisplayMode(bool _display) {
+        display = _display;
+    }
+}
