@@ -28,7 +28,6 @@
 
 #include "../graphics/texture.hpp"
 #include "../graphics/vertex.hpp"
-#include "../graphics/renderer.hpp"
 #include "object.hpp"
 
 namespace Boomerang::Core::Physics { 
@@ -39,14 +38,34 @@ namespace Boomerang::Core::Physics {
         position = _position;
         size = _size;
         color = _color;
-        texture = _texture;
-        rotation = 0.0;
+        rotation = 0.f;
+
+        if(_texture != nullptr)
+            texture = _texture;
 
 		// initialize the children and vertices vectors to empty vectors
         //parent = nullptr;
 
         // for now
         //vertices = nullptr;
+    }
+
+    // Setters
+    void Object::SetRotation(const float _rotation) {
+        rotation = _rotation;
+    }
+    void Object::SetSize(const glm::vec2& _size) {
+        size = _size;
+    }
+    void Object::SetPosition(const glm::vec3& _position) {
+        position = _position;
+        rigidbody.SetPosition(_position);
+    }
+    void Object::SetColor(const glm::vec4& _color) {
+        color = _color;
+    }
+    void Object::SetVisible(bool _visible) {
+        visible = _visible;
     }
 
     // Getters
@@ -58,24 +77,24 @@ namespace Boomerang::Core::Physics {
     //    return parent;
     //}
 
-    const bool Object::GetVisible() const {
-        return visible;
+    const float Object::GetRotation() const {
+        return rotation;
     }
-
-    const glm::vec3& Object::GetPosition() const {
-        return position;
-    }
-
     const glm::vec2& Object::GetSize() const {
         return size;
     }
-
+    const glm::vec3& Object::GetPosition() const {
+        return position;
+    }
     const glm::vec4& Object::GetColor() const {
         return color;
     }
-
     const std::vector<std::string>& Object::GetTags() const {
         return tags;
+    }
+
+    const bool Object::GetVisible() const {
+        return visible;
     }
 
     // Setters
@@ -97,42 +116,5 @@ namespace Boomerang::Core::Physics {
     //void Unit::SetParent(std::shared_ptr<Unit> _parent) {
     //    parent = _parent;
     //}
-
-    void Object::SetVisible(bool _visible) {
-        visible = _visible;
-    }
-
-    void Object::SetShouldDisplay(bool _shouldDisplay) {
-        ShouldDisplay = _shouldDisplay;
-    }
-	
-	// Functions
-	
-	void Object::Update() {
-		// do cool update things
-    }
-
-    void Object::Display() {
-        if (visible && ShouldDisplay) {
-
-			// do cool display things
-            if (DisplayVertices) {
-                
-                // because we're only working with quads for now, we draw quad
-                //Renderer::DrawQuad(position, size, color);
-            }
-
-            if (texture != nullptr) {
-
-                // now we draw the texture if it's declared
-                //Renderer::DrawTexture(position, size, texture);
-            }
-
-            //for (std::shared_ptr<Unit> _unit : children) {
-            //    _unit->Display();
-            //}
-        }
-    }
-    
 }
 

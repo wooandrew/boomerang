@@ -57,10 +57,12 @@ namespace Boomerang::Core::Physics {
         const glm::vec2& GetScale() const;
 
         // Debug functions
-        void SetDisplayMode(bool _display);
+        void SetVisible(bool _visible);
 
 
     private:
+
+        friend class Object;
 
         // ***** Variables to be used by collision system *****
         friend class Collision;
@@ -85,7 +87,7 @@ namespace Boomerang::Core::Physics {
         glm::vec2 scale;
 
         // Debug Mode
-        bool display;
+        bool visible;
     };
 }
 

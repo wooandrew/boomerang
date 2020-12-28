@@ -23,16 +23,19 @@
 
 #pragma once
 
+#ifndef BOOMERANG_ENGINE_PHYSICS_OBJECT
+#define BOOMERANG_ENGINE_PHYSICS_OBJECT
+
+// Include standard library
 #include <vector>
 #include <memory>
 
+// Include dependencies
 #include <GLM/glm/glm.hpp>
 
+// Include boomerang libraries
 #include "../graphics/texture.hpp"
-#include "../graphics/vertex.hpp"
-
-#ifndef BOOMERANG_ENGINE_PHYSICS_OBJECT
-#define BOOMERANG_ENGINE_PHYSICS_OBJECT
+#include "rigidbody.hpp"
 
 namespace Boomerang::Core::Physics {
 
@@ -41,50 +44,55 @@ namespace Boomerang::Core::Physics {
     public:
 
         // Constructor
-        Object(glm::vec3& _position, glm::vec2& _size, glm::vec4& _color, std::shared_ptr<Graphics::Texture> _texture);
+        Object(glm::vec3& _position, glm::vec2& _size, glm::vec4& _color, std::shared_ptr<Graphics::Texture> _texture = nullptr);
+
+        // Destructor
+        virtual ~Object() = 0;
+
+        // Setters
+        void SetRotation(const float _rotation);
+        void SetSize(const glm::vec2& _size);
+        void SetPosition(const glm::vec3& _position);
+        void SetColor(const glm::vec4& _color);
+        void SetVisible(bool _visible);
 
         // Getters
         //std::vector<std::shared_ptr<Unit>> GetChildren();
         //std::shared_ptr<Unit> GetParent();
-        const bool GetVisible() const;
-        const glm::vec3& GetPosition() const;
+        const float GetRotation() const;
         const glm::vec2& GetSize() const;
+        const glm::vec3& GetPosition() const;
         const glm::vec4& GetColor() const;
         const std::vector<std::string>& GetTags() const;
 
-        // Setters
-		//void AddChild(std::shared_ptr<Unit> _unit);
-        //void RemoveChild(std::shared_ptr<Unit> _unit);
-        //void SetParent(std::shared_ptr<Unit> _parent);
-        void SetVisible(bool _visible);
-        void SetShouldDisplay(bool _shouldDisplay);
+        const bool GetVisible() const;
 		
 		// Functions
-		virtual void Update();
-		virtual void Display();
-
-        virtual void serialize();
+		virtual void update() = 0;
+        virtual void interact() = 0;
+        virtual int serialize() = 0;
 		
     protected:
 
         float rotation;         // in degrees
         glm::vec2 size;         // { w, h }
         glm::vec3 position;     // { x, y, z }
-        glm::vec4 color;        // { r, g, b, a }
+        glm::vec4 color;        // { r, g, b, a } // ?? is color necessary ? Color should be handled via shaders
 
-        // std::vector<std::shared_ptr<vertex>> vertices;
+        Rigidbody rigidbody;
+
+        // std::vector<std::shared_ptr<vertex>> vertices;   
         std::shared_ptr<Boomerang::Core::Graphics::Texture> texture;
 
         //std::vector<std::shared_ptr<Unit>> children;
         //std::shared_ptr<Unit> parent;
 
-        bool visible;
-        bool ShouldDisplay;
-        bool DisplayVertices;
+        bool visible;           // visibility determines render mode
+        bool DisplayVertices;   // to be deprecated; handled by Rigidbody
 
-        int id; // this_cool_item
-        std::string DisplayName; // This Cool Item
-        std::vector<std::string> tags;     // ??? What dis?
+        int id;                             // object identification
+        std::string DisplayName;            // This Cool Item
+        std::vector<std::string> tags;      // ??? What dis?
     };
 }
 

@@ -23,23 +23,43 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 class Serialize {
 
 public:
 
+    template<typename T> T VariadicTypes(T arg) {
+        return arg;
+    }
+    template<typename T, typename... Ts> int VariadicTypes(T path, Ts... ts) {
+        
+        try {
+
+            std::ofstream file("out.txt", std::ios::binary);
+            file << VariadicTypes(ts...) << std::endl;
+            file.close();
+        }
+        catch (std::exception& e) {
+            return 1;
+        }
+
+        return 0;
+    }
     virtual void write() {
 
-        std::ofstream file("out.txt", std::ios::binary);
-        file << id << '\n' << name;
-        file.close();
+        // std::ofstream file("out.txt", std::ios::binary);
+        // file << id << '\n' << name;
+        // file.close();
+        VariadicTypes("out.txt", id, name, value);
     }
 
 private:
 
     int id = 3;
     std::string name = "Hello World";
+    float value = 3.14159f;
 };
 
 int main() {

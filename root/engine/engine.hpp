@@ -70,7 +70,7 @@ namespace Boomerang::Core {
             // GLFW window initialization metadata
             std::vector<std::pair<int, int>> windowHints{ { std::make_pair(GLFW_CLIENT_API, GLFW_OPENGL_API),       // Window hints _ default (GLFW_CLIENT_API, GLFW_OPENGL_API)
                                                             std::make_pair(GLFW_RESIZABLE, GLFW_FALSE),             // Window hints _ default (GLFW_RESIZABLE, GLFW_FALSE)
-                                                            std::make_pair(GLFW_SAMPLES, 8) } };                    // Window hints _ default (GLFW_SAMPLES, 8)
+                                                            std::make_pair(GLFW_SAMPLES, 4) } };                    // Window hints _ default (GLFW_SAMPLES, 4)
 
         }; Metadata metadata;
 

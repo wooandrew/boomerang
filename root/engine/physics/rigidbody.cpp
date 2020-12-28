@@ -107,7 +107,7 @@ namespace Boomerang::Core::Physics {
     }
 
     // Debug Functions
-    void Rigidbody::SetDisplayMode(bool _display) {
-        display = _display;
+    void Rigidbody::SetVisible(bool _visible) {
+        visible = _visible;
     }
 }
