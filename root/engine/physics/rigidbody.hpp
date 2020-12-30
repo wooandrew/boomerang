@@ -35,6 +35,12 @@ namespace Boomerang::Core::Physics {
 
         /// Object rigidbody
 
+        /* MEMO / NOTE to DEVS
+         * Rigidbody objects must be isolated from outside
+         * access. Only physics classes and functions
+         * should be able to manage rigidbody objects.
+        **/
+
     public:
 
         // Constructors
@@ -44,25 +50,37 @@ namespace Boomerang::Core::Physics {
         // Destructor
         ~Rigidbody();
 
-        void update(const glm::vec3& _position, float _rotation);
-        
-        // Setters
-        void SetScale(const glm::vec2& _scale);
-        void SetPosition(const glm::vec3& _position);
-        void AdvancePositionBy(const glm::vec3& _advance);
-
-        // Getters
-        const glm::vec3& GetPosition() const;
-        const glm::vec2& GetSize() const;
-        const glm::vec2& GetScale() const;
-
         // Debug functions
-        void SetVisible(bool _visible);
+        void SetVisible(bool _visible);         // to be deprecated; should be handled by object class
+        const bool GetVisible() const;          // to be deprecated; should be handled by object class
 
+        struct Vertices {
+            glm::vec3 UpperLeftVertex;
+            glm::vec3 LowerLeftVertex;
+            glm::vec3 UpperRightVertex;
+            glm::vec3 LowerRightVertex;
+        };
+
+        const Vertices GetVertices() const;     // to be deprecated; should be handled by object class
 
     private:
 
         friend class Object;
+
+        void update(const glm::vec3& _position, float _rotation);
+        void UpdateVertices();
+        
+        // Setters
+        void SetSize(const glm::vec2& _size);
+        void SetScale(const glm::vec2& _scale);
+        void SetRotation(const float _rotation);                    // This function must be tested in conjunction with Object
+        void SetPosition(const glm::vec3& _position);
+        void AdvancePositionBy(const glm::vec3& _advance);
+
+        // Getters
+        const glm::vec2& GetSize() const;
+        const glm::vec2& GetScale() const;
+        const glm::vec3& GetPosition() const;
 
         // ***** Variables to be used by collision system *****
         friend class Collision;
@@ -72,19 +90,14 @@ namespace Boomerang::Core::Physics {
         float w;        // width
         float h;        // height
 
-        glm::vec3 UpperLeftVertex;
-        glm::vec3 LowerLeftVertex;
-        glm::vec3 UpperRightVertex;
-        glm::vec3 LowerRightVertex;
+        Vertices vt;
         // ***** Variables to be used by collision system *****
-
-        void UpdateVertices();
 
         float LastRotation;     // in degrees
 
-        glm::vec3 position;     // centered at texture midpoint
         glm::vec2 size;
-        glm::vec2 scale;
+        glm::vec2 scale;        // handles zoom
+        glm::vec3 position;     // centered at texture midpoint
 
         // Debug Mode
         bool visible;

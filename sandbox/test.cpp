@@ -24,6 +24,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <utility>
 #include <string>
 
 class Serialize {
@@ -33,12 +34,12 @@ public:
     template<typename T> T VariadicTypes(T arg) {
         return arg;
     }
-    template<typename T, typename... Ts> int VariadicTypes(T path, Ts... ts) {
+    template<typename... Ts> int VariadicTypes(std::string path, Ts&& ... ts) {
         
         try {
 
-            std::ofstream file("out.txt", std::ios::binary);
-            file << VariadicTypes(ts...) << std::endl;
+            std::ofstream file(path, std::ios::binary);
+            ((file << std::forward<Ts>(ts) << std::endl), ...);
             file.close();
         }
         catch (std::exception& e) {
@@ -62,11 +63,21 @@ private:
     float value = 3.14159f;
 };
 
+template<typename ERRNUM, typename...ERRMSG> void Logger(ERRNUM num, ERRMSG&&... msgs) {
+
+    std::clog << "STUFF HERE" << " |" << num << '|';
+    ((std::clog << ' ' << std::forward<ERRMSG>(msgs)), ...) << std::endl;
+}
+
+  
 int main() {
 
     Serialize ser;
     
     ser.write();
+
+    Logger("0x000", "Hello", "World", "Loser");
+    Logger("Hello", "Hello World");
 
     return 0;
 }

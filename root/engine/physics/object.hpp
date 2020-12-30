@@ -39,7 +39,17 @@
 
 namespace Boomerang::Core::Physics {
 
+    // TODO: Object class should inherit from Serializable class
     class Object {
+
+        /// Inheritable object base class. All objects should inherit from this class.
+
+        /*
+         * This class is a virtual class. All video game objects 
+         * should inherit from this class. No object should directly 
+         * be instantiated using this class as its type; all objects
+         * should be instantiated via inherited classes.
+         */
 
     public:
 
@@ -52,15 +62,15 @@ namespace Boomerang::Core::Physics {
         // Setters
         void SetRotation(const float _rotation);
         void SetSize(const glm::vec2& _size);
+        void SetScale(const glm::vec2& _scale);
         void SetPosition(const glm::vec3& _position);
         void SetColor(const glm::vec4& _color);
         void SetVisible(bool _visible);
 
         // Getters
-        //std::vector<std::shared_ptr<Unit>> GetChildren();
-        //std::shared_ptr<Unit> GetParent();
         const float GetRotation() const;
         const glm::vec2& GetSize() const;
+        const glm::vec2& GetScale() const;
         const glm::vec3& GetPosition() const;
         const glm::vec4& GetColor() const;
         const std::vector<std::string>& GetTags() const;
@@ -76,23 +86,19 @@ namespace Boomerang::Core::Physics {
 
         float rotation;         // in degrees
         glm::vec2 size;         // { w, h }
+        glm::vec2 scale;        // { x, y }
         glm::vec3 position;     // { x, y, z }
         glm::vec4 color;        // { r, g, b, a } // ?? is color necessary ? Color should be handled via shaders
 
-        Rigidbody rigidbody;
-
-        // std::vector<std::shared_ptr<vertex>> vertices;   
         std::shared_ptr<Boomerang::Core::Graphics::Texture> texture;
-
-        //std::vector<std::shared_ptr<Unit>> children;
-        //std::shared_ptr<Unit> parent;
+        std::shared_ptr<Rigidbody> rigidbody;
 
         bool visible;           // visibility determines render mode
         bool DisplayVertices;   // to be deprecated; handled by Rigidbody
 
         int id;                             // object identification
         std::string DisplayName;            // This Cool Item
-        std::vector<std::string> tags;      // ??? What dis?
+        std::vector<std::string> tags;      // ???? What dis?
     };
 }
 

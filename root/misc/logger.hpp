@@ -30,6 +30,7 @@
 #include <mutex>
 #include <ostream>
 #include <fstream>
+#include <utility>
 
 #include "utilities.hpp"
 
@@ -47,16 +48,11 @@ namespace Boomerang::Misc::Logger {
     void SetLogStream();
     void SetLogStream(std::fstream& file);
 
-    template<typename ERRNUM, typename...ERRMSG> void logger(ERRNUM errnum, ERRMSG...errmsg) {
+    template<typename ERRNUM, typename...ERRMSG> void logger(ERRNUM num, ERRMSG&&... msgs) {
 
         std::lock_guard<std::mutex> lock(mu);
-        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << Boomerang::Misc::Utilities::VariadicAdd(errmsg...) << std::endl;
-    }
-
-    template<typename ERRNUM, typename ERRMSG> void logger(ERRNUM errnum, ERRMSG errmsg) {
-
-        std::lock_guard<std::mutex> lock(mu);
-        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << errnum << "| " << errmsg << std::endl;
+        std::clog << Boomerang::Misc::Utilities::GetDateTime() << " |" << num << '|';
+        ((std::clog << ' ' << std::forward<ERRMSG>(msgs)), ...) << std::endl;
     }
 }
 

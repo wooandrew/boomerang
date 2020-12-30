@@ -56,10 +56,15 @@ namespace Boomerang::Core::Physics {
     }
     void Object::SetSize(const glm::vec2& _size) {
         size = _size;
+        rigidbody->SetSize(size);
+    }
+    void Object::SetScale(const glm::vec2& _scale) {
+        scale = _scale;
+        rigidbody->SetScale(scale);
     }
     void Object::SetPosition(const glm::vec3& _position) {
         position = _position;
-        rigidbody.SetPosition(_position);
+        rigidbody->SetPosition(_position);
     }
     void Object::SetColor(const glm::vec4& _color) {
         color = _color;
@@ -83,6 +88,9 @@ namespace Boomerang::Core::Physics {
     const glm::vec2& Object::GetSize() const {
         return size;
     }
+    const glm::vec2& Object::GetScale() const {
+        return scale;
+    }
     const glm::vec3& Object::GetPosition() const {
         return position;
     }
@@ -96,25 +104,5 @@ namespace Boomerang::Core::Physics {
     const bool Object::GetVisible() const {
         return visible;
     }
-
-    // Setters
-	//void Unit::AddChild(std::shared_ptr<Unit> _unit) {
-    //    children.push_back(_unit);
-    //    _unit.SetParent(this);
-    //}
-    //
-    //void Unit::RemoveChild(std::shared_ptr<Unit> _unit) {
-	//	for (int i = 0; i < children.size(); i++) {
-    //        if (children[i] == unit) {
-    //            children[i] = children[children.size() - 1];
-    //            children.pop_back();
-    //            break;
-    //        }
-    //    }
-    //}
-
-    //void Unit::SetParent(std::shared_ptr<Unit> _parent) {
-    //    parent = _parent;
-    //}
 }
 

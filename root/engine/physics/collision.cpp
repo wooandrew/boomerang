@@ -38,15 +38,15 @@ namespace Boomerang::Core::Physics {
 
     bool Collision::SAT(const Rigidbody& left, const Rigidbody& right) {
 
-        glm::vec3 aUL = left.UpperLeftVertex;           // A -> Upper Left
-        glm::vec3 aLL = left.LowerLeftVertex;           // A -> Lower Left
-        glm::vec3 aUR = left.UpperRightVertex;          // A -> Upper Right
-        glm::vec3 aLR = left.LowerRightVertex;          // A -> Lower Right
+        glm::vec3 aUL = left.vt.UpperLeftVertex;        // A -> Upper Left
+        glm::vec3 aLL = left.vt.LowerLeftVertex;        // A -> Lower Left
+        glm::vec3 aUR = left.vt.UpperRightVertex;       // A -> Upper Right
+        glm::vec3 aLR = left.vt.LowerRightVertex;       // A -> Lower Right
 
-        glm::vec3 bUL = right.UpperLeftVertex;          // B -> Upper Left
-        glm::vec3 bLL = right.LowerLeftVertex;          // B -> Lower Left
-        glm::vec3 bUR = right.UpperRightVertex;         // B -> Upper Right
-        glm::vec3 bLR = right.LowerRightVertex;         // B -> Lower Right
+        glm::vec3 bUL = right.vt.UpperLeftVertex;       // B -> Upper Left
+        glm::vec3 bLL = right.vt.LowerLeftVertex;       // B -> Lower Left
+        glm::vec3 bUR = right.vt.UpperRightVertex;      // B -> Upper Right
+        glm::vec3 bLR = right.vt.LowerRightVertex;      // B -> Lower Right
 
         float aMax = 0;
         float aMin = 0;
