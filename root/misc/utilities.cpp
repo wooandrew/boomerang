@@ -49,7 +49,7 @@ namespace Boomerang::Misc::Utilities {
             input.close();
         }
         else
-            logger::logger<std::string, std::string>("     ", "Error reading file at ", _path);
+            logger::logger("     ", "Error reading file at ", _path);
 
         return data;
     }

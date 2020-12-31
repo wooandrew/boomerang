@@ -1,0 +1,32 @@
+Project Boomerang Dev Meeting - 01/02/2021 - End of / Week 9
+---------------------------------------------------------------------------------
+
+Agenda:
+
+- Administrative Stuff
+    > Review renderer / discuss rewrite
+    > Review physics components
+    > Review Concept Art
+    > Review release v0.1.0-pre.2-alpha
+
+- Development
+    > Terrain Generation / Perlin Noise (height maps) vs RRTs (randomized trees)
+        # Grids? Terrain tiling
+    > Data serialization
+    > Object inheritance
+    > Multi-threading for rendering/object updates ... Opinions?
+    > New Misc function -> ReadFile()
+    > The beginnings of Audio
+    > GUI and the future
+
+- Assets
+    > Asset metadata
+    > Asset size standardization
+    > Terrain tile maps
+    > Color replacement shaders
+
+- Other
+    > Survival aspects?
+---------------------------------------------------------------------------------
+
+Meeting Notes:

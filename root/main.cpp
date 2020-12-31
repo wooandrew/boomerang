@@ -130,18 +130,18 @@ int main() {
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
         Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, RENDER_LAYER::LAYER1 }, { 20.f, 20.f }, { 1.f, 1.f, 1.f, 1.f });
         //Boomerang::Core::Graphics::Renderer::DrawQuad(r1.GetPosition(), r1.GetSize(), { 1.f, 1.f, 1.f, 1.f });
         //Boomerang::Core::Graphics::Renderer::DrawQuad(r2.GetPosition(), r2.GetSize(), rotation, color);
-
-        // Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperLeftVertex.x, r2.UpperLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, {0.f, 1.f, 1.f, 1.f});
-        // Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperRightVertex.x, r2.UpperRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 1.f, 1.f });
-        // Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerLeftVertex.x, r2.LowerLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 0.f, 1.f });
-        // Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerRightVertex.x, r2.LowerRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 0.f, 0.f, 1.f, 1.f });
-
+        //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperLeftVertex.x, r2.UpperLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 0.f, 1.f, 1.f, 1.f });
+        //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerLeftVertex.x, r2.LowerLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 0.f, 1.f });
+        //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperRightVertex.x, r2.UpperRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 1.f, 1.f });
+        //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerRightVertex.x, r2.LowerRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 0.f, 0.f, 1.f, 1.f });
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f);
         Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { -495, 295, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 1.f, 1.f, 1.f }, font);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 1.f }, font);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
