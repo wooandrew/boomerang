@@ -1,0 +1,22 @@
+01/11/2021
+
+-> Shader Library implementation
+    > Must be readable from assets
+    > JSON? XML?
+
+    SHADER LIBRARY DESIGN
+
+    ; Comment
+    name : basic
+        type : frag.glsl
+             : vert.glsl
+
+    name : text
+        type : frag.glsl
+             : vert.glsl
+
+name:basic
+path:basic-frag.glsl,basic-vert.glsl
+order:frag,vert
+
+-> Change Misc to ASWL

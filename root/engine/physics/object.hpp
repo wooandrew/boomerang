@@ -96,9 +96,9 @@ namespace Boomerang::Core::Physics {
         bool visible;           // visibility determines render mode
         bool DisplayVertices;   // to be deprecated; handled by Rigidbody
 
-        int id;                             // object identification
+        int id;                             // Object ID
         std::string DisplayName;            // This Cool Item
-        std::vector<std::string> tags;      // ???? What dis?
+        std::vector<std::string> tags;      // Object medadata
     };
 }
 

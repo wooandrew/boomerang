@@ -37,10 +37,10 @@
 #include "engine/physics/rigidbody.hpp"
 #include "engine/physics/collision.hpp"
 
-#include "misc/logger.hpp"
-#include "misc/utilities.hpp"
+#include <ASWL/logger.hpp>
+#include <ASWL/utilities.hpp>
 
-// Move to render manager
+// TODO: Move to render manager
 namespace RENDER_LAYER {
 
     constexpr float LAYER0 = 0.0f;
@@ -52,16 +52,16 @@ namespace RENDER_LAYER {
 
 int main() {
 
-    logger::logger("     ", "Hello, Project Boomerang!");
+    ASWL::Logger::logger("     ", "Hello, Project Boomerang!");
 
     Boomerang::Core::Engine engine;
     
     if (engine.init() != 0) {
-        logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
+        ASWL::Logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
         return -1;
     }
     else
-        logger::logger("  E  ", "Engine initialization success. All systems go!");
+        ASWL::Logger::logger("  E  ", "Engine initialization success. All systems go!");
 
     // Initialize Engine components
     Boomerang::Core::Manager manager;

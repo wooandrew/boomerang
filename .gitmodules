@@ -13,3 +13,6 @@
 [submodule "includes/FREETYPE"]
 	path = includes/FREETYPE
 	url = https://github.com/freetype/freetype2.git
+[submodule "includes/ASWL"]
+	path = includes/ASWL
+	url = https://github.com/wooandrew/ASWL.git

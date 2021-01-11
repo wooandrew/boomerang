@@ -33,9 +33,8 @@
 // Include dependencies
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>
-
-// Include boomerang libraries
-#include "../misc/utilities.hpp"
+#include <GLM/glm/glm.hpp>
+#include <ASWL/utilities.hpp>
 
 namespace Boomerang::Core {
 
@@ -46,7 +45,7 @@ namespace Boomerang::Core {
     public:
 
         // Constructor
-        Engine(std::string _WindowTitle = "Boomerang", util::dimen2d<int> _WindowDimensions = util::dimen2d<int>(1000, 618));
+        Engine(const std::string& _WindowTitle = "Boomerang", const glm::vec2& _WindowDimensions = glm::vec2(1000, 618));
 
         // Destructor
         ~Engine();
@@ -79,14 +78,14 @@ namespace Boomerang::Core {
 
         // Getters
         GLFWwindow* GetWindow();
-        const util::dimen2d<int> GetWindowDimensions() const;
+        const glm::vec2 GetWindowDimensions() const;
 
     private:
 
         GLFWwindow* window;
 
         std::string WindowTitle;
-        util::dimen2d<int> WindowDimensions;
+        glm::vec2 WindowDimensions;
     };
 }
 

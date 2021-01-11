@@ -23,6 +23,8 @@
 
 #include "vertex.hpp"
 
+#include <ASWL/logger.hpp>
+
 namespace Boomerang::Core::Graphics {
 
     Vertex::Vertex() {
@@ -43,7 +45,7 @@ namespace Boomerang::Core::Graphics {
     void Vertex::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vtxBuffer) {
 
         if (vtxBuffer->GetLayout().GetElements().size() == 0) {
-            Boomerang::Misc::Logger::logger("VA001", "Error: Vertex Buffer has no layout.");
+            ASWL::Logger::logger("VA001", "Error: Vertex Buffer has no layout.");
             return;
         }
 

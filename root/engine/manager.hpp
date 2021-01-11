@@ -28,15 +28,13 @@
 
 // Include dependencies
 #include <GLFW/glfw3.h>
-
-// Include boomerang libraries
-#include "../misc/utilities.hpp"
+#include <ASWL/utilities.hpp>
 
 namespace Boomerang::Core {
 
     class Manager {
 
-        /// This class manages background tasks for the game.
+        /// This class manages background tasks for the game. Process Manager.
 
     public:
 
@@ -56,7 +54,7 @@ namespace Boomerang::Core {
 
     private:
 
-        Boomerang::Misc::Utilities::DeltaTime DeltaTime;
+        ASWL::Utilities::DeltaTime DeltaTime;
     };
 }
 

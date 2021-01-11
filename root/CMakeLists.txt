@@ -61,23 +61,14 @@ add_library(
     "engine/physics/collision.hpp"                  "engine/physics/collision.cpp"
 )
 
-add_library(
-    
-    # Add misc
-    BoomerangMisc STATIC
-
-    # files
-    "misc/utilities.hpp"            "misc/utilities.cpp"
-    "misc/logger.hpp"               "misc/logger.cpp"
-)
 # Link engine against main
 target_link_libraries(main PRIVATE BoomerangEngine)
-target_link_libraries(main PRIVATE BoomerangMisc)
 
 # Make Engine depend on GLFW, GLAD
-add_dependencies(BoomerangEngine glfw glad freetype)
+add_dependencies(BoomerangEngine libaswl glfw glad freetype)
 
 # Link dependencies against project executable
+target_link_libraries(main PRIVATE libaswl)                 # Link ASWL
 target_link_libraries(main PRIVATE glfw)                    # Link GLFW
 target_link_libraries(main PRIVATE glad)                    # Link GLAD
 # GLM is header only, no library to link                    # Link GLM

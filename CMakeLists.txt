@@ -42,11 +42,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # set(VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/root/)          # this crap doesnt work whyyyyyyyyyyy
 
 # Include directories
+include_directories("${CMAKE_SOURCE_DIR}/includes/ASWL/root/include")
 include_directories("${CMAKE_SOURCE_DIR}/includes/GLFW/include")
 include_directories("${CMAKE_SOURCE_DIR}/includes/GLAD/include")
 include_directories("${CMAKE_SOURCE_DIR}/includes/FREETYPE/include")
+
 include_directories("${CMAKE_SOURCE_DIR}/includes")
 
+add_subdirectory("includes/ASWL")
 add_subdirectory("includes/GLFW")
 add_subdirectory("includes/GLAD-master")
 add_subdirectory("includes/GLM")

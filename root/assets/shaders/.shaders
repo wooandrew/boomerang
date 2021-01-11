@@ -1,0 +1,7 @@
+name:basic
+path:basic-frag.glsl,basic-vert.glsl
+order:frag,vert
+
+name:text
+path:text-frag.glsl,text-vert.glsl
+order:frag,vert

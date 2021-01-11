@@ -31,9 +31,7 @@
 
 // Include dependencies
 #include <GLAD/glad.h>
-
-// Include boomerang libraries
-#include "../../misc/utilities.hpp"
+#include <GLM/glm/glm.hpp>
 
 namespace Boomerang::Core::Graphics {
 
@@ -44,11 +42,11 @@ namespace Boomerang::Core::Graphics {
     public:
 
         Texture() = default;
-        Texture(const util::dimen2d<int> _dimensions);
+        Texture(const glm::vec2& _dimensions);
         Texture(const std::string& _path);
         ~Texture();
 
-        const util::dimen2d<int>& GetDimensions() const;
+        const glm::vec2& GetDimensions() const;
 
         void SetData(void* _data, unsigned int _size);
         void Bind(unsigned int slot = 0) const;
@@ -56,7 +54,7 @@ namespace Boomerang::Core::Graphics {
     private:
 
         std::string path;
-        util::dimen2d<int> dimensions;
+        glm::vec2 dimensions;
 
         unsigned int TextureID;
 

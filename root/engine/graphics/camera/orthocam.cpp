@@ -49,7 +49,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Setters
-    void OrthoCam::SetZoom(float _zoom, const util::dimen2d<int>& windowSize) {
+    void OrthoCam::SetZoom(float _zoom, const glm::vec2& windowSize) {
 
         if (_zoom > 0.0f) {
 
@@ -114,6 +114,7 @@ namespace Boomerang::Core::Graphics {
 
         if (!lock) {
 
+            // TODO: Remove trig movement
             if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W)) {               // UP
                 position.x -= std::sin(glm::radians(rotation)) * speed * dt;
                 position.y += std::cos(glm::radians(rotation)) * speed * dt;

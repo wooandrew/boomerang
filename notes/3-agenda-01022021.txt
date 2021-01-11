@@ -10,7 +10,7 @@ Agenda:
     > Review release v0.1.0-pre.2-alpha
 
 - Development
-    > Terrain Generation / Perlin Noise (height maps) vs RRTs (randomized trees)
+    > Terrain Generation / Perlin Noise (height maps) vs RRTs (rapidly-exploring random trees)
         # Grids? Terrain tiling
     > Data serialization
     > Object inheritance
@@ -30,3 +30,14 @@ Agenda:
 ---------------------------------------------------------------------------------
 
 Meeting Notes:
+-> Survival Aspects -> Randomized Quests? Tile Sets?
+-> Character switching?
+-> Stuff to discuss with Brandon
+    # Survival Aspects
+    # Terrain generation / Grids
+    # Save data?
+    # Encryption
+-> XML or JSON?
+-> Figure out game name
+-> GUI Assets
+-> Egg bomb, egg launcher, eggs galore

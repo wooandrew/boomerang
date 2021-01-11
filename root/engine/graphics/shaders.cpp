@@ -32,6 +32,8 @@
 
 // Include dependencies
 #include <GLM/glm/gtc/type_ptr.hpp>
+#include <ASWL/utilities.hpp>
+#include <ASWL/logger.hpp>
 
 namespace Boomerang::Core::Graphics {
 
@@ -53,7 +55,7 @@ namespace Boomerang::Core::Graphics {
 
         default:
 
-            Boomerang::Misc::Logger::logger("S0000", "Error: Unknown shader data type.");
+            ASWL::Logger::logger("S0000", "Error: Unknown shader data type.");
 
             return 0;
         }
@@ -76,20 +78,37 @@ namespace Boomerang::Core::Graphics {
 
         default:
 
-            Boomerang::Misc::Logger::logger("S0001", "Error: Unknown shader data type.");
+            ASWL::Logger::logger("S0001", "Error: Unknown shader data type.");
 
             return 0;
         }
     }
 
     Shader::Shader(const std::string& vtxPath, const std::string& frgPath) {
+        
         init(vtxPath, frgPath);
+
+        // --- Name shader
+
+        // Find final slash in path -> /root/assets/shaders/shader-vert.glsl
+        auto lastSlash = vtxPath.find_last_of("/\\");
+        lastSlash = (lastSlash == std::string::npos) ? 0 : lastSlash + 1;
+
+        // Find final period in path -> /root/assets/shaders/shader-vert.glsl
+        auto lastDot = vtxPath.find_last_of('.');
+        lastDot = (lastDot == std::string::npos) ? vtxPath.size() - lastSlash : lastDot - lastSlash;
+
+        name = vtxPath.substr(lastSlash, lastDot);
+    }
+
+    Shader::Shader(const std::string& _name, const std::string& vtxPath, const std::string& frgPath) {
+        init(_name, vtxPath, frgPath);
     }
 
     void Shader::init(const std::string& vtxPath, const std::string& frgPath) {
 
-        std::string vtxSource = Boomerang::Misc::Utilities::ReadFile(vtxPath, std::ios::binary);  // Read Vertex Shader
-        std::string frgSource = Boomerang::Misc::Utilities::ReadFile(frgPath, std::ios::binary);  // Read Fragment Shader
+        std::string vtxSource = ASWL::Utilities::ReadFile(vtxPath, std::ios::binary);  // Read Vertex Shader
+        std::string frgSource = ASWL::Utilities::ReadFile(frgPath, std::ios::binary);  // Read Fragment Shader
 
         // --- Shader processing
         std::unordered_map<GLenum, std::string> sources;
@@ -127,7 +146,7 @@ namespace Boomerang::Core::Graphics {
                 glad_glDeleteShader(shader);
 
                 // Log
-                Boomerang::Misc::Logger::logger<std::string, std::string>("S0002", "Error: Could not compile shader -> ", std::string(log.data()));
+                ASWL::Logger::logger<std::string, std::string>("S0002", "Error: Could not compile shader -> ", std::string(log.data()));
 
                 return;
             }
@@ -157,7 +176,7 @@ namespace Boomerang::Core::Graphics {
                 glad_glDeleteShader(id);
 
             // Log
-            Boomerang::Misc::Logger::logger<std::string, std::string>("S0002", "Error: Failed to link shaders -> ", std::string(log.data()));
+            ASWL::Logger::logger<std::string, std::string>("S0002", "Error: Failed to link shaders -> ", std::string(log.data()));
 
             return;
         }
@@ -168,21 +187,15 @@ namespace Boomerang::Core::Graphics {
         }
 
         // --- End shader processing
-
-        // --- Name shader
-
-        // Find final slash in path -> /root/assets/shaders/shader-vert.glsl
-        auto lastSlash = vtxPath.find_last_of("/\\");
-        lastSlash = (lastSlash == std::string::npos) ? 0 : lastSlash + 1;
-
-        // Find final period in path -> /root/assets/shaders/shader-vert.glsl
-        auto lastDot = vtxPath.find_last_of('.');
-        lastDot = (lastDot == std::string::npos) ? vtxPath.size() - lastSlash : lastDot - lastSlash;
-
-        name = vtxPath.substr(lastSlash, lastDot);
     }
 
-    std::string Shader::GetName() const {
+    void Shader::init(const std::string& _name, const std::string& vtxPath, const std::string& frgPath) {
+
+        init(vtxPath, frgPath);
+        name = _name;
+    }
+
+    const std::string& Shader::GetName() const {
         return name;
     }
 
@@ -236,5 +249,22 @@ namespace Boomerang::Core::Graphics {
     void Shader::UploadUniformMat4(const std::string& _name, const glm::mat4& _matrix) {
         GLuint location = glad_glGetUniformLocation(RendererID, _name.c_str());
         glad_glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(_matrix));
+    }
+
+
+    ShaderLibrary::ShaderLibrary(const std::string& _libraryPath) {
+        init(_libraryPath);
+    }
+    ShaderLibrary::~ShaderLibrary() {
+
+    }
+
+    int ShaderLibrary::init(const std::string& _libraryPath) {
+
+        LibraryPath = _libraryPath;
+
+        std::string raw = ASWL::Utilities::ReadFile(_libraryPath, std::ios::binary);
+
+        return 0;
     }
 }

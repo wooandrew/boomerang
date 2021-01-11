@@ -23,16 +23,17 @@
 
 #include "renderer.hpp"
 
+// Include standard library
 #include <vector>
 
+// Include dependencies
 #include <GLM/glm/gtc/matrix_transform.hpp>
 #include <GLM/glm/gtc/color_space.hpp>
 
+// Include boomerang libraries
 #include "manager.hpp"
 #include "shaders.hpp"
 #include "vertex.hpp"
-
-#include "../../misc/utilities.hpp"
 
 namespace Boomerang::Core::Graphics {
 
@@ -71,7 +72,7 @@ namespace Boomerang::Core::Graphics {
         std::shared_ptr<IndexBuffer> __quadIB = std::make_shared<IndexBuffer>(__quad_indices, sizeof(__quad_indices) / sizeof(uint32_t));
         RenderData->__quad_vtx_array->SetIndexBuffer(__quadIB);
 
-        RenderData->__white = std::make_shared<Texture>(util::dimen2d<int>(1, 1));
+        RenderData->__white = std::make_shared<Texture>(glm::vec2(1, 1));
         uint32_t __white_data = 0xffffffff;
         RenderData->__white->SetData(&__white_data, sizeof(uint32_t));
 

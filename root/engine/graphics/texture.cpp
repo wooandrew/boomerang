@@ -26,11 +26,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <STB/stb_image.h>
 
-#include "../../misc/logger.hpp"
+#include <ASWL/logger.hpp>
 
 namespace Boomerang::Core::Graphics {
 
-    Texture::Texture(const util::dimen2d<int> _dimensions) : dimensions(_dimensions) {
+    Texture::Texture(const glm::vec2& _dimensions) : dimensions(_dimensions) {
 
         InternalFormat = GL_RGBA8;
         DataFormat = GL_RGBA;
@@ -47,7 +47,7 @@ namespace Boomerang::Core::Graphics {
 
     Texture::Texture(const std::string& _path) : path(_path) {
 
-        dimensions = util::dimen2d<int>();
+        dimensions = glm::vec2();
 
         TextureID = 0;
 
@@ -63,7 +63,7 @@ namespace Boomerang::Core::Graphics {
 
         if (data) {
 
-            dimensions = util::dimen2d<int>(width, height);
+            dimensions = glm::vec2(width, height);
 
             GLenum iFormat = 0;     // Temp Internal Format
             GLenum dFormat = 0;     // Temp Data Format
@@ -77,7 +77,7 @@ namespace Boomerang::Core::Graphics {
                 dFormat = GL_RGB;
             }
             else
-                Boomerang::Misc::Logger::logger<std::string, std::string>("T0001", "Error: Bad channel #", std::to_string(channels));
+                ASWL::Logger::logger("T0001", "Error: Bad channel #", std::to_string(channels));
 
             InternalFormat = iFormat;
             DataFormat = dFormat;
@@ -94,7 +94,7 @@ namespace Boomerang::Core::Graphics {
             glad_glTextureSubImage2D(TextureID, 0, 0, 0, dimensions.x, dimensions.y, DataFormat, GL_UNSIGNED_BYTE, data);
         }
         else
-            Boomerang::Misc::Logger::logger<std::string, std::string>("T0002", "Error: Failed to load image -> !stbi_load() [", path, "].");
+            ASWL::Logger::logger("T0002", "Error: Failed to load image -> !stbi_load() [", path, "].");
 
         stbi_image_free(data);
     }
@@ -103,7 +103,7 @@ namespace Boomerang::Core::Graphics {
         glad_glDeleteTextures(1, &TextureID);
     }
 
-    const util::dimen2d<int>& Texture::GetDimensions() const {
+    const glm::vec2& Texture::GetDimensions() const {
         return dimensions;
     }
 
@@ -112,7 +112,7 @@ namespace Boomerang::Core::Graphics {
         unsigned int bpp = (DataFormat == GL_RGBA) ? 4 : 3;
 
         if (_size != dimensions.x * dimensions.y * bpp)
-            Boomerang::Misc::Logger::logger("T0003", "Error: Size does not match.");
+            ASWL::Logger::logger("T0003", "Error: Size does not match.");
 
         glad_glTextureSubImage2D(TextureID, 0, 0, 0, dimensions.x, dimensions.y, DataFormat, GL_UNSIGNED_BYTE, _data);
     }

@@ -26,10 +26,12 @@
 #ifndef BOOMERANG_ENGINE_GRAPHICS_SHADERS
 #define BOOMERANG_ENGINE_GRAPHICS_SHADERS
 
+// Include standard library
+#include <map>
+
+// Include dependencies
 #include <GLAD/glad.h>
 #include <GLM/glm/glm.hpp>
-
-#include "../../misc/logger.hpp"
 
 namespace Boomerang::Core::Graphics {
 
@@ -55,8 +57,10 @@ namespace Boomerang::Core::Graphics {
 
         Shader() = default;
         Shader(const std::string& vtxPath, const std::string& frgPath);
+        Shader(const std::string& _name, const std::string& vtxPath, const std::string& frgPath);
 
         void init(const std::string& vtxPath, const std::string& frgPath);
+        void init(const std::string& _name, const std::string& vtxPath, const std::string& frgPath);
 
         void Bind() const;
         void Unbind() const;
@@ -77,12 +81,33 @@ namespace Boomerang::Core::Graphics {
         void UploadUniformMat4(const std::string& _name, const glm::mat4& _matrix);
 
         // Getters
-        std::string GetName() const;
+        const std::string& GetName() const;
 
     private:
 
         unsigned int RendererID;
         std::string name;
+    };
+
+
+    class ShaderLibrary {
+        
+    public:
+
+        ShaderLibrary() = default;
+        ShaderLibrary(const std::string& _libraryPath);
+        ~ShaderLibrary();
+
+        int init(const std::string& _libraryPath);
+
+        void AddShader(Shader _shader);
+        void AddShader(const std::string& _name, const std::string& _path);
+        void AddLibrary(const std::string& _libraryPath);
+
+    private:
+
+        std::string LibraryPath;
+        std::map<std::string, Shader> list;
     };
 }
 

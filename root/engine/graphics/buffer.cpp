@@ -24,6 +24,7 @@
 #include "buffer.hpp"
 
 #include <GLAD/glad.h>
+#include <ASWL/logger.hpp>
 
 namespace Boomerang::Core::Graphics {
 
@@ -52,7 +53,7 @@ namespace Boomerang::Core::Graphics {
         case ShaderDataType::Bool:          return 1;
         default:
 
-            Boomerang::Misc::Logger::logger("BE000", "Error: Unknown shader data type.");
+            ASWL::Logger::logger("BE000", "Error: Unknown shader data type.");
 
             return 0;
         }

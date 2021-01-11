@@ -26,12 +26,12 @@
 #include "input/mouse.hpp"
 #include "input/keyboard.hpp"
 
-#include "../misc/logger.hpp"
+#include <ASWL/logger.hpp>
 
 namespace Boomerang::Core {
 
     // Define default engine constructor
-    Engine::Engine(std::string _WindowTitle, util::dimen2d<int> _WindowDimensions) {
+    Engine::Engine(const std::string& _WindowTitle, const glm::vec2& _WindowDimensions) {
 
         WindowTitle = _WindowTitle;
         WindowDimensions = _WindowDimensions;
@@ -46,7 +46,7 @@ namespace Boomerang::Core {
 
         // Initialize GLFW
         if (!glfwInit()) {
-            Boomerang::Misc::Logger::logger("E0001", "Fatal Error: Failed to initialize GLFW -> !glfwInit().");
+            ASWL::Logger::logger("E0001", "Fatal Error: Failed to initialize GLFW -> !glfwInit().");
             return 1;
         }
 
@@ -58,7 +58,7 @@ namespace Boomerang::Core {
         window = glfwCreateWindow(WindowDimensions.x, WindowDimensions.y, WindowTitle.c_str(), NULL, NULL);
         if (!window) {
             
-            Boomerang::Misc::Logger::logger("E0002", "Fatal Error: Failed to create window -> !glfwCreateWindow().");
+            ASWL::Logger::logger("E0002", "Fatal Error: Failed to create window -> !glfwCreateWindow().");
             glfwTerminate();
 
             return 2;
@@ -70,7 +70,7 @@ namespace Boomerang::Core {
         // Initialize GLAD
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 
-            Boomerang::Misc::Logger::logger("E0003", "Fatal Error: Failed to initialize GLAD -> !gladLoadGLLoader().");
+            ASWL::Logger::logger("E0003", "Fatal Error: Failed to initialize GLAD -> !gladLoadGLLoader().");
             glfwTerminate();
 
             return 3;
@@ -112,7 +112,7 @@ namespace Boomerang::Core {
         return window;
     }
 
-    const util::dimen2d<int> Engine::GetWindowDimensions() const {
+    const glm::vec2 Engine::GetWindowDimensions() const {
         return WindowDimensions;
     }
 }

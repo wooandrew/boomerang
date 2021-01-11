@@ -38,10 +38,10 @@ namespace Boomerang::Core {
     }
 
     void Manager::update() {
-        DeltaTime.update();
+        DeltaTime.UpdateDeltaTime();
     }
 
     const float Manager::dt() {
-        return static_cast<float>(DeltaTime.dt());
+        return static_cast<float>(DeltaTime.GetDeltaTime());
     }
 }

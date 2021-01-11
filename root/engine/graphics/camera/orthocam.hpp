@@ -29,9 +29,6 @@
 // Include dependencies
 #include <GLM/glm/glm.hpp>
 
-// Include boomerang libraries
-#include "../../../misc/utilities.hpp"
-
 namespace Boomerang::Core::Graphics {
 
     class OrthoCam {
@@ -45,7 +42,7 @@ namespace Boomerang::Core::Graphics {
         OrthoCam(glm::mat4& _ProjectionMat, float _speed = 0, bool _lock = false);
         
         // Setters
-        void SetZoom(float _zoom, const util::dimen2d<int>& windowSize);
+        void SetZoom(float _zoom, const glm::vec2& windowSize);
         void SetSpeed(float _speed);
         void SetRotation(float _rotation);
         void SetPosition(glm::vec3& _position);
