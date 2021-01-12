@@ -76,7 +76,7 @@ namespace Boomerang::Core::Graphics {
         lock = _lock;
     }
 
-    void OrthoCam::SetProjection(glm::mat4& _projection) {
+    void OrthoCam::SetProjection(const glm::mat4& _projection) {
         ProjectionMatrix = _projection;
         ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
     }

@@ -49,7 +49,7 @@ namespace Boomerang::Core::Graphics {
 
         void SetLock(bool _lock);
 
-        void SetProjection(glm::mat4& _projection);
+        void SetProjection(const glm::mat4& _projection);
 
         // Getters
         const float GetSpeed() const;
