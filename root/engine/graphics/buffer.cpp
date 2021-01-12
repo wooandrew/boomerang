@@ -23,7 +23,7 @@
 
 #include "buffer.hpp"
 
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <ASWL/logger.hpp>
 
 namespace Boomerang::Core::Graphics {

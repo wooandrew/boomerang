@@ -31,7 +31,7 @@
 #include <vector>
 
 // Include dependencies
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <GLM/glm/glm.hpp>
 #include <ASWL/utilities.hpp>

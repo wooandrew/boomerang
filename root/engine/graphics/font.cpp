@@ -28,7 +28,7 @@
 #include <fstream>
 
 // Include dependencies
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <ASWL/logger.hpp>
 
 namespace Boomerang::Core::Graphics {
