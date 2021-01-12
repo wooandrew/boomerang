@@ -32,7 +32,7 @@
 
 namespace Boomerang::Core::Graphics {
 
-    OrthoCam::OrthoCam(glm::mat4& _ProjectionMat, float _speed, bool _lock) {
+    OrthoCam::OrthoCam(const glm::mat4& _ProjectionMat, float _speed, bool _lock) {
 
         zoom = 1.f;
         speed = _speed;

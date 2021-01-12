@@ -39,7 +39,7 @@ namespace Boomerang::Core::Graphics {
 
         // Constructors
         OrthoCam() = default;
-        OrthoCam(glm::mat4& _ProjectionMat, float _speed = 0, bool _lock = false);
+        OrthoCam(const glm::mat4& _ProjectionMat, float _speed = 0, bool _lock = false);
         
         // Setters
         void SetZoom(float _zoom, const glm::vec2& windowSize);
