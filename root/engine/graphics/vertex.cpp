@@ -69,13 +69,13 @@ namespace Boomerang::Core::Graphics {
         glad_glBindVertexArray(RendererID);
         idxBuffer->Bind();
 
-        IndexBuffer = idxBuffer;
+        ptrIndexBuffer = idxBuffer;
     }
 
     const std::vector<std::shared_ptr<VertexBuffer>>& Vertex::GetVertexBuffers() const {
         return VertexBuffers;
     }
     const std::shared_ptr<IndexBuffer>& Vertex::GetIndexBuffer() const {
-        return IndexBuffer;
+        return ptrIndexBuffer;
     }
 }

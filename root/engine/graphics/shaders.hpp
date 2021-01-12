@@ -28,9 +28,10 @@
 
 // Include standard library
 #include <map>
+#include <string>
 
 // Include dependencies
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <GLM/glm/glm.hpp>
 
 namespace Boomerang::Core::Graphics {

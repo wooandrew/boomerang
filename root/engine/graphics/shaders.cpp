@@ -265,6 +265,8 @@ namespace Boomerang::Core::Graphics {
 
         std::string raw = ASWL::Utilities::ReadFile(_libraryPath, std::ios::binary);
 
+
+
         return 0;
     }
 }

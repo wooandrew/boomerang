@@ -25,7 +25,9 @@
 #include <fstream>
 #include <sstream>
 #include <utility>
+#include <vector>
 #include <string>
+#include <bitset>
 
 class Serialize {
 
@@ -76,8 +78,28 @@ int main() {
     
     ser.write();
 
-    Logger("0x000", "Hello", "World", "Loser");
-    Logger("Hello", "Hello World");
+    //Logger("0x000", "Hello", "World", "Loser");
+    //Logger("Hello", "Hello World");
+
+    std::string s = "Hello World";
+    std::vector<std::bitset<256>> sD;
+
+    for (std::string::iterator x = s.begin(); x != s.end(); x++) {
+        std::bitset<256> v = *x;
+        std::cout << char(v.to_ulong()) << std::endl;
+        sD.push_back(v << 2);
+    }
+
+    //std::ofstream out("out.bin", std::ios::binary);
+    std::vector<char> g;
+
+    for (const std::bitset<256>& val : sD)
+        g.push_back(static_cast<unsigned char>(val.to_ulong()));
+
+    for (char x : g) {
+        std::bitset<256> v = x;
+        std::cout << (v >> 2);
+    }
 
     return 0;
 }

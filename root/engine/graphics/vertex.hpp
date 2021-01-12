@@ -59,7 +59,7 @@ namespace Boomerang::Core::Graphics {
         unsigned int VertexBufferIndex;
 
         std::vector<std::shared_ptr<VertexBuffer>> VertexBuffers;
-        std::shared_ptr<IndexBuffer> IndexBuffer;
+        std::shared_ptr<IndexBuffer> ptrIndexBuffer;
     };
 }
 
