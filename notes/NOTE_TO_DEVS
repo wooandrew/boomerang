@@ -1,2 +1,5 @@
 STUFF THAT SHOULD GO INTO GAME MANAGER/PROCESS MANAGER:
     ShaderLibrary
+
+IN THE FUTURE:
+    Target OpenGL v3.0. We currently target OpenGL v4.0+, which excludes a large portion of people.
