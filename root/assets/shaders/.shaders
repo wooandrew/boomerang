@@ -1,7 +1,2 @@
-name:basic
-path:basic-frag.glsl,basic-vert.glsl
-order:frag,vert
-
-name:text
-path:text-frag.glsl,text-vert.glsl
-order:frag,vert
+basic;assets/shaders/basic-frag.glsl;assets/shaders/basic-vert.glsl
+text;assets/shaders/text-frag.glsl;assets/shaders/text-vert.glsl

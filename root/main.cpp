@@ -139,7 +139,7 @@ int main() {
         //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerRightVertex.x, r2.LowerRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 0.f, 0.f, 1.f, 1.f });
         Boomerang::Core::Graphics::Renderer::EndScene();
 
-        Boomerang::Core::Graphics::Renderer::StartScene(__camera_f);
+        Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
         Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { -495, 295, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 1.f, 1.f, 1.f }, font);
         Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 1.f }, font);
         Boomerang::Core::Graphics::Renderer::EndScene();

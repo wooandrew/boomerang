@@ -27,7 +27,7 @@
 #include <array>
 #include <string>
 #include <vector>
-#include <fstream>
+#include <sstream>
 #include <unordered_map>
 
 // Include dependencies
@@ -146,7 +146,7 @@ namespace Boomerang::Core::Graphics {
                 glad_glDeleteShader(shader);
 
                 // Log
-                ASWL::Logger::logger<std::string, std::string>("S0002", "Error: Could not compile shader -> ", std::string(log.data()));
+                ASWL::Logger::logger("S0002", "Error: Could not compile shader -> ", log.data());
 
                 return;
             }
@@ -176,7 +176,7 @@ namespace Boomerang::Core::Graphics {
                 glad_glDeleteShader(id);
 
             // Log
-            ASWL::Logger::logger<std::string, std::string>("S0002", "Error: Failed to link shaders -> ", std::string(log.data()));
+            ASWL::Logger::logger("S0002", "Error: Failed to link shaders -> ", log.data());
 
             return;
         }
@@ -259,14 +259,34 @@ namespace Boomerang::Core::Graphics {
 
     }
 
-    int ShaderLibrary::init(const std::string& _libraryPath) {
+    int ShaderLibrary::init(const std::string& _LibraryPath) {
 
-        LibraryPath = _libraryPath;
-
-        std::string raw = ASWL::Utilities::ReadFile(_libraryPath, std::ios::binary);
-
-
+        LibraryPath = _LibraryPath;
+        AddLibrary(_LibraryPath);
 
         return 0;
+    }
+
+    void ShaderLibrary::AddShader(std::shared_ptr<Shader>& _shader) {
+        map.insert({ _shader->GetName(), _shader });
+    }
+    void ShaderLibrary::AddShader(const std::string& _name, const std::string& _vtxPath, const std::string& _frgPath) {
+        map.insert({ _name, std::make_shared<Shader>(Shader(_name, _vtxPath, _frgPath)) });
+    }
+    void ShaderLibrary::AddLibrary(const std::string& _LibraryPath) {
+
+        std::string raw = ASWL::Utilities::ReadFile(_LibraryPath, std::ios::binary);
+        std::istringstream iss(raw);
+
+        for (std::string __line; std::getline(iss, __line); ) {
+
+            std::vector<std::string> __data = ASWL::Utilities::split(__line, ';');
+            std::shared_ptr<Shader> shader = std::make_shared<Shader>(Shader(__data[0], ASWL::Utilities::strip(__data[2], "\r"), __data[1]));
+            map.insert({ __data[0], shader });
+        }
+    }
+
+    const std::map<std::string, std::shared_ptr<Shader>>& ShaderLibrary::GetMap() const {
+        return std::ref(map);
     }
 }

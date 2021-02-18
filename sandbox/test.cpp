@@ -22,84 +22,40 @@
 
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <utility>
-#include <vector>
 #include <string>
-#include <bitset>
 
-class Serialize {
+std::string strip(std::string _str, std::string _tokens) {
 
-public:
+    std::string ret = "";
+    bool tokenFound = false;
 
-    template<typename T> T VariadicTypes(T arg) {
-        return arg;
-    }
-    template<typename... Ts> int VariadicTypes(std::string path, Ts&& ... ts) {
-        
-        try {
+    for (char val : _str) {
 
-            std::ofstream file(path, std::ios::binary);
-            ((file << std::forward<Ts>(ts) << std::endl), ...);
-            file.close();
-        }
-        catch (std::exception& e) {
-            return 1;
+        for (char token : _tokens) {
+
+            if (val == token) {
+                tokenFound = true;
+                break;
+            }
         }
 
-        return 0;
+        if (!tokenFound) {
+            ret += val;
+            std::cout << ret << std::endl;
+        }
+            
+
+        tokenFound = false;
     }
-    virtual void write() {
-
-        // std::ofstream file("out.txt", std::ios::binary);
-        // file << id << '\n' << name;
-        // file.close();
-        VariadicTypes("out.txt", id, name, value);
-    }
-
-private:
-
-    int id = 3;
-    std::string name = "Hello World";
-    float value = 3.14159f;
-};
-
-template<typename ERRNUM, typename...ERRMSG> void Logger(ERRNUM num, ERRMSG&&... msgs) {
-
-    std::clog << "STUFF HERE" << " |" << num << '|';
-    ((std::clog << ' ' << std::forward<ERRMSG>(msgs)), ...) << std::endl;
+    
+    return ret;
 }
 
-  
 int main() {
 
-    Serialize ser;
-    
-    ser.write();
+    std::string s = "Hello, World!\r";
 
-    //Logger("0x000", "Hello", "World", "Loser");
-    //Logger("Hello", "Hello World");
-
-    std::string s = "Hello World";
-    std::vector<std::bitset<256>> sD;
-
-    for (std::string::iterator x = s.begin(); x != s.end(); x++) {
-        std::bitset<256> v = *x;
-        std::cout << char(v.to_ulong()) << std::endl;
-        sD.push_back(v << 2);
-    }
-
-    //std::ofstream out("out.bin", std::ios::binary);
-    std::vector<char> g;
-
-    for (const std::bitset<256>& val : sD)
-        g.push_back(static_cast<unsigned char>(val.to_ulong()));
-
-    for (char x : g) {
-        std::bitset<256> v = x;
-        std::cout << (v >> 2);
-    }
+    std::cout << strip(s, "lo\r");
 
     return 0;
 }

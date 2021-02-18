@@ -29,6 +29,7 @@
 // Include standard library
 #include <map>
 #include <string>
+#include <memory>
 
 // Include dependencies
 #include <glad/glad.h>
@@ -91,24 +92,27 @@ namespace Boomerang::Core::Graphics {
     };
 
 
+    // TODO
     class ShaderLibrary {
         
     public:
 
         ShaderLibrary() = default;
-        ShaderLibrary(const std::string& _libraryPath);
+        ShaderLibrary(const std::string& _LibraryPath);
         ~ShaderLibrary();
 
-        int init(const std::string& _libraryPath);
+        int init(const std::string& _LibraryPath);
 
-        void AddShader(Shader _shader);
-        void AddShader(const std::string& _name, const std::string& _path);
-        void AddLibrary(const std::string& _libraryPath);
+        void AddShader(std::shared_ptr<Shader>& _shader);
+        void AddShader(const std::string& _name, const std::string& _vtxPath, const std::string& _frgPath);
+        void AddLibrary(const std::string& _LibraryPath);
+
+        const std::map<std::string, std::shared_ptr<Shader>>& GetMap() const;
 
     private:
 
         std::string LibraryPath;
-        std::map<std::string, Shader> list;
+        std::map<std::string, std::shared_ptr<Shader>> map;
     };
 }
 

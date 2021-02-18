@@ -42,9 +42,10 @@ namespace Boomerang::Core::Graphics {
         RenderStorage() = default;
 
         //std::shared_ptr<Vertex>
+        std::shared_ptr<ShaderLibrary> __shader_library;
         std::shared_ptr<Vertex> __quad_vtx_array;
-        std::shared_ptr<Shader> __basic_shader;
-        std::shared_ptr<Shader> __text_shader;
+        //std::shared_ptr<Shader> __basic_shader;
+        //std::shared_ptr<Shader> __text_shader;
         std::shared_ptr<Texture> __white;
     };
 
@@ -76,26 +77,17 @@ namespace Boomerang::Core::Graphics {
         uint32_t __white_data = 0xffffffff;
         RenderData->__white->SetData(&__white_data, sizeof(uint32_t));
 
-        RenderData->__basic_shader = std::make_shared<Shader>("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
-        RenderData->__basic_shader->Bind();
-        RenderData->__basic_shader->SetInt("u_Texture", 0);
-
-        RenderData->__text_shader = std::make_shared<Shader>("assets/shaders/text-vert.glsl", "assets/shaders/text-frag.glsl");
-        RenderData->__text_shader->Bind();
-        RenderData->__text_shader->SetInt("u_Texture", 0);
+        RenderData->__shader_library = std::make_shared<ShaderLibrary>(ShaderLibrary("assets/shaders/.shaders"));
     }
 
     void Renderer::shutdown() {
         delete RenderData;
     }
 
-    void Renderer::StartScene(const std::shared_ptr<OrthoCam>& camera) {
+    void Renderer::StartScene(const std::shared_ptr<OrthoCam>& camera, const std::string& _shader) {
 
-        RenderData->__basic_shader->Bind();
-        RenderData->__basic_shader->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
-        
-        RenderData->__text_shader->Bind();
-        RenderData->__text_shader->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
+        RenderData->__shader_library->GetMap().find(_shader)->second->Bind();
+        RenderData->__shader_library->GetMap().find(_shader)->second->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
     }
 
     void Renderer::EndScene() { }
@@ -106,16 +98,14 @@ namespace Boomerang::Core::Graphics {
     }
     void Renderer::RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
 
-        RenderData->__basic_shader->Bind();
-
-        RenderData->__basic_shader->SetFloat4("u_Color", glm::vec4(1.0f));
+        RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", glm::vec4(1.0f));
         _texture->Bind();
 
         float t_Width = static_cast<float>(_texture->GetDimensions().x) * _scale.x;
         float t_Height = static_cast<float>(_texture->GetDimensions().y) * _scale.y;
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
-        RenderData->__basic_shader->SetMat4("u_Transform", transform);
+        RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
 
         RenderData->__quad_vtx_array->Bind();
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
@@ -127,8 +117,7 @@ namespace Boomerang::Core::Graphics {
     }
     void Renderer::RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
 
-        RenderData->__text_shader->Bind();
-        RenderData->__text_shader->SetFloat3("u_Color", _color);
+        RenderData->__shader_library->GetMap().find("text")->second->SetFloat3("u_Color", _color);
 
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); i++) {
 
@@ -142,7 +131,7 @@ namespace Boomerang::Core::Graphics {
             float t_Height = static_cast<float>(ch.size.y) * _scale.y;
 
             glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, _position.z += 0.00001 }) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
-            RenderData->__text_shader->SetMat4("u_Transform", transform);
+            RenderData->__shader_library->GetMap().find("text")->second->SetMat4("u_Transform", transform);
 
             RenderData->__quad_vtx_array->Bind();
             Manager::DrawIndexed(RenderData->__quad_vtx_array);
@@ -156,14 +145,12 @@ namespace Boomerang::Core::Graphics {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _color);
     }
     void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color) {
-        
-        RenderData->__basic_shader->Bind();
 
-        RenderData->__basic_shader->SetFloat4("u_Color", _color);
+        RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), { _size.x, _size.y, 1.0f });
-        RenderData->__basic_shader->SetMat4("u_Transform", transform);
+        RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
         RenderData->__quad_vtx_array->Bind();
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
@@ -173,14 +160,13 @@ namespace Boomerang::Core::Graphics {
     }
     void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
 
-        RenderData->__basic_shader->Bind();
-
-        RenderData->__basic_shader->SetFloat4("u_Color", _color);
+        RenderData->__shader_library->GetMap().find("basic")->second->Bind();
+        RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), { _size.x, _size.y, 1.0f });
         transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
-        RenderData->__basic_shader->SetMat4("u_Transform", transform);
+        RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
         RenderData->__quad_vtx_array->Bind();
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
