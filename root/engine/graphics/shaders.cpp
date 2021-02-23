@@ -160,7 +160,6 @@ namespace Boomerang::Core::Graphics {
         glad_glLinkProgram(program);
         GLint isLinked = 0;
 
-
         glad_glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
         if (isLinked == GL_FALSE) {
 
@@ -209,6 +208,9 @@ namespace Boomerang::Core::Graphics {
 
     void Shader::SetInt(const std::string& _name, int _value) {
         UploadUniformInt(_name, _value);
+    }
+    void Shader::SetFloat(const std::string& _name, const float _value) {
+        UploadUniformFloat(_name, _value);
     }
     void Shader::SetFloat3(const std::string& _name, const glm::vec3& _value) {
         UploadUniformFloat3(_name, _value);

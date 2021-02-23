@@ -62,11 +62,14 @@ namespace Boomerang::Core::Graphics {
         static void RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
         static void RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
 
-        // Render Static Quad
+        // Draw Static Quad
         static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
         static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
         static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
         static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
+
+        // Render Grid (debug_mode)
+        static void RenderGrid(const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
     };
 }
 

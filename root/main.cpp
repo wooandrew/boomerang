@@ -70,7 +70,7 @@ int main() {
     Boomerang::Core::Graphics::Manager::init();
     Boomerang::Core::Graphics::Renderer::init();
 
-    //Boomerang::Core::Graphics::Manager::SetClearColor({ 0.f, 0.f, 1.f, 1.f });
+    //Boomerang::Core::Graphics::Manager::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
     
     // Initialize Primary Orthographic Camera
     std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_1 = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(
@@ -81,17 +81,22 @@ int main() {
                                                                       glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
                                                                                  -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
 
-    __camera_1->SetLock(true);
+    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_g = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(
+                                                                      glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
+                                                                                 -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
+
+    //__camera_1->SetLock(true);
     __camera_f->SetLock(true);
 
     std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/projectboomerang.png");
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
-    font->init("raleway", "assets/fonts/raleway.ttf", 24);
+    font->init("raleway", "assets/fonts/raleway.ttf", 64);
 
     Boomerang::Core::Physics::Rigidbody r1({ 0, 0, RENDER_LAYER::LAYER1 }, { 50, 50 });
     Boomerang::Core::Physics::Rigidbody r2({ 100, 100, RENDER_LAYER::LAYER2 }, { 50, 50 });
 
 
+    glm::vec3 position = { 0, 0, 0 };
     while (manager.run(engine.GetWindow())) {
 
         engine.update();
@@ -100,20 +105,18 @@ int main() {
         __camera_1->update(manager.dt());
 
         // ***** TEST ***** \\
-
-        //glm::vec3 position = r2.GetPosition();
         //static float rotation = 0;
         //
-        //if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W))                 // UP
-        //    position.y += 300 * manager.dt();
-        //else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S))            // DOWN
-        //    position.y -= 300 * manager.dt();
-        //
-        //if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A))                 // LEFT
-        //    position.x -= 300 * manager.dt();
-        //else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D))            // RIGHT
-        //    position.x += 300 * manager.dt();
-        //
+        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W))                 // UP
+            position.y += 300 * manager.dt();
+        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S))            // DOWN
+            position.y -= 300 * manager.dt();
+        
+        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A))                 // LEFT
+            position.x -= 300 * manager.dt();
+        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D))            // RIGHT
+            position.x += 300 * manager.dt();
+        
         //if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_Q))                 // ROTATE LEFT
         //    rotation += 100 * manager.dt();
         //else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_E))            // ROTATE RIGHT
@@ -128,20 +131,19 @@ int main() {
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
+        __camera_1->SetPosition(position);
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
-        Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, RENDER_LAYER::LAYER1 }, { 20.f, 20.f }, { 1.f, 1.f, 1.f, 1.f });
-        //Boomerang::Core::Graphics::Renderer::DrawQuad(r1.GetPosition(), r1.GetSize(), { 1.f, 1.f, 1.f, 1.f });
-        //Boomerang::Core::Graphics::Renderer::DrawQuad(r2.GetPosition(), r2.GetSize(), rotation, color);
-        //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperLeftVertex.x, r2.UpperLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 0.f, 1.f, 1.f, 1.f });
-        //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerLeftVertex.x, r2.LowerLeftVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 0.f, 1.f });
-        //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.UpperRightVertex.x, r2.UpperRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 1.f, 0.f, 1.f, 1.f });
-        //Boomerang::Core::Graphics::Renderer::DrawQuad({ r2.LowerRightVertex.x, r2.LowerRightVertex.y, RENDER_LAYER::LAYER3 }, { 10, 10 }, { 0.f, 0.f, 1.f, 1.f });
+        //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, RENDER_LAYER::LAYER1 }, { 20.f, 20.f }, { 1.f, 0.f, 0.f, 1.f });
+        Boomerang::Core::Graphics::Renderer::EndScene();
+
+        Boomerang::Core::Graphics::Renderer::StartScene(__camera_g, "grid");
+        Boomerang::Core::Graphics::Renderer::RenderGrid(__camera_1->GetPosition(), 50.0f);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { -495, 295, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 1.f, 1.f, 1.f }, font);
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 1.f }, font);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { -495, 280, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 1, 1.f, 0.f }, font);
+        //Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 1.f }, font);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());

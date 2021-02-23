@@ -140,7 +140,7 @@ namespace Boomerang::Core::Graphics {
         }
     }
 
-    // Render static quad functions
+    // Draw static quad functions
     void Renderer::DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color) {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _color);
     }
@@ -160,13 +160,27 @@ namespace Boomerang::Core::Graphics {
     }
     void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
 
-        RenderData->__shader_library->GetMap().find("basic")->second->Bind();
         RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), { _size.x, _size.y, 1.0f });
         transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
+        RenderData->__quad_vtx_array->Bind();
+
+        Manager::DrawIndexed(RenderData->__quad_vtx_array);
+    }
+
+    // Render Grid (debug_mode)
+    void Renderer::RenderGrid(const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
+
+        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat4("u_Color", glm::vec4(1.f));
+        //RenderData->__white->Bind();
+
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0)) * glm::scale(glm::mat4(1.f), { 1000.f, 618.f, 1.0f });
+        RenderData->__shader_library->GetMap().find("grid")->second->SetMat4("u_Transform", transform);
+        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat("u_CellSize", _CellSize);
+        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat3("u_CameraPosition", _CameraPosition);
         RenderData->__quad_vtx_array->Bind();
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);

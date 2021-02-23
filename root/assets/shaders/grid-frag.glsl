@@ -1,18 +1,13 @@
 #version 460 core
 
-varying vec4 v_uv;
-uniform vec4 params;
- 
-float grid(vec2 st, float res) {
-    vec2 grid = fract(st*res);
-    return (step(res,grid.x) * step(res,grid.y));
-}
- 
+layout(location = 0) out vec4 color;
+
+in vec3 v_CamPos;
+in float v_CellSize;
+
 void main() {
 
-    vec2 grid_uv = v_uv.xy * params.x; // scale
-    float x = grid(grid_uv, params.y); // resolution
-
-    gl_FragColor.rgb = vec3(0.5) * x;  
-    gl_FragColor.a = 1.0;
+    vec2 pos = floor((gl_FragCoord.xy + v_CamPos.xy - vec2(v_CellSize / 2.f)) / v_CellSize);    
+    // PatternMask = mod(pos.x + pos.y, 2.0);
+    color = mod(pos.x + pos.y, 2.0) * vec4(1.0, 1.0, 1.0, 1.0);
 }
