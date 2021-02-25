@@ -69,6 +69,7 @@ namespace Boomerang::Core::Graphics {
 
         void SetInt(const std::string& _name, int _value);
         void SetFloat(const std::string& _name, const float _value);
+        void SetFloat2(const std::string& _name, const glm::vec2& _value);
         void SetFloat3(const std::string& _name, const glm::vec3& _value);
         void SetFloat4(const std::string& _name, const glm::vec4& _value);
         void SetMat4(const std::string& _name, const glm::mat4& _value);

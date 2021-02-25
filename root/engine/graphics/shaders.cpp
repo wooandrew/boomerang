@@ -212,6 +212,9 @@ namespace Boomerang::Core::Graphics {
     void Shader::SetFloat(const std::string& _name, const float _value) {
         UploadUniformFloat(_name, _value);
     }
+    void Shader::SetFloat2(const std::string& _name, const glm::vec2& _value) {
+        UploadUniformFloat2(_name, _value);
+    }
     void Shader::SetFloat3(const std::string& _name, const glm::vec3& _value) {
         UploadUniformFloat3(_name, _value);
     }

@@ -60,6 +60,7 @@ namespace Boomerang::Core {
             bool autoinit = true;               // Automatically initialize engine components
             bool debugmode = false;             // Enable debug mode
             bool loggingEnabled = true;         // Enable logging
+            bool fullscreenmode = false;        // Enable full screen mode
 
             std::vector<float> clearcolor = { 1.f, 1.f, 1.f, 0.f };     // Render surface clear color
             //RendererType rendermode = RendererType::Render_2D;        // Engine render mode
@@ -78,14 +79,18 @@ namespace Boomerang::Core {
 
         // Getters
         GLFWwindow* GetWindow();
-        const glm::vec2 GetWindowDimensions() const;
+        const glm::vec2& GetWindowDimensions() const;
+        const glm::vec2& GetFramebufferDimensions() const;
 
     private:
+
+        void SetWindowSize(int _width, int _height);
 
         GLFWwindow* window;
 
         std::string WindowTitle;
         glm::vec2 WindowDimensions;
+        glm::vec2 FramebufferDimensions;
     };
 }
 

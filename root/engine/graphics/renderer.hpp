@@ -69,7 +69,7 @@ namespace Boomerang::Core::Graphics {
         static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
 
         // Render Grid (debug_mode)
-        static void RenderGrid(const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
+        static void RenderGrid(const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
     };
 }
 

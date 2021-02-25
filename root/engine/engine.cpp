@@ -35,6 +35,7 @@ namespace Boomerang::Core {
 
         WindowTitle = _WindowTitle;
         WindowDimensions = _WindowDimensions;
+        FramebufferDimensions = glm::vec2(0);
     }
     // Define defalt engine destructor
     Engine::~Engine() {
@@ -78,9 +79,9 @@ namespace Boomerang::Core {
 
         // Framebuffer initialization
         int width = 0;
-        int height = 0;
-
+        int height = 0;        
         glfwGetFramebufferSize(window, &width, &height);
+        FramebufferDimensions = glm::vec2(width, height);
         glfwSwapInterval(1);
 
         // Window Setup
@@ -90,14 +91,17 @@ namespace Boomerang::Core {
         glfwSetWindowPos(window, xPos, yPos);
 
         // Full screen
-        //glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+        if (metadata.fullscreenmode) {
+            glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+            SetWindowSize(mode->width, mode->height);
+        }
+        else // To be deprecated
+            glfwSetWindowSizeLimits(window, WindowDimensions.x, WindowDimensions.y, WindowDimensions.x, WindowDimensions.y);
 
         // Input Callback
         glfwSetCursorPosCallback(window, Boomerang::Core::Input::Mouse::MousePositionCallback);
         glfwSetMouseButtonCallback(window, Boomerang::Core::Input::Mouse::MouseButtonCallback);
         glfwSetKeyCallback(window, Boomerang::Core::Input::Keyboard::KeyCallback);
-
-        glfwSetWindowSizeLimits(window, WindowDimensions.x, WindowDimensions.y, WindowDimensions.x, WindowDimensions.y);
 
         return 0;
     }
@@ -107,12 +111,22 @@ namespace Boomerang::Core {
         glfwPollEvents();
     }
 
+    // Private member functions
+    void Engine::SetWindowSize(int _width, int _height) {
+        glfwSetWindowSize(window, _width, _height);
+        WindowDimensions = { _width, _height };
+    }
+
     // Getters
     GLFWwindow* Engine::GetWindow() {
         return window;
     }
 
-    const glm::vec2 Engine::GetWindowDimensions() const {
+    const glm::vec2& Engine::GetWindowDimensions() const {
         return WindowDimensions;
+    }
+
+    const glm::vec2& Engine::GetFramebufferDimensions() const {
+        return FramebufferDimensions;
     }
 }

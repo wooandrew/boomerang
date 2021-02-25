@@ -97,6 +97,9 @@ int main() {
 
 
     glm::vec3 position = { 0, 0, 0 };
+    float cellsize = 50;
+    float inte = 0;
+
     while (manager.run(engine.GetWindow())) {
 
         engine.update();
@@ -129,20 +132,27 @@ int main() {
         if(Boomerang::Core::Physics::Collision::SAT(r1, r2))
             color = { 1.f, 0, 0, 1.f };
 
+        //inte += 20 * manager.dt();
+        //cellsize = std::abs(std::cos(glm::radians(inte)) * 100); //(std::floor(std::fmod(618, std::abs(std::cos(glm::radians(inte)) * 100))) == 18) ? std::abs(std::cos(glm::radians(inte))) * 100 : cellsize;
+        //
+        //std::cout << std::floor(std::fmod(618, std::abs(std::cos(glm::radians(inte)) * 100))) << std::endl;
+
         Boomerang::Core::Graphics::Manager::BeginRender();
 
         __camera_1->SetPosition(position);
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
         //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, RENDER_LAYER::LAYER1 }, { 20.f, 20.f }, { 1.f, 0.f, 0.f, 1.f });
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, RENDER_LAYER::LAYER1 }, { cellsize, cellsize }, { 1.f, 0.f, 0.f, 1.f });
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ 2 * cellsize, 0, RENDER_LAYER::LAYER1 }, { cellsize, cellsize }, { 1.f, 0.f, 0.f, 1.f });
+        //Boomerang::Core::Graphics::Renderer::DrawQuad({ 2 * cellsize, 309, RENDER_LAYER::LAYER1 }, { cellsize, cellsize }, { 1.f, 0.f, 0.f, 1.f });
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_g, "grid");
-        Boomerang::Core::Graphics::Renderer::RenderGrid(__camera_1->GetPosition(), 50.0f);
+        Boomerang::Core::Graphics::Renderer::RenderGrid(engine.GetWindowDimensions(), __camera_1->GetPosition(), cellsize);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { -495, 280, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 1, 1.f, 0.f }, font);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { -495, 280, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 1.f }, font);
         //Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 1.f }, font);
         Boomerang::Core::Graphics::Renderer::EndScene();
 

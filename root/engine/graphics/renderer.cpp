@@ -41,11 +41,8 @@ namespace Boomerang::Core::Graphics {
 
         RenderStorage() = default;
 
-        //std::shared_ptr<Vertex>
         std::shared_ptr<ShaderLibrary> __shader_library;
         std::shared_ptr<Vertex> __quad_vtx_array;
-        //std::shared_ptr<Shader> __basic_shader;
-        //std::shared_ptr<Shader> __text_shader;
         std::shared_ptr<Texture> __white;
     };
 
@@ -172,15 +169,18 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Render Grid (debug_mode)
-    void Renderer::RenderGrid(const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
+    void Renderer::RenderGrid(const glm::vec2& _WindowSize,  const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
 
         RenderData->__shader_library->GetMap().find("grid")->second->SetFloat4("u_Color", glm::vec4(1.f));
-        //RenderData->__white->Bind();
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0)) * glm::scale(glm::mat4(1.f), { 1000.f, 618.f, 1.0f });
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0)) * 
+                              glm::scale(glm::mat4(1.f), { _WindowSize.x, _WindowSize.y, 1.0f });
+
         RenderData->__shader_library->GetMap().find("grid")->second->SetMat4("u_Transform", transform);
         RenderData->__shader_library->GetMap().find("grid")->second->SetFloat("u_CellSize", _CellSize);
         RenderData->__shader_library->GetMap().find("grid")->second->SetFloat3("u_CameraPosition", _CameraPosition);
+        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat2("u_Resolution", _WindowSize);
+
         RenderData->__quad_vtx_array->Bind();
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
