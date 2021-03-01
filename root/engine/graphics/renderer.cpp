@@ -101,7 +101,9 @@ namespace Boomerang::Core::Graphics {
         float t_Width = static_cast<float>(_texture->GetDimensions().x) * _scale.x;
         float t_Height = static_cast<float>(_texture->GetDimensions().y) * _scale.y;
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * 
+                              glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
 
         RenderData->__quad_vtx_array->Bind();
@@ -127,7 +129,9 @@ namespace Boomerang::Core::Graphics {
             float t_Width = static_cast<float>(ch.size.x) * _scale.x;
             float t_Height = static_cast<float>(ch.size.y) * _scale.y;
 
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, _position.z += 0.00001 }) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, _position.z += 0.00001 }) * 
+                                  glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+
             RenderData->__shader_library->GetMap().find("text")->second->SetMat4("u_Transform", transform);
 
             RenderData->__quad_vtx_array->Bind();
@@ -146,7 +150,9 @@ namespace Boomerang::Core::Graphics {
         RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), { _size.x, _size.y, 1.0f });
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * 
+                              glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
+
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
         RenderData->__quad_vtx_array->Bind();
 
@@ -160,7 +166,9 @@ namespace Boomerang::Core::Graphics {
         RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), { _size.x, _size.y, 1.0f });
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * 
+                              glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
+
         transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
         RenderData->__quad_vtx_array->Bind();
@@ -174,12 +182,12 @@ namespace Boomerang::Core::Graphics {
         RenderData->__shader_library->GetMap().find("grid")->second->SetFloat4("u_Color", glm::vec4(1.f));
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0)) * 
-                              glm::scale(glm::mat4(1.f), { _WindowSize.x, _WindowSize.y, 1.0f });
+                              glm::scale(glm::mat4(1.0f), { _WindowSize.x, _WindowSize.y, 1.0f });
 
         RenderData->__shader_library->GetMap().find("grid")->second->SetMat4("u_Transform", transform);
         RenderData->__shader_library->GetMap().find("grid")->second->SetFloat("u_CellSize", _CellSize);
-        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat3("u_CameraPosition", _CameraPosition);
         RenderData->__shader_library->GetMap().find("grid")->second->SetFloat2("u_Resolution", _WindowSize);
+        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat3("u_CameraPosition", _CameraPosition);
 
         RenderData->__quad_vtx_array->Bind();
 

@@ -97,7 +97,7 @@ int main() {
 
 
     glm::vec3 position = { 0, 0, 0 };
-    float cellsize = 50;
+    float cellsize = 80;
     float inte = 0;
 
     while (manager.run(engine.GetWindow())) {
@@ -132,10 +132,10 @@ int main() {
         if(Boomerang::Core::Physics::Collision::SAT(r1, r2))
             color = { 1.f, 0, 0, 1.f };
 
-        //inte += 20 * manager.dt();
-        //cellsize = std::abs(std::cos(glm::radians(inte)) * 100); //(std::floor(std::fmod(618, std::abs(std::cos(glm::radians(inte)) * 100))) == 18) ? std::abs(std::cos(glm::radians(inte))) * 100 : cellsize;
-        //
-        //std::cout << std::floor(std::fmod(618, std::abs(std::cos(glm::radians(inte)) * 100))) << std::endl;
+        inte += 20 * manager.dt();
+        cellsize = std::abs(std::cos(glm::radians(inte)) * 100); //(std::floor(std::fmod(618, std::abs(std::cos(glm::radians(inte)) * 100))) == 18) ? std::abs(std::cos(glm::radians(inte))) * 100 : cellsize;
+        
+        std::cout << std::floor(std::fmod(618, std::abs(std::cos(glm::radians(inte)) * 100))) << std::endl;
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 

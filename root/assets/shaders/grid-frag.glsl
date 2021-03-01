@@ -14,10 +14,9 @@ void main() {
 
 	float width = lineWidth / v_CellSize;
 
-    //vec2 uv = vec2(gl_FragCoord.x + v_CellSize / 2, gl_FragCoord.y / v_Resolution.y + (mod(v_Resolution.y, v_CellSize) - v_CellSize) / 2);
-	vec2 uv = vec2(gl_FragCoord.x, gl_FragCoord.y / v_Resolution.y + v_Resolution.y / 2 - v_CellSize / 2);
+	vec2 uv = vec2(gl_FragCoord.x - (v_Resolution.x / 2.f) + (v_CellSize / 2.f), (gl_FragCoord.y / v_Resolution.y) + (v_Resolution.y / 2.f) - (v_CellSize / 2.f));
 
-	uv.x *= 1.0 / v_CellSize;
+	uv.x /= v_CellSize;
 	uv.y /= v_CellSize;
 
     // Adjust the origin of each line thicker than one pixel to its center.
