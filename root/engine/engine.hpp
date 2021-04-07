@@ -60,7 +60,7 @@ namespace Boomerang::Core {
             bool autoinit = true;               // Automatically initialize engine components
             bool debugmode = false;             // Enable debug mode
             bool loggingEnabled = true;         // Enable logging
-            bool fullscreenmode = false;        // Enable full screen mode
+            bool fullscreenmode = true;         // Enable full screen mode
 
             std::vector<float> clearcolor = { 1.f, 1.f, 1.f, 0.f };     // Render surface clear color
             //RendererType rendermode = RendererType::Render_2D;        // Engine render mode
@@ -68,9 +68,9 @@ namespace Boomerang::Core {
             //Version version;                                // Application version
 
             // GLFW window initialization metadata
-            std::vector<std::pair<int, int>> windowHints{ { std::make_pair(GLFW_CLIENT_API, GLFW_OPENGL_API),       // Window hints _ default (GLFW_CLIENT_API, GLFW_OPENGL_API)
-                                                            std::make_pair(GLFW_RESIZABLE, GLFW_FALSE),             // Window hints _ default (GLFW_RESIZABLE, GLFW_FALSE)
-                                                            std::make_pair(GLFW_SAMPLES, 4) } };                    // Window hints _ default (GLFW_SAMPLES, 4)
+            std::vector<std::pair<int, int>> windowHints { { std::make_pair(GLFW_CLIENT_API, GLFW_OPENGL_API),      // Window hints _ default (GLFW_CLIENT_API, GLFW_OPENGL_API)
+                                                             std::make_pair(GLFW_RESIZABLE, GLFW_TRUE),             // Window hints _ default (GLFW_RESIZABLE, GLFW_FALSE)
+                                                             std::make_pair(GLFW_SAMPLES, 4) } };                   // Window hints _ default (GLFW_SAMPLES, 4)
 
         }; Metadata metadata;
 

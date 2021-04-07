@@ -37,6 +37,7 @@
 #include "font.hpp"
 #include "texture.hpp"
 #include "camera/orthocam.hpp"
+#include "../world/chunk.hpp"
 
 namespace Boomerang::Core::Graphics {
 
@@ -70,6 +71,9 @@ namespace Boomerang::Core::Graphics {
 
         // Render Grid (debug_mode)
         static void RenderGrid(const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
+
+        // Render Chunk (debug_mode) -> this should be called from render world
+        static void RenderChunk(const Boomerang::Core::World::Chunk& chunk, const float _CellSize, const float _zoom = 1.f);
     };
 }
 

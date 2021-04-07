@@ -26,6 +26,9 @@
 #ifndef BOOMERANG_ENGINE_WORLD_GRID
 #define BOOMERANG_ENGINE_WORLD_GRID
 
+// Include dependencies
+#include <GLM/glm/glm.hpp>
+
 namespace Boomerang::Core::World {
 
     class Grid {
@@ -34,13 +37,18 @@ namespace Boomerang::Core::World {
 
     public:
 
-        Grid() = default;
+        Grid(float _CellSize = 20.f, float _scale = 1.f);
         ~Grid();
+
+        const float GetCellSize() const;
+        void update(const glm::vec3& _position);
 
     private:
 
-        float IntervalX;
-        float IntervalY;
+        float CellSize;
+        float scale;
+
+        void GenerateChunk(glm::vec3& _position);
 
     };
 }

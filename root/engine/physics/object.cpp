@@ -48,6 +48,10 @@ namespace Boomerang::Core::Physics {
 
         // for now
         //vertices = nullptr;
+
+        visible = true;
+        DisplayVertices = false;
+        scale = { 1, 1 };
     }
 
     // Setters
@@ -74,14 +78,6 @@ namespace Boomerang::Core::Physics {
     }
 
     // Getters
-    //std::vector<std::shared_ptr<Unit>> Unit::GetChildren() {
-    //    return children;
-    //}
-    //
-    //std::shared_ptr<Unit> Unit::GetParent() {
-    //    return parent;
-    //}
-
     const float Object::GetRotation() const {
         return rotation;
     }

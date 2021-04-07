@@ -1,4 +1,4 @@
-// Project Boomerang : engine/world/grid.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/world/world.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,26 +21,31 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "grid.hpp"
+#pragma once
+
+#ifndef BOOMERANG_ENGINE_WORLD_WORLD
+#define BOOMERANG_ENGINE_WORLD_WORLD
+
+// Include dependencies
+#include <GLM/glm/glm.hpp>
 
 namespace Boomerang::Core::World {
 
-    Grid::Grid(float _CellSize, float _scale) {
-        CellSize = _CellSize;
-        scale = _scale;
-    }
+    class World {
 
-    Grid::~Grid() { }
+        /// World object
 
-    const float Grid::GetCellSize() const {
-        return CellSize;
-    }
+    public:
 
-    void Grid::update(const glm::vec3& _position) {
+        World() = default;
+        ~World();
 
-    }
+    private:
 
-    void Grid::GenerateChunk(glm::vec3& _position) {
+    };
 
-    }
+    glm::vec3 GridToPixelCoord(const glm::vec3& _GridCoord, const float _CellSize);
+    
 }
+
+#endif // !BOOMERANG_ENGINE_WORLD_WORLD

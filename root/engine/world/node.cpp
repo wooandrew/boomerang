@@ -1,4 +1,4 @@
-// Project Boomerang : engine/world/grid.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/world/node.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,26 +21,50 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "grid.hpp"
+#include "node.hpp"
+
+#include "world.hpp"
 
 namespace Boomerang::Core::World {
 
-    Grid::Grid(float _CellSize, float _scale) {
-        CellSize = _CellSize;
+    Node::Node(const glm::vec3& _position, const glm::vec2& _size, const glm::vec2& _scale) {
+        
+        position = _position;
+        size = _size;
+        scale = _scale;
+
+        texture = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
+        rigidbody = std::make_shared<Boomerang::Core::Physics::Rigidbody>(GridToPixelCoord(position, size.x), size, scale);
+    }
+
+    Node::~Node() { };
+
+
+    // Getters
+    void Node::SetPosition(const glm::vec3& _position) {
+        position = _position;
+    }
+    void Node::SetSize(const glm::vec2& _size) {
+        size = _size;
+    }
+    void Node::SetScale(const glm::vec2& _scale) {
         scale = _scale;
     }
 
-    Grid::~Grid() { }
-
-    const float Grid::GetCellSize() const {
-        return CellSize;
+    // Setters
+    const glm::vec3& Node::GetPosition() const {
+        return position;
     }
 
-    void Grid::update(const glm::vec3& _position) {
-
+    const glm::vec2& Node::GetSize() const {
+        return size;
     }
 
-    void Grid::GenerateChunk(glm::vec3& _position) {
+    const glm::vec2& Node::GetScale() const {
+        return scale;
+    }
 
+    const std::shared_ptr<Boomerang::Core::Graphics::Texture> Node::GetTexture() const {
+        return texture;
     }
 }

@@ -34,6 +34,7 @@
 #include "manager.hpp"
 #include "shaders.hpp"
 #include "vertex.hpp"
+#include "../world/world.hpp"
 
 namespace Boomerang::Core::Graphics {
 
@@ -181,7 +182,7 @@ namespace Boomerang::Core::Graphics {
 
         RenderData->__shader_library->GetMap().find("grid")->second->SetFloat4("u_Color", glm::vec4(1.f));
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0)) * 
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 1.f)) * 
                               glm::scale(glm::mat4(1.0f), { _WindowSize.x, _WindowSize.y, 1.0f });
 
         RenderData->__shader_library->GetMap().find("grid")->second->SetMat4("u_Transform", transform);
@@ -192,5 +193,27 @@ namespace Boomerang::Core::Graphics {
         RenderData->__quad_vtx_array->Bind();
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
+    }
+
+    // Render Chunk (debug_mode) -> this should be called from render world
+    void Renderer::RenderChunk(const Boomerang::Core::World::Chunk& chunk, const float _CellSize, const float _zoom) {
+
+        RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", glm::vec4(1.f));
+        
+        for (auto const& [key, node] : chunk.GetMap()) {
+
+            node->GetTexture()->Bind();
+
+            float t_Width = static_cast<float>(node->GetTexture()->GetDimensions().x) * node->GetScale().x;
+            float t_Height = static_cast<float>(node->GetTexture()->GetDimensions().y) * node->GetScale().y;
+
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), Boomerang::Core::World::GridToPixelCoord(node->GetPosition(), _CellSize)) 
+                                * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+
+            RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
+
+            RenderData->__quad_vtx_array->Bind();
+            Manager::DrawIndexed(RenderData->__quad_vtx_array);
+        }
     }
 }

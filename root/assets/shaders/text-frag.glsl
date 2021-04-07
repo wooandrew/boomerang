@@ -9,6 +9,8 @@ uniform sampler2D u_Texture;
 
 void main() {
 
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_Texture, v_TexCoord).r);
-    color = vec4(u_Color, 1.0) * sampled;
+    color = vec4(u_Color, 1.0) * vec4(1.0, 1.0, 1.0, texture(u_Texture, v_TexCoord).r);
+    
+    // Alpha channel handling
+    if(color.a < 0.1) discard;
 }

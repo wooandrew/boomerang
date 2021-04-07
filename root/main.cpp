@@ -37,8 +37,14 @@
 #include "engine/physics/rigidbody.hpp"
 #include "engine/physics/collision.hpp"
 
+#include "engine/world/world.hpp"
+#include "engine/world/grid.hpp"
+#include "engine/world/chunk.hpp"
+
 #include <ASWL/logger.hpp>
 #include <ASWL/utilities.hpp>
+
+namespace World = Boomerang::Core::World;
 
 // TODO: Move to render manager
 namespace RENDER_LAYER {
@@ -90,17 +96,21 @@ int main() {
 
     std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/projectboomerang.png");
     std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
-    font->init("raleway", "assets/fonts/raleway.ttf", 64);
+    font->init("raleway", "assets/fonts/notosans.ttf", 64);
 
     Boomerang::Core::Physics::Rigidbody r1({ 0, 0, RENDER_LAYER::LAYER1 }, { 50, 50 });
     Boomerang::Core::Physics::Rigidbody r2({ 100, 100, RENDER_LAYER::LAYER2 }, { 50, 50 });
 
+    Boomerang::Core::World::Grid WorldGrid(40.f);
 
     glm::vec3 position = { 0, 0, 0 };
-    float cellsize = 80;
-    float inte = 0;
+
+    Boomerang::Core::World::Chunk c(position, WorldGrid.GetCellSize(), 40.f/125.f);
 
     while (manager.run(engine.GetWindow())) {
+
+        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_Q))                 // QUIT
+            manager.state = Boomerang::Core::Manager::GAME_STATE::STOP;
 
         engine.update();
         manager.update();
@@ -128,32 +138,28 @@ int main() {
         //r2.update(position, rotation);
         // ***** TEST ***** \\
 
-        glm::vec4 color = { 0, 1.f, 0, 1.f };
-        if(Boomerang::Core::Physics::Collision::SAT(r1, r2))
-            color = { 1.f, 0, 0, 1.f };
-
-        inte += 20 * manager.dt();
-        cellsize = std::abs(std::cos(glm::radians(inte)) * 100); //(std::floor(std::fmod(618, std::abs(std::cos(glm::radians(inte)) * 100))) == 18) ? std::abs(std::cos(glm::radians(inte))) * 100 : cellsize;
-        
-        std::cout << std::floor(std::fmod(618, std::abs(std::cos(glm::radians(inte)) * 100))) << std::endl;
+        //glm::vec4 color = { 0, 1.f, 0, 1.f };
+        //if(Boomerang::Core::Physics::Collision::SAT(r1, r2))
+        //    color = { 1.f, 0, 0, 1.f };
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
         __camera_1->SetPosition(position);
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
         //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, RENDER_LAYER::LAYER1 }, { cellsize, cellsize }, { 1.f, 0.f, 0.f, 1.f });
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ 2 * cellsize, 0, RENDER_LAYER::LAYER1 }, { cellsize, cellsize }, { 1.f, 0.f, 0.f, 1.f });
-        //Boomerang::Core::Graphics::Renderer::DrawQuad({ 2 * cellsize, 309, RENDER_LAYER::LAYER1 }, { cellsize, cellsize }, { 1.f, 0.f, 0.f, 1.f });
+        //Boomerang::Core::Graphics::Renderer::DrawQuad(World::GridToPixelCoord({ 0, 0, RENDER_LAYER::LAYER1 }, 
+        //                        WorldGrid.GetCellSize()), glm::vec2(WorldGrid.GetCellSize()), { 1.f, 0.f, 0.f, 0.5f });
+        //Boomerang::Core::Graphics::Renderer::DrawQuad(World::GridToPixelCoord({ 5, 5, RENDER_LAYER::LAYER1 }, 
+        //                        WorldGrid.GetCellSize()), glm::vec2(WorldGrid.GetCellSize()), { 1.f, 0.f, 0.f, 0.5f });
+        Boomerang::Core::Graphics::Renderer::RenderChunk(c, WorldGrid.GetCellSize());
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_g, "grid");
-        Boomerang::Core::Graphics::Renderer::RenderGrid(engine.GetWindowDimensions(), __camera_1->GetPosition(), cellsize);
+        Boomerang::Core::Graphics::Renderer::RenderGrid(engine.GetWindowDimensions(), __camera_1->GetPosition(), WorldGrid.GetCellSize());
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { -495, 280, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 1.f }, font);
-        //Boomerang::Core::Graphics::Renderer::RenderText("Boomerang", { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, { 0.f, 1.f, 1.f }, font);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 1nv0.1.0-pre.3-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), font);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());

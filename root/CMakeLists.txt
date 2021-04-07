@@ -59,6 +59,12 @@ add_library(
     "engine/physics/object.hpp"                     "engine/physics/object.cpp"
     "engine/physics/rigidbody.hpp"                  "engine/physics/rigidbody.cpp"
     "engine/physics/collision.hpp"                  "engine/physics/collision.cpp"
+
+    # World
+    "engine/world/world.hpp"                        "engine/world/world.cpp"
+    "engine/world/grid.hpp"                         "engine/world/grid.cpp"
+    "engine/world/chunk.hpp"                        "engine/world/chunk.cpp"
+    "engine/world/node.hpp"                         "engine/world/node.cpp"
 )
 
 # Link engine against main

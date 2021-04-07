@@ -1,4 +1,4 @@
-// Project Boomerang : engine/world/grid.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/world/chunk.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,26 +21,49 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "grid.hpp"
+#pragma once
+
+#ifndef BOOMERANG_ENGINE_WORLD_CHUNK
+#define BOOMERANG_ENGINE_WORLD_CHUNK
+
+// Include standard library
+#include <map>
+#include <memory>
+#include <bitset>
+#include <ostream>
+
+// Include dependencies
+#include <GLM/glm/glm.hpp>
+#include "../../xperimental.hpp"
+
+// Include boomerang libraries
+#include "node.hpp"
 
 namespace Boomerang::Core::World {
 
-    Grid::Grid(float _CellSize, float _scale) {
-        CellSize = _CellSize;
-        scale = _scale;
-    }
+    class Chunk {
 
-    Grid::~Grid() { }
+        /// World Chunk
 
-    const float Grid::GetCellSize() const {
-        return CellSize;
-    }
+    public:
 
-    void Grid::update(const glm::vec3& _position) {
+        Chunk(const glm::vec3& _position, const float _size, const float _scale);
+        Chunk(const glm::vec3& _position, const glm::vec2& _size, const glm::vec2& _scale);
+        ~Chunk();
 
-    }
+        const std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Node>>& GetMap() const;
 
-    void Grid::GenerateChunk(glm::vec3& _position) {
+        friend std::ostream& operator<< (std::ostream& stream, const Chunk& chunk);
 
-    }
+    private:
+
+        void Generate(const glm::vec2& _size, const glm::vec2& _scale);         // Generate nodes
+        void Populate();                                                        // Populate nodes
+
+        std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Node>> map;       // 64 nodes per chunk
+
+        glm::vec3 position;
+    };
 }
+
+#endif // !BOOMERANG_ENGINE_WORLD_CHUNK

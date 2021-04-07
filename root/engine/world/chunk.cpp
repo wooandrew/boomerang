@@ -1,4 +1,4 @@
-// Project Boomerang : engine/world/grid.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/world/chunk.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
@@ -21,26 +21,49 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "grid.hpp"
+#include "chunk.hpp"
+#include <iostream>
 
 namespace Boomerang::Core::World {
 
-    Grid::Grid(float _CellSize, float _scale) {
-        CellSize = _CellSize;
-        scale = _scale;
+    Chunk::Chunk(const glm::vec3& _position, const float _size, const float _scale) {
+        position = _position;
+        Generate(glm::vec2(_size), glm::vec2(_scale));
     }
 
-    Grid::~Grid() { }
-
-    const float Grid::GetCellSize() const {
-        return CellSize;
+    Chunk::Chunk(const glm::vec3& _position, const glm::vec2& _size, const glm::vec2& _scale) {
+        position = _position;
+        Generate(_size, _scale);
     }
 
-    void Grid::update(const glm::vec3& _position) {
+    Chunk::~Chunk() { };
 
+    void Chunk::Generate(const glm::vec2& _size, const glm::vec2& _scale) {
+
+        int xPos = static_cast<int>(position.x);
+        int yPos = static_cast<int>(position.y);
+
+        for (int x = xPos - 3; x < xPos + 5; x++) {
+            for (int y = yPos + 3; y > yPos - 5; y--) {
+
+                glm::vec3 pos = { x, y, position.z };
+
+                ASWL::eXperimental::SetHash hash(x, y);
+                map.insert({ hash, std::make_shared<Node>(pos, _size, _scale) });
+            }
+        }
     }
 
-    void Grid::GenerateChunk(glm::vec3& _position) {
+    const std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Node>>& Chunk::GetMap() const {
+        return map;
+    }
 
+    std::ostream& operator<< (std::ostream& stream, const Chunk& chunk) {
+
+        for (auto const& [key, val] : chunk.map) {
+            stream << key << '\n';
+        }
+
+        return stream;
     }
 }

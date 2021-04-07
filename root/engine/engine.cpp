@@ -51,7 +51,8 @@ namespace Boomerang::Core {
             return 1;
         }
 
-        // Set the window hints using engine metadata. Defaulted to (GLFW_CLIENT_API, GLFW_OPENGL_API), (GLFW_RESIZABLE, GLFW_FALSE), and (GLFW_SAMPLES, 4).
+        // Set the window hints using engine metadata. Defaulted to (GLFW_CLIENT_API, GLFW_OPENGL_API), 
+        // (GLFW_RESIZABLE, GLFW_FALSE), and (GLFW_SAMPLES, 4).
         for (const auto& hint : metadata.windowHints)
             glfwWindowHint(hint.first, hint.second);
 
@@ -92,8 +93,10 @@ namespace Boomerang::Core {
 
         // Full screen
         if (metadata.fullscreenmode) {
+
             glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
             SetWindowSize(mode->width, mode->height);
+            glad_glViewport(0, 0, mode->width, mode->height);
         }
         else // To be deprecated
             glfwSetWindowSizeLimits(window, WindowDimensions.x, WindowDimensions.y, WindowDimensions.x, WindowDimensions.y);
