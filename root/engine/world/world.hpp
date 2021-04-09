@@ -26,8 +26,14 @@
 #ifndef BOOMERANG_ENGINE_WORLD_WORLD
 #define BOOMERANG_ENGINE_WORLD_WORLD
 
+// Include standard library
+#include <memory>
+
 // Include dependencies
 #include <GLM/glm/glm.hpp>
+
+// Include boomerang libraries
+#include "../graphics/texture.hpp"
 
 namespace Boomerang::Core::World {
 
@@ -45,7 +51,17 @@ namespace Boomerang::Core::World {
     };
 
     glm::vec3 GridToPixelCoord(const glm::vec3& _GridCoord, const float _CellSize);
-    
+    glm::vec3 PixelToGridCoord(const glm::vec3& _PixlCoord, const float _CellSize);
+
+    enum class BIOME {
+        PLAINS,
+        TUNDRA
+    };
+
+    //std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png")
+    struct BIOME_TEXTURES {
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> test;
+    };
 }
 
 #endif // !BOOMERANG_ENGINE_WORLD_WORLD

@@ -22,6 +22,7 @@
 */
 
 #include <iostream>
+#include <thread>
 
 #include <GLM/glm/gtc/matrix_transform.hpp>
 
@@ -95,31 +96,32 @@ int main() {
     __camera_f->SetLock(true);
 
     std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/projectboomerang.png");
-    std::shared_ptr<Boomerang::Core::Graphics::Font> font = std::make_shared<Boomerang::Core::Graphics::Font>();
-    font->init("raleway", "assets/fonts/notosans.ttf", 64);
+    std::shared_ptr<Boomerang::Core::Graphics::Font> nsjpl_56 = std::make_shared<Boomerang::Core::Graphics::Font>();
+    nsjpl_56->init("nsjpl_56", "assets/fonts/nsjpl.otf", 56);
 
-    Boomerang::Core::Physics::Rigidbody r1({ 0, 0, RENDER_LAYER::LAYER1 }, { 50, 50 });
-    Boomerang::Core::Physics::Rigidbody r2({ 100, 100, RENDER_LAYER::LAYER2 }, { 50, 50 });
+    std::shared_ptr<Boomerang::Core::Graphics::Font> nsjpl_32 = std::make_shared<Boomerang::Core::Graphics::Font>();
+    nsjpl_32->init("nsjpl_32", "assets/fonts/nsjpl.otf", 32);
 
-    Boomerang::Core::World::Grid WorldGrid(40.f);
+    Boomerang::Core::World::Grid WorldGrid;
+    WorldGrid.init({ 0, 0, 0 }, engine.GetWindowDimensions());
 
     glm::vec3 position = { 0, 0, 0 };
 
-    Boomerang::Core::World::Chunk c(position, WorldGrid.GetCellSize(), 40.f/125.f);
+    ASWL::Utilities::FramesPerSecond::UpdateFPS();
 
     while (manager.run(engine.GetWindow())) {
 
         if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_Q))                 // QUIT
             manager.state = Boomerang::Core::Manager::GAME_STATE::STOP;
 
+        ASWL::Utilities::FramesPerSecond::UpdateFPS();
+        double fps = ASWL::Utilities::FramesPerSecond::GetFPS();
+
         engine.update();
         manager.update();
 
         __camera_1->update(manager.dt());
 
-        // ***** TEST ***** \\
-        //static float rotation = 0;
-        //
         if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W))                 // UP
             position.y += 300 * manager.dt();
         else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S))            // DOWN
@@ -129,29 +131,21 @@ int main() {
             position.x -= 300 * manager.dt();
         else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D))            // RIGHT
             position.x += 300 * manager.dt();
-        
-        //if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_Q))                 // ROTATE LEFT
-        //    rotation += 100 * manager.dt();
-        //else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_E))            // ROTATE RIGHT
-        //    rotation -= 100 * manager.dt();
-
-        //r2.update(position, rotation);
-        // ***** TEST ***** \\
-
-        //glm::vec4 color = { 0, 1.f, 0, 1.f };
-        //if(Boomerang::Core::Physics::Collision::SAT(r1, r2))
-        //    color = { 1.f, 0, 0, 1.f };
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
+        int chunks_rendered = 0;
+
         __camera_1->SetPosition(position);
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
-        //Boomerang::Core::Graphics::Renderer::RenderTexture({ 0, 0, RENDER_LAYER::LAYER0 }, { 1.f, 1.f }, demo);
-        //Boomerang::Core::Graphics::Renderer::DrawQuad(World::GridToPixelCoord({ 0, 0, RENDER_LAYER::LAYER1 }, 
-        //                        WorldGrid.GetCellSize()), glm::vec2(WorldGrid.GetCellSize()), { 1.f, 0.f, 0.f, 0.5f });
-        //Boomerang::Core::Graphics::Renderer::DrawQuad(World::GridToPixelCoord({ 5, 5, RENDER_LAYER::LAYER1 }, 
-        //                        WorldGrid.GetCellSize()), glm::vec2(WorldGrid.GetCellSize()), { 1.f, 0.f, 0.f, 0.5f });
-        Boomerang::Core::Graphics::Renderer::RenderChunk(c, WorldGrid.GetCellSize());
+        for (auto const& [key, chunk] : WorldGrid.GetMap()) {
+
+            if (chunk->InFrame(__camera_1->GetPosition(), engine.GetWindowDimensions())) {
+                Boomerang::Core::Graphics::Renderer::RenderChunk(chunk, WorldGrid.GetCellSize(), engine.GetWindowDimensions(), position);
+                chunks_rendered++;
+            }
+        }
+
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_g, "grid");
@@ -159,7 +153,9 @@ int main() {
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 1nv0.1.0-pre.3-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), font);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 1nv0.1.0-pre.3-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), nsjpl_56);
+        Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps), { 900, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
+        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { -130, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());

@@ -28,7 +28,7 @@
 
 // Include dependencies
 #include <GLM/glm/gtc/matrix_transform.hpp>
-#include <GLM/glm/gtc/color_space.hpp>
+//#include <GLM/glm/gtc/color_space.hpp>
 
 // Include boomerang libraries
 #include "manager.hpp"
@@ -117,9 +117,17 @@ namespace Boomerang::Core::Graphics {
     }
     void Renderer::RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
 
-        RenderData->__shader_library->GetMap().find("text")->second->SetFloat3("u_Color", _color);
+        std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("text")->second;
+        shader->SetFloat3("u_Color", _color);
 
-        for (std::string::const_iterator i = _string.begin(); i != _string.end(); i++) {
+        /* 
+         * TODO: Rewrite this horrible code. Why did I ever think it was a good idea to
+         *       bind/render a single glyph at a time? Stupid, silly Andrew. What we
+         *       SHOULD be doing is packing the relevant glyphs into a single bitmap
+         *       and then rendering that bitmap.
+         */
+
+        for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
 
             Character ch = _font->GetCharacters()[*i];
             ch.Bind();
@@ -133,7 +141,7 @@ namespace Boomerang::Core::Graphics {
             glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, _position.z += 0.00001 }) * 
                                   glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
 
-            RenderData->__shader_library->GetMap().find("text")->second->SetMat4("u_Transform", transform);
+            shader->SetMat4("u_Transform", transform);
 
             RenderData->__quad_vtx_array->Bind();
             Manager::DrawIndexed(RenderData->__quad_vtx_array);
@@ -180,15 +188,16 @@ namespace Boomerang::Core::Graphics {
     // Render Grid (debug_mode)
     void Renderer::RenderGrid(const glm::vec2& _WindowSize,  const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
 
-        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat4("u_Color", glm::vec4(1.f));
+        std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("grid")->second;
+        shader->SetFloat4("u_Color", glm::vec4(1.f));
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 1.f)) * 
                               glm::scale(glm::mat4(1.0f), { _WindowSize.x, _WindowSize.y, 1.0f });
 
-        RenderData->__shader_library->GetMap().find("grid")->second->SetMat4("u_Transform", transform);
-        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat("u_CellSize", _CellSize);
-        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat2("u_Resolution", _WindowSize);
-        RenderData->__shader_library->GetMap().find("grid")->second->SetFloat3("u_CameraPosition", _CameraPosition);
+        shader->SetMat4("u_Transform", transform);
+        shader->SetFloat("u_CellSize", _CellSize);
+        shader->SetFloat2("u_Resolution", _WindowSize);
+        shader->SetFloat3("u_CameraPosition", _CameraPosition);
 
         RenderData->__quad_vtx_array->Bind();
 
@@ -196,24 +205,21 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Render Chunk (debug_mode) -> this should be called from render world
-    void Renderer::RenderChunk(const Boomerang::Core::World::Chunk& chunk, const float _CellSize, const float _zoom) {
+    void Renderer::RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const float _CellSize, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _zoom) {
 
-        RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", glm::vec4(1.f));
-        
-        for (auto const& [key, node] : chunk.GetMap()) {
+        std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("basic")->second;
+        shader->SetFloat4("u_Color", glm::vec4(1.f));
 
-            node->GetTexture()->Bind();
+        for (auto const& [key, node] : chunk->GetMap()) {
 
-            float t_Width = static_cast<float>(node->GetTexture()->GetDimensions().x) * node->GetScale().x;
-            float t_Height = static_cast<float>(node->GetTexture()->GetDimensions().y) * node->GetScale().y;
+            if (node->InFrame(_CameraPosition, _WindowSize)) {
 
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), Boomerang::Core::World::GridToPixelCoord(node->GetPosition(), _CellSize)) 
-                                * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+                node->GetTexture()->Bind();
+                shader->SetMat4("u_Transform", node->GetTransform());
 
-            RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
-
-            RenderData->__quad_vtx_array->Bind();
-            Manager::DrawIndexed(RenderData->__quad_vtx_array);
+                RenderData->__quad_vtx_array->Bind();
+                Manager::DrawIndexed(RenderData->__quad_vtx_array);
+            }
         }
     }
 }

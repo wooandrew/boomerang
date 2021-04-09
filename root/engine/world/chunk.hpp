@@ -43,15 +43,17 @@ namespace Boomerang::Core::World {
 
     class Chunk {
 
-        /// World Chunk
+        /// Chunks are 8x8 sections of a pseudo-infinitely generating world.
 
     public:
 
-        Chunk(const glm::vec3& _position, const float _size, const float _scale);
-        Chunk(const glm::vec3& _position, const glm::vec2& _size, const glm::vec2& _scale);
+        Chunk(const glm::vec3& _position, const float _CellSize, const float _scale);
+        Chunk(const glm::vec3& _position, const glm::vec2& _CellSize, const glm::vec2& _scale);
         ~Chunk();
 
+        // Getters
         const std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Node>>& GetMap() const;
+        bool InFrame(const glm::vec3& _position, const glm::vec2& _windowSize);
 
         friend std::ostream& operator<< (std::ostream& stream, const Chunk& chunk);
 
@@ -59,6 +61,8 @@ namespace Boomerang::Core::World {
 
         void Generate(const glm::vec2& _size, const glm::vec2& _scale);         // Generate nodes
         void Populate();                                                        // Populate nodes
+
+        float CellSize;
 
         std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Node>> map;       // 64 nodes per chunk
 

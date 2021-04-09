@@ -26,8 +26,15 @@
 #ifndef BOOMERANG_ENGINE_WORLD_GRID
 #define BOOMERANG_ENGINE_WORLD_GRID
 
+// Include standard library
+#include <map>
+
 // Include dependencies
 #include <GLM/glm/glm.hpp>
+#include "../../xperimental.hpp"
+
+// Include boomerang libraries
+#include "chunk.hpp"
 
 namespace Boomerang::Core::World {
 
@@ -37,19 +44,28 @@ namespace Boomerang::Core::World {
 
     public:
 
-        Grid(float _CellSize = 20.f, float _scale = 1.f);
+        Grid(float _CellSize = 80.f, float _scale = 1.f);
         ~Grid();
 
+        void init(const glm::vec3& _position, const glm::vec2& _windowSize);
+        void update(const glm::vec3& _position, const glm::vec2& _windowSize);
+
+        // Getters
         const float GetCellSize() const;
-        void update(const glm::vec3& _position);
+        const std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>>& GetMap() const;
 
     private:
 
         float CellSize;
         float scale;
 
-        void GenerateChunk(glm::vec3& _position);
+        void GenerateChunk(const glm::vec3& _position);
+        void LoadChunk(const ASWL::eXperimental::SetHash& hash, const float layer);
+        void UnloadChunk();
 
+        std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>> map;          // Loaded chunk map
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> texture;
+        BIOME_TEXTURES bt;
     };
 }
 

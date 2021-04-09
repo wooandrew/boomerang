@@ -26,14 +26,16 @@
 
 namespace Boomerang::Core::World {
 
-    Chunk::Chunk(const glm::vec3& _position, const float _size, const float _scale) {
+    Chunk::Chunk(const glm::vec3& _position, const float _CellSize, const float _scale) {
+
         position = _position;
-        Generate(glm::vec2(_size), glm::vec2(_scale));
+        CellSize = _CellSize;
+        Generate(glm::vec2(_CellSize), glm::vec2(_scale));
     }
 
-    Chunk::Chunk(const glm::vec3& _position, const glm::vec2& _size, const glm::vec2& _scale) {
+    Chunk::Chunk(const glm::vec3& _position, const glm::vec2& _CellSize, const glm::vec2& _scale) {
         position = _position;
-        Generate(_size, _scale);
+        Generate(_CellSize, _scale);
     }
 
     Chunk::~Chunk() { };
@@ -58,11 +60,30 @@ namespace Boomerang::Core::World {
         return map;
     }
 
+    bool Chunk::InFrame(const glm::vec3& _position, const glm::vec2& _windowSize) {
+
+        float xMax = _position.x + (_windowSize.x / 2);
+        float xMin = _position.x - (_windowSize.x / 2);
+        float yMax = _position.y + (_windowSize.y / 2);
+        float yMin = _position.y - (_windowSize.y / 2);
+
+        glm::vec3 p = GridToPixelCoord(position, CellSize);
+
+        float xMaxChunk = p.x + (CellSize / 2) + (4.f * CellSize);
+        float xMinChunk = p.x - (CellSize / 2) - (3.f * CellSize);
+        float yMaxChunk = p.y + (CellSize / 2) + (4.f * CellSize);
+        float yMinChunk = p.y - (CellSize / 2) - (4.f * CellSize);
+
+        if (xMinChunk >= xMax || xMaxChunk <= xMin || yMinChunk >= yMax || yMaxChunk <= yMin)
+            return false;
+
+        return true;
+    }
+
     std::ostream& operator<< (std::ostream& stream, const Chunk& chunk) {
 
-        for (auto const& [key, val] : chunk.map) {
+        for (auto const& [key, val] : chunk.map)
             stream << key << '\n';
-        }
 
         return stream;
     }

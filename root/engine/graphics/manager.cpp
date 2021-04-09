@@ -33,6 +33,8 @@ namespace Boomerang::Core::Graphics {
         glad_glEnable(GL_DEPTH_TEST);
         glad_glEnable(GL_MULTISAMPLE);      // 4x MSAA
 
+        //glad_glEnable(GL_CULL_FACE);
+
         SetClearColor(color);
     }
     void Manager::shutdown() {

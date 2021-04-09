@@ -22,118 +22,93 @@
 
 
 #include <iostream>
-#include <bitset>
-#include <vector>
 
-#include "windows.h"
-#include "psapi.h"
+struct vec3 {
 
-struct SetHash {
+    vec3() {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
 
-    SetHash() = default;
-    SetHash(int _x, int _y) {
+    vec3(float x, float y, float z) {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
 
-        x = std::bitset<32>(_x);
-        y = std::bitset<32>(_y);
-
-        xy = std::bitset<64>(0);
-
-        for (int i = 0; i < xy.size(); i++) {
-
-            if (i < x.size() && x[i])
-                xy.set(i);
-
-            if (i >= y.size() && y[i - y.size()])
-                xy.set(i);
-        }
-
-        xy = xy >> 32 | xy << 32;
-    };
-
-    std::bitset<32> x;
-    std::bitset<32> y;
-    std::bitset<64> xy;
-
-    friend bool operator< (const SetHash& left, const SetHash& right) {
-        return left.xy.to_ullong() < right.xy.to_ullong();
-    };
-
-    friend std::ostream& operator<< (std::ostream& stream, const SetHash& sh) {
-
-        std::vector<unsigned char> v = Bitset2Bytes<64>(sh.xy);
-
-        for (int x = 0; x < v.size(); x++)
-            stream << v[x];
-
-        return stream;
-    };
+    float x;
+    float y;
+    float z;
 };
 
-template<size_t N> std::vector<unsigned char> Bitset2Bytes(const std::bitset<N>& bs) {
+struct vec2 {
 
-    std::vector<unsigned char> result((N + 7) >> 3);
+    vec2() {
+        x = 0;
+        y = 0;
+    }
 
-    for (int j = 0; j < static_cast<int>(N); j++)
-        result[j >> 3] |= (bs[j] << (j & 7));
+    vec2(float x, float y) {
+        this->x = x;
+        this->y = y;
+    }
 
-    return result;
+    float x;
+    float y;
+};
+
+
+vec3 PixelToGridCoord(const vec3& _PixlCoord, const float _CellSize) {
+
+    vec3 ret;
+
+    ret.x = std::round(_PixlCoord.x / _CellSize);
+    ret.y = std::round(_PixlCoord.y / _CellSize);
+    ret.z = _PixlCoord.z;
+
+    return ret;
 }
 
-template<size_t N> std::bitset<N> Bytes2Bitset(const std::vector<unsigned char>& buf) {
+void test(const vec3& _position, const vec2& _windowSize) {
 
-    assert(buf.size() == ((N + 7) >> 3));
-    std::bitset<N> result;
+    // Return pixel position as grid position
+    vec3 gridCoord = PixelToGridCoord(_position, 40.f);
 
-    for (int j = 0; j<int(N); j++)
-        result[j] = ((buf[j >> 3] >> (j & 7)) & 1);
+    // Calculate xMax, xMin, yMax, yMin in terms of grid coords.
+    float xMax = std::round((_position.x + _windowSize.x / 2) / 40.f);
+    float xMin = std::round((_position.x - _windowSize.x / 2) / 40.f) + 1.f;        // +1 to normalize negative x
+    float yMax = std::round((_position.y + _windowSize.y / 2) / 40.f) - 1.f;        // -1 to normalize positive y
+    float yMin = std::round((_position.y - _windowSize.y / 2) / 40.f);
+    std::cout << "xMax: " << xMax << "\nxMin: " << xMin << "\nyMax: " << yMax << "\nyMin: " << yMin << std::endl;
 
-    return result;
+    // Calculate which chunk coord xMax, xMin, yMax, yMin are in
+    float xMaxCC = std::round(xMax / 8) + 1;
+    float xMinCC = std::round(xMin / 8) - 1;
+    float yMaxCC = std::round(yMax / 8) + 1;
+    float yMinCC = std::round(yMin / 8) - 1;
+    std::cout << "\nxMaxCC: " << xMaxCC << "\nxMinCC: " << xMinCC << "\nyMaxCC: " << yMaxCC << "\nyMinCC: " << yMinCC << '\n' << std::endl;
+
+    
+    //<< "\nChunks to generate:"
+
+    // Calculate chunks to generate
+    for (int y = yMinCC * 8; y <= yMaxCC * 8; y += 8) {
+        
+        for (int x = xMinCC * 8; x <= xMaxCC * 8; x += 8) {
+            std::cout << " [" << x << ", " << y << "],\t";
+        }
+
+        std::cout << '\n';
+    }
 }
 
 int main() {
 
-    std::vector<SetHash> sh;
+    vec2 w(1920.f, 1080.f);
+    vec3 p(0.f, 0.f, 0.f);
 
-    // Intervals from x: -10,000 : 10,000
-    //                y: -10,000 : 10,000
-
-    // Checking for duplicates
-    std::cout << "Hashing set from >>\n x: -100 : 100\n y: -100 : 100" << std::endl;
-    for (int x = -100; x < 100; x++) {
-        for (int y = -100; y < 100; y++) {
-            sh.push_back(SetHash(x, y));
-        }
-    }
-
-    std::cout << "\nRunning hash collision test..." << std::endl;
-    for (int i = 0; i < sh.size(); i++) {
-        for (int j = 0; j < sh.size(); j++) {
-
-            if (sh[i].xy == sh[j].xy && i != j) {
-                std::cout << (int)sh[i].x.to_ullong() << (int)sh[i].y.to_ullong() << std::endl;
-            }
-        }
-    }
-
-    std::cout << "\nOutput data: "
-              << "\n element count: " << sh.size();
-    std::cout << "\n binary: ";
-
-    for (int i = 0; i < sh.size(); i++) {
-        std::cout << sh[i];
-    }
-
-
-    // Memory diagnostics
-    std::cout << "\nRunning memory diagnostics..." << std::endl;
-
-    PROCESS_MEMORY_COUNTERS_EX pmc;
-    GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
-    SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
-
-    std::cout <<  "mem: " << virtualMemUsedByMe / 1000000 << " megabytes";
-
-    Sleep(10000);
+    test(p, w);
 
     return 0;
 }

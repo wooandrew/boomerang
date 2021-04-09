@@ -23,6 +23,10 @@
 
 #include "node.hpp"
 
+// Include dependencies
+#include <GLM/glm/gtc/matrix_transform.hpp>
+
+// Include boomerang libraries
 #include "world.hpp"
 
 namespace Boomerang::Core::World {
@@ -35,23 +39,42 @@ namespace Boomerang::Core::World {
 
         texture = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
         rigidbody = std::make_shared<Boomerang::Core::Physics::Rigidbody>(GridToPixelCoord(position, size.x), size, scale);
+
+        UpdateTransform();
+
+        biome = BIOME::PLAINS;
     }
 
     Node::~Node() { };
 
+    void Node::UpdateTransform() {
 
-    // Getters
-    void Node::SetPosition(const glm::vec3& _position) {
-        position = _position;
-    }
-    void Node::SetSize(const glm::vec2& _size) {
-        size = _size;
-    }
-    void Node::SetScale(const glm::vec2& _scale) {
-        scale = _scale;
+        float t_Width = static_cast<float>(texture->GetDimensions().x) * scale.x;
+        float t_Height = static_cast<float>(texture->GetDimensions().y) * scale.y;
+
+        transform = glm::translate(glm::mat4(1.0f), Boomerang::Core::World::GridToPixelCoord(position, size.x))
+            * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
     }
 
     // Setters
+    void Node::SetPosition(const glm::vec3& _position) {
+        position = _position;
+        UpdateTransform();
+    }
+    void Node::SetSize(const glm::vec2& _size) {
+        size = _size;
+        UpdateTransform();
+    }
+    void Node::SetScale(const glm::vec2& _scale) {
+        scale = _scale;
+        UpdateTransform();
+    }
+    void Node::SetTexture(const std::shared_ptr<Boomerang::Core::Graphics::Texture>& _texture) {
+        texture = _texture;
+        UpdateTransform();
+    }
+
+    // Getters
     const glm::vec3& Node::GetPosition() const {
         return position;
     }
@@ -66,5 +89,24 @@ namespace Boomerang::Core::World {
 
     const std::shared_ptr<Boomerang::Core::Graphics::Texture> Node::GetTexture() const {
         return texture;
+    }
+    
+    const glm::mat4& Node::GetTransform() const {
+        return transform;
+    }
+
+    bool Node::InFrame(const glm::vec3& _position, const glm::vec2& _windowSize) {
+        
+        glm::vec3 p = PixelToGridCoord(_position, size.x);
+
+        float xMax = std::round((_position.x + _windowSize.x / 2) / size.x) + 1;
+        float xMin = std::round((_position.x - _windowSize.x / 2) / size.x) - 1;
+        float yMax = std::round((_position.y + _windowSize.y / 2) / size.y) + 1;
+        float yMin = std::round((_position.y - _windowSize.y / 2) / size.y) - 1;
+
+        if (position.x > xMax || position.x < xMin || position.y > yMax || position.y < yMin)
+            return false;
+
+        return true;
     }
 }

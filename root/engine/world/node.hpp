@@ -33,6 +33,7 @@
 #include <GLM/glm/glm.hpp>
 
 // Include boomerang libraries
+#include "world.hpp"
 #include "../physics/rigidbody.hpp"
 #include "../graphics/texture.hpp"
 
@@ -51,14 +52,21 @@ namespace Boomerang::Core::World {
         void SetPosition(const glm::vec3& _position);
         void SetSize(const glm::vec2& _size);
         void SetScale(const glm::vec2& _scale);
+        void SetTexture(const std::shared_ptr<Boomerang::Core::Graphics::Texture>& _texture);
         
         // Getters
         const glm::vec3& GetPosition() const;
         const glm::vec2& GetSize() const;
         const glm::vec2& GetScale() const;
         const std::shared_ptr<Boomerang::Core::Graphics::Texture> GetTexture() const;
+        const glm::mat4& GetTransform() const;
+        bool InFrame(const glm::vec3& _position, const glm::vec2& _windowSize);
+
+        friend std::ostream& operator<< (std::ostream& stream, const Node& node);
 
     private:
+
+        void UpdateTransform();
 
         glm::vec3 position;     // Node's position on the grid
         glm::vec2 size;
@@ -66,6 +74,10 @@ namespace Boomerang::Core::World {
 
         std::shared_ptr<Boomerang::Core::Graphics::Texture> texture;
         std::shared_ptr<Boomerang::Core::Physics::Rigidbody> rigidbody;
+
+        glm::mat4 transform;
+
+        BIOME biome;
     };
 }
 

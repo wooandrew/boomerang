@@ -1,5 +1,7 @@
 // eXperimental functions/class, to be later implemented into ASWL
 
+#pragma once
+
 #include <bitset>
 #include <vector>
 #include <ostream>

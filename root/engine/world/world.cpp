@@ -35,4 +35,15 @@ namespace Boomerang::Core::World {
 
         return ret;
     }
+
+    glm::vec3 PixelToGridCoord(const glm::vec3& _PixlCoord, const float _CellSize) {
+
+        glm::vec3 ret = {};
+
+        ret.x = std::round(_PixlCoord.x / _CellSize);
+        ret.y = std::round(_PixlCoord.y / _CellSize);
+        ret.z = _PixlCoord.z;
+
+        return ret;
+    }
 }
