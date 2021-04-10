@@ -24,6 +24,7 @@
 #include "renderer.hpp"
 
 // Include standard library
+#include <iostream>
 #include <vector>
 
 // Include dependencies
@@ -83,7 +84,6 @@ namespace Boomerang::Core::Graphics {
     }
 
     void Renderer::StartScene(const std::shared_ptr<OrthoCam>& camera, const std::string& _shader) {
-
         RenderData->__shader_library->GetMap().find(_shader)->second->Bind();
         RenderData->__shader_library->GetMap().find(_shader)->second->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
     }
@@ -119,46 +119,66 @@ namespace Boomerang::Core::Graphics {
 
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("text")->second;
         shader->SetFloat3("u_Color", _color);
+        _font->Bind();
+
+        unsigned int vbo = 0;
+        unsigned int VertexBufferIndex = 0;
+        glad_glEnableVertexAttribArray(VertexBufferIndex);
+        glad_glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glad_glVertexAttribPointer(VertexBufferIndex, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+        /*
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) *
+            glm::scale(glm::mat4(1.0f), { _font->GetAtlasDimensions().x, _font->GetAtlasDimensions().y, 1.0f });
+
+        RenderData->__shader_library->GetMap().find("text")->second->SetMat4("u_Transform", transform);
+        RenderData->__quad_vtx_array->Bind();
+
+        Manager::DrawIndexed(RenderData->__quad_vtx_array);
+        */
 
         struct point {
-            float x;
-            float y;
-            float s;
-            float t;
-        }; 
-        std::vector<point> coords;
-        coords.resize(6 * _string.size());
+            GLfloat x;
+            GLfloat y;
+            GLfloat s;
+            GLfloat t;
+        };
+        point coords[6 * _string.length()]; // = new point[];
 
         int n = 0;
 
+        auto gd = _font->GetGlyphData();
+
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
 
-            GlyphData gd = _font->GetGlyphData()[*i];
+            float x2 = _position.x + gd[*i].bl * _scale.x;
+            float y2 = -_position.y - gd[*i].bt * _scale.y;
+            float w = gd[*i].bw * _scale.x;
+            float h = gd[*i].bh * _scale.y;
 
-            float x2 = _position.x + gd.topLeft.x * _scale.x;
-            float y2 = -_position.y - gd.topLeft.y * _scale.y;
-            float w = gd.size.x * _scale.x;
-            float h = gd.size.y * _scale.y;
+            /* Advance the cursor to the start of the next character */
+            _position.x += gd[*i].ax * _scale.x;
+            _position.y += gd[*i].ay * _scale.y;
 
-            // Advance the cursor to the start of the next character
-            _position.x += gd.advance.x * _scale.x;
-            _position.y += gd.advance.y * _scale.y;
-
-            // Skip glyphs that have no pixels
+            /* Skip glyphs that have no pixels */
             if (!w || !h)
                 continue;
 
-            coords[n++] = point({ x2,     -y2    , gd.tx, 0 });
-            coords[n++] = point({ x2 + w, -y2    , gd.tx + gd.size.x / _font->GetAtlasDimensions().x, 0 });
-            coords[n++] = point({ x2,     -y2 - h, gd.tx,  gd.size.y / _font->GetAtlasDimensions().y });
-            coords[n++] = point({ x2 + w, -y2    , gd.tx + gd.size.x / _font->GetAtlasDimensions().x, 0 });
-            coords[n++] = point({ x2,     -y2 - h, gd.tx,  gd.size.y / _font->GetAtlasDimensions().y });
-            coords[n++] = point({ x2 + w, -y2 - h, gd.tx + gd.size.x / _font->GetAtlasDimensions().x, gd.size.y / _font->GetAtlasDimensions().y });
+            float dX = _font->GetAtlasDimensions().x;
+            float dY = _font->GetAtlasDimensions().y;
+
+            coords[n++] = point{ x2    , -y2    , gd[*i].tx                 , 0 };
+            coords[n++] = point{ x2 + w, -y2    , gd[*i].tx + gd[*i].bw / dX, 0 };
+            coords[n++] = point{ x2    , -y2 - h, gd[*i].tx                 , gd[*i].bh / dY };
+            coords[n++] = point{ x2 + w, -y2    , gd[*i].tx + gd[*i].bw / dX, 0 };
+            coords[n++] = point{ x2    , -y2 - h, gd[*i].tx                 , gd[*i].bh / dY };
+            coords[n++] = point{ x2 + w, -y2 - h, gd[*i].tx + gd[*i].bw / dX, gd[*i].bh / dY };
         }
-
-
-        glad_glBufferData(GL_ARRAY_BUFFER, sizeof(coords) / 6, coords.data(), GL_DYNAMIC_DRAW);
+        
+        glad_glBufferData(GL_ARRAY_BUFFER, sizeof coords, coords, GL_DYNAMIC_DRAW);
         glad_glDrawArrays(GL_TRIANGLES, 0, n);
+
+        glad_glDisableVertexAttribArray(VertexBufferIndex);
     }
 
     // Draw static quad functions

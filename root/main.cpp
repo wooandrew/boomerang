@@ -139,13 +139,12 @@ int main() {
         __camera_1->SetPosition(position);
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
         for (auto const& [key, chunk] : WorldGrid.GetMap()) {
-
+        
             if (chunk->InFrame(__camera_1->GetPosition(), engine.GetWindowDimensions())) {
                 Boomerang::Core::Graphics::Renderer::RenderChunk(chunk, WorldGrid.GetCellSize(), engine.GetWindowDimensions(), position);
                 chunks_rendered++;
             }
         }
-
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_g, "grid");

@@ -39,9 +39,18 @@ namespace Boomerang::Core::Graphics {
 
     struct GlyphData {
 
-        glm::ivec2 size;
-        glm::ivec2 advance;
-        glm::ivec2 topLeft;
+        //glm::ivec2 size;
+        //glm::ivec2 advance;
+        //glm::ivec2 bearing;
+
+        float ax;
+        float ay;
+
+        float bw;
+        float bh;
+
+        float bl;
+        float bt;
 
         float tx;
     };
@@ -57,6 +66,7 @@ namespace Boomerang::Core::Graphics {
         ~Font();
 
         int init(const std::string& _FontName, const std::string& _FontPath, int _FontSize = 48);
+        void Bind(unsigned int _slot = 0);
 
         // Getters
         std::unordered_map<char, GlyphData> GetGlyphData() const;

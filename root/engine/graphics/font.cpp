@@ -37,6 +37,7 @@ namespace Boomerang::Core::Graphics {
     Font::Font() {
         FontSize = 48;
         AtlasDimensions = glm::vec2(0);
+        TextureID = 0;
     }
     Font::~Font() {
 
@@ -91,7 +92,7 @@ namespace Boomerang::Core::Graphics {
         unsigned int texture;
         glad_glGenTextures(1, &texture);
         glad_glBindTexture(GL_TEXTURE_2D, texture);
-        glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_ALPHA, GL_UNSIGNED_BYTE, 0);
+        glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
         // Set texture options
         glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -108,12 +109,19 @@ namespace Boomerang::Core::Graphics {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
                 continue;
 
-            glad_glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows, GL_ALPHA, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+            glad_glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
 
-            GlyphData gd = { 
-                glm::ivec2(g->advance.x >> 6, g->advance.y >> 6),
-                glm::ivec2(g->bitmap.width, g->bitmap.rows),
-                glm::ivec2(g->bitmap_left, g->bitmap_top),
+            GlyphData gd = {
+
+                g->advance.x >> 6,
+                g->advance.y >> 6,
+
+                g->bitmap.width,
+                g->bitmap.rows,
+
+                g->bitmap_left,
+                g->bitmap_top,
+
                 static_cast<float>(x / w)
             };
 
@@ -128,6 +136,10 @@ namespace Boomerang::Core::Graphics {
         FT_Done_FreeType(library);
 
         return 0;
+    }
+
+    void Font::Bind(unsigned int _slot) {
+        glad_glBindTextureUnit(_slot, TextureID);
     }
 
     // Getters

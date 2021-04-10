@@ -60,7 +60,7 @@ namespace Boomerang::Core {
             bool autoinit = true;               // Automatically initialize engine components
             bool debugmode = false;             // Enable debug mode
             bool loggingEnabled = true;         // Enable logging
-            bool fullscreenmode = false;         // Enable full screen mode
+            bool fullscreenmode = true;         // Enable full screen mode
 
             std::vector<float> clearcolor = { 1.f, 1.f, 1.f, 0.f };     // Render surface clear color
             //RendererType rendermode = RendererType::Render_2D;        // Engine render mode
