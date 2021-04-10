@@ -120,34 +120,45 @@ namespace Boomerang::Core::Graphics {
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("text")->second;
         shader->SetFloat3("u_Color", _color);
 
-        /* 
-         * TODO: Rewrite this horrible code. Why did I ever think it was a good idea to
-         *       bind/render a single glyph at a time? Stupid, silly Andrew. What we
-         *       SHOULD be doing is packing the relevant glyphs into a single bitmap
-         *       and then rendering that bitmap.
-         */
+        struct point {
+            float x;
+            float y;
+            float s;
+            float t;
+        }; 
+        std::vector<point> coords;
+        coords.resize(6 * _string.size());
+
+        int n = 0;
 
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
 
-            Character ch = _font->GetCharacters()[*i];
-            ch.Bind();
+            GlyphData gd = _font->GetGlyphData()[*i];
 
-            float xPos = _position.x + ch.bearing.x + ch.size.x / 2.f;
-            float yPos = _position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font->GetSize() / 2.f) * 0.75f;
+            float x2 = _position.x + gd.topLeft.x * _scale.x;
+            float y2 = -_position.y - gd.topLeft.y * _scale.y;
+            float w = gd.size.x * _scale.x;
+            float h = gd.size.y * _scale.y;
 
-            float t_Width = static_cast<float>(ch.size.x) * _scale.x;
-            float t_Height = static_cast<float>(ch.size.y) * _scale.y;
+            // Advance the cursor to the start of the next character
+            _position.x += gd.advance.x * _scale.x;
+            _position.y += gd.advance.y * _scale.y;
 
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, _position.z += 0.00001 }) * 
-                                  glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+            // Skip glyphs that have no pixels
+            if (!w || !h)
+                continue;
 
-            shader->SetMat4("u_Transform", transform);
-
-            RenderData->__quad_vtx_array->Bind();
-            Manager::DrawIndexed(RenderData->__quad_vtx_array);
-
-            _position.x += ((ch.advance >> 6) - (ch.bearing.x / 2.f)) * _scale.x;
+            coords[n++] = point({ x2,     -y2    , gd.tx, 0 });
+            coords[n++] = point({ x2 + w, -y2    , gd.tx + gd.size.x / _font->GetAtlasDimensions().x, 0 });
+            coords[n++] = point({ x2,     -y2 - h, gd.tx,  gd.size.y / _font->GetAtlasDimensions().y });
+            coords[n++] = point({ x2 + w, -y2    , gd.tx + gd.size.x / _font->GetAtlasDimensions().x, 0 });
+            coords[n++] = point({ x2,     -y2 - h, gd.tx,  gd.size.y / _font->GetAtlasDimensions().y });
+            coords[n++] = point({ x2 + w, -y2 - h, gd.tx + gd.size.x / _font->GetAtlasDimensions().x, gd.size.y / _font->GetAtlasDimensions().y });
         }
+
+
+        glad_glBufferData(GL_ARRAY_BUFFER, sizeof(coords) / 6, coords.data(), GL_DYNAMIC_DRAW);
+        glad_glDrawArrays(GL_TRIANGLES, 0, n);
     }
 
     // Draw static quad functions
