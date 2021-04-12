@@ -113,14 +113,9 @@ namespace Boomerang::Core::Graphics {
 
             GlyphData gd = {
 
-                g->advance.x >> 6,
-                g->advance.y >> 6,
-
-                g->bitmap.width,
-                g->bitmap.rows,
-
-                g->bitmap_left,
-                g->bitmap_top,
+                { g->bitmap.width, g->bitmap.rows },
+                { g->advance.x >> 6, g->advance.y >> 6  },
+                { g->bitmap_left, g->bitmap_top, },
 
                 static_cast<float>(x / w)
             };
@@ -143,7 +138,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Getters
-    std::unordered_map<char, GlyphData> Font::GetGlyphData() const {
+    std::unordered_map<char, Font::GlyphData> Font::GetGlyphData() const {
         return umGlyphData;
     }
 
