@@ -101,7 +101,7 @@ namespace Boomerang::Core::Graphics {
         glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        for (int c = 32, x = 0; c < 128; c++) {
+        for (int c = 32, x = 0; c < 127; c++) {
 
             // No need to log load failure here; if it 
             // fails, it should already have been logged

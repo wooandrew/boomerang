@@ -121,64 +121,37 @@ namespace Boomerang::Core::Graphics {
         shader->SetFloat3("u_Color", _color);
         _font->Bind();
 
-        unsigned int vbo = 0;
-        unsigned int VertexBufferIndex = 0;
-        glad_glEnableVertexAttribArray(VertexBufferIndex);
-        glad_glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glad_glVertexAttribPointer(VertexBufferIndex, 4, GL_FLOAT, GL_FALSE, 0, 0);
+        float __qvt[] = {
 
-        /*
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) *
-            glm::scale(glm::mat4(1.0f), { _font->GetAtlasDimensions().x, _font->GetAtlasDimensions().y, 1.0f });
+            // Positions            // Tex Coords
+            -0.5f, -0.5f, 0.0f,    0.0f, 0.0f,      // Bottom Left
+             0.0f, -0.5f, 0.0f,    0.5f, 0.0f,      // Bottom Right
+             0.0f,  0.5f, 0.0f,    0.5f, 1.0f,      // Top Right
+            -0.5f,  0.5f, 0.0f,    0.0f, 1.0f,      // Top Left
 
-        RenderData->__shader_library->GetMap().find("text")->second->SetMat4("u_Transform", transform);
-        RenderData->__quad_vtx_array->Bind();
-
-        Manager::DrawIndexed(RenderData->__quad_vtx_array);
-        */
-
-        struct point {
-            GLfloat x;
-            GLfloat y;
-            GLfloat s;
-            GLfloat t;
+            0.0f, -0.5f, 0.0f,    0.5f, 0.0f,      // Bottom Left
+             0.5f, -0.5f, 0.0f,    1.0f, 0.0f,      // Bottom Right
+             0.5f,  0.5f, 0.0f,    1.0f, 1.0f,      // Top Right
+            0.0f,  0.5f, 0.0f,    0.5f, 1.0f,      // Top Left
         };
-        point coords[6 * _string.length()]; // = new point[];
 
-        int n = 0;
+        std::shared_ptr<Vertex> __vtx = std::make_shared<Vertex>();
 
-        auto gd = _font->GetGlyphData();
+        std::shared_ptr<VertexBuffer> __vxb = std::make_shared<VertexBuffer>(__qvt, sizeof(__qvt));
+        __vxb->SetLayout({ { ShaderDataType::Float3, "a_Position" }, { ShaderDataType::Float2, "a_TexCoord" } });
+        __vtx->AddVertexBuffer(__vxb);
 
-        for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
+        uint32_t __qi[] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
+        std::shared_ptr<IndexBuffer> __ixb = std::make_shared<IndexBuffer>(__qi, sizeof(__qi) / sizeof(uint32_t));
+        __vtx->SetIndexBuffer(__ixb);
 
-            float x2 = _position.x + gd[*i].bl * _scale.x;
-            float y2 = -_position.y - gd[*i].bt * _scale.y;
-            float w = gd[*i].bw * _scale.x;
-            float h = gd[*i].bh * _scale.y;
-
-            /* Advance the cursor to the start of the next character */
-            _position.x += gd[*i].ax * _scale.x;
-            _position.y += gd[*i].ay * _scale.y;
-
-            /* Skip glyphs that have no pixels */
-            if (!w || !h)
-                continue;
-
-            float dX = _font->GetAtlasDimensions().x;
-            float dY = _font->GetAtlasDimensions().y;
-
-            coords[n++] = point{ x2    , -y2    , gd[*i].tx                 , 0 };
-            coords[n++] = point{ x2 + w, -y2    , gd[*i].tx + gd[*i].bw / dX, 0 };
-            coords[n++] = point{ x2    , -y2 - h, gd[*i].tx                 , gd[*i].bh / dY };
-            coords[n++] = point{ x2 + w, -y2    , gd[*i].tx + gd[*i].bw / dX, 0 };
-            coords[n++] = point{ x2    , -y2 - h, gd[*i].tx                 , gd[*i].bh / dY };
-            coords[n++] = point{ x2 + w, -y2 - h, gd[*i].tx + gd[*i].bw / dX, gd[*i].bh / dY };
-        }
+        glm::vec2 _size = _font->GetAtlasDimensions();
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
         
-        glad_glBufferData(GL_ARRAY_BUFFER, sizeof coords, coords, GL_DYNAMIC_DRAW);
-        glad_glDrawArrays(GL_TRIANGLES, 0, n);
+        shader->SetMat4("u_Transform", transform);
+        __vtx->Bind();
 
-        glad_glDisableVertexAttribArray(VertexBufferIndex);
+        Manager::DrawIndexed(__vtx);
     }
 
     // Draw static quad functions
@@ -252,5 +225,44 @@ namespace Boomerang::Core::Graphics {
                 Manager::DrawIndexed(RenderData->__quad_vtx_array);
             }
         }
+    }
+
+    void Renderer::RenderDebug(const glm::vec3& _position, const std::shared_ptr<Texture>& _texture) {
+
+        std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("basic")->second;
+        shader->SetFloat4("u_Color", glm::vec4(1.f));
+        _texture->Bind();
+
+        float __qvt[] = {
+
+            // Positions            // Tex Coords
+            -0.5f, -0.5f, 0.0f,    0.0f, 0.0f,      // Bottom Left
+             0.0f, -0.5f, 0.0f,    0.5f, 0.0f,      // Bottom Right
+             0.0f,  0.5f, 0.0f,    0.5f, 1.0f,      // Top Right
+            -0.5f,  0.5f, 0.0f,    0.0f, 1.0f,      // Top Left
+
+            0.0f, -0.5f, 0.0f,    0.5f, 0.0f,      // Bottom Left
+             0.5f, -0.5f, 0.0f,    1.0f, 0.0f,      // Bottom Right
+             0.5f,  0.5f, 0.0f,    1.0f, 1.0f,      // Top Right
+            0.0f,  0.5f, 0.0f,    0.5f, 1.0f,      // Top Left
+        };
+
+        std::shared_ptr<Vertex> __vtx = std::make_shared<Vertex>();
+
+        std::shared_ptr<VertexBuffer> __vxb = std::make_shared<VertexBuffer>(__qvt, sizeof(__qvt));
+        __vxb->SetLayout({ { ShaderDataType::Float3, "a_Position" }, { ShaderDataType::Float2, "a_TexCoord" } });
+        __vtx->AddVertexBuffer(__vxb);
+
+        uint32_t __qi[] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
+        std::shared_ptr<IndexBuffer> __ixb = std::make_shared<IndexBuffer>(__qi, sizeof(__qi) / sizeof(uint32_t));
+        __vtx->SetIndexBuffer(__ixb);
+
+        glm::vec2 _size = _texture->GetDimensions();
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
+
+        shader->SetMat4("u_Transform", transform);
+        __vtx->Bind();
+
+        Manager::DrawIndexed(__vtx);
     }
 }

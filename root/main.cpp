@@ -107,6 +107,8 @@ int main() {
 
     glm::vec3 position = { 0, 0, 0 };
 
+    std::shared_ptr<Boomerang::Core::Graphics::Texture> t = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_250.png");
+
     ASWL::Utilities::FramesPerSecond::UpdateFPS();
 
     while (manager.run(engine.GetWindow())) {
