@@ -45,8 +45,6 @@
 #include <ASWL/logger.hpp>
 #include <ASWL/utilities.hpp>
 
-namespace World = Boomerang::Core::World;
-
 // TODO: Move to render manager
 namespace RENDER_LAYER {
 
@@ -79,18 +77,13 @@ int main() {
 
     //Boomerang::Core::Graphics::Manager::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
     
+    glm::mat4 ortho = glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
+                                 -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f);
+
     // Initialize Primary Orthographic Camera
-    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_1 = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(
-                                                                      glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
-                                                                                 -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
-
-    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_f = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(
-                                                                      glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
-                                                                                 -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
-
-    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_g = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(
-                                                                      glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
-                                                                                 -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f), 500.f);
+    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_1 = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(ortho, 500.f);
+    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_f = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(ortho, 500.f);
+    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_g = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(ortho, 500.f);
 
     //__camera_1->SetLock(true);
     __camera_f->SetLock(true);
