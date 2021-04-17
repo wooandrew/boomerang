@@ -28,7 +28,7 @@
 
 // Include standard library
 #include <string>
-#include <map>
+#include <unordered_map>
 
 // Include dependencies
 #include <GLM/glm/glm.hpp>
@@ -37,17 +37,7 @@
 
 namespace Boomerang::Core::Graphics {
 
-    // TODO: overload Texture to create Character
-    struct Character {
-
-        unsigned int TextureID;
-        glm::ivec2 size;            // Need to switch to our own convention
-        glm::ivec2 bearing;         // Need to switch to our own convention
-        signed long advance;
-
-        void Bind(unsigned int slot = 0) const;
-    };
-
+    // TODO: Make Font inherit from Texture
     class Font {
 
         /// Font objects & rendering
@@ -57,10 +47,21 @@ namespace Boomerang::Core::Graphics {
         Font();
         ~Font();
 
-        int init(std::string _FontName, std::string _FontPath, int _FontSize = 48);
+        int init(const std::string& _FontName, const std::string& _FontPath, int _FontSize = 48);
+        void Bind(unsigned int _slot = 0);
+
+        struct GlyphData {
+
+            glm::ivec2 size;
+            glm::ivec2 advance;
+            glm::ivec2 bearing;
+
+            float tx;                   // x offset in atlas of the glyph
+        };
 
         // Getters
-        const std::map<char, Character>& GetCharacters() const;
+        std::unordered_map<char, GlyphData> GetGlyphData() const;
+        const glm::vec2& GetAtlasDimensions() const;
         const int GetSize() const;
 
     private:
@@ -69,8 +70,11 @@ namespace Boomerang::Core::Graphics {
         std::string FontPath;
 
         int FontSize;
+        glm::vec2 AtlasDimensions;
 
-        std::map<char, Character> characters;
+        unsigned int TextureID;     // Atlas ID *** should be inherited from Boomerang::Graphics::Texture in the future.
+
+        std::unordered_map<char, GlyphData> umGlyphData;
     };
 }
 

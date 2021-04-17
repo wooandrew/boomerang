@@ -25,6 +25,7 @@
 
 // Include standard library
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 
 // Include dependencies
@@ -33,18 +34,16 @@
 
 namespace Boomerang::Core::Graphics {
 
-    void Character::Bind(unsigned int _slot) const {
-        glad_glBindTextureUnit(_slot, TextureID);
-    }
-
     Font::Font() {
         FontSize = 48;
+        AtlasDimensions = glm::vec2(0);
+        TextureID = 0;
     }
     Font::~Font() {
 
     };
 
-    int Font::init(std::string _FontName, std::string _FontPath, int _FontSize) {
+    int Font::init(const std::string& _FontName, const std::string& _FontPath, int _FontSize) {
 
         FontName = _FontName;
         FontPath = _FontPath;
@@ -68,37 +67,65 @@ namespace Boomerang::Core::Graphics {
         // Disable byte-alignment restriction
         glad_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        for (unsigned char c = 0; c < 128; c++) {
+        // Initialize temporary glyph container
+        FT_GlyphSlot g = face->glyph;
 
-            // Load glyph 
+        // Initialize Font atlas dimensions
+        unsigned int w = 0;         // width
+        unsigned int h = 0;         // height
+
+        // Calculate Font atlas dimensions
+        for (unsigned char c = 32; c < 128; c++) {
+
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
                 ASWL::Logger::logger("F0002", "Error: Failed to load glyph [", std::to_string(c), "].");
                 continue;
             }
 
-            // Generate texture
-            unsigned int texture;
-            glad_glGenTextures(1, &texture);
-            glad_glBindTexture(GL_TEXTURE_2D, texture);
-            glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+            w += g->bitmap.width;
+            h = std::max(h, g->bitmap.rows);
+        }
 
-            // Set texture options
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        AtlasDimensions = { w, h };
 
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // Generate empty atlas
+        unsigned int texture;
+        glad_glGenTextures(1, &texture);
+        glad_glBindTexture(GL_TEXTURE_2D, texture);
+        glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
-            // Store character for later use
-            Character character = {
-                texture,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                face->glyph->advance.x
+        // Set texture options
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        for (int c = 32, x = 0; c < 127; c++) {
+
+            // No need to log load failure here; if it 
+            // fails, it should already have been logged
+            // when calculating atlas dimensions.
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+                continue;
+
+            glad_glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+
+            GlyphData gd = {
+
+                { g->bitmap.width, g->bitmap.rows },
+                { g->advance.x >> 6, g->advance.y >> 6  },
+                { g->bitmap_left, g->bitmap_top, },
+
+                static_cast<float>(x / w)
             };
 
-            characters.insert(std::pair<char, Character>(c, character));
+            umGlyphData.insert({ c, gd });
+
+            x += g->bitmap.width;
         }
+
+        TextureID = texture;
 
         FT_Done_Face(face);
         FT_Done_FreeType(library);
@@ -106,9 +133,17 @@ namespace Boomerang::Core::Graphics {
         return 0;
     }
 
+    void Font::Bind(unsigned int _slot) {
+        glad_glBindTextureUnit(_slot, TextureID);
+    }
+
     // Getters
-    const std::map<char, Character>& Font::GetCharacters() const {
-        return characters;
+    std::unordered_map<char, Font::GlyphData> Font::GetGlyphData() const {
+        return umGlyphData;
+    }
+
+    const glm::vec2& Font::GetAtlasDimensions() const {
+        return AtlasDimensions;
     }
 
     const int Font::GetSize() const {

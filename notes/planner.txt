@@ -1,19 +1,19 @@
 01/11/2021
 
 -> Shader Library implementation
-    > Must be readable from assets
-    > JSON? XML?
+ > Must be readable from assets
+ > JSON? XML?
 
-    SHADER LIBRARY DESIGN
+ SHADER LIBRARY DESIGN
 
-    ; Comment
-    name : basic
-        type : frag.glsl
-             : vert.glsl
+ ; Comment
+ name : basic
+ type : frag.glsl
+ : vert.glsl
 
-    name : text
-        type : frag.glsl
-             : vert.glsl
+ name : text
+ type : frag.glsl
+ : vert.glsl
 
 name:basic
 path:basic-frag.glsl,basic-vert.glsl
@@ -27,3 +27,31 @@ DONE -> Change Misc to ASWL
 Chunk data storage
 
 64 nodes per chunk (8x8) ; each node is stored inside a chunk object as a map
+
+04/07/2021
+
+Chunk generation (parameters w(1920, 1080), p(0.f, 0.f, 0.f))
+xMax: 24
+xMin: -23
+yMax: 13
+yMin: -14
+
+xMaxCC: 4
+xMinCC: -4
+yMaxCC: 3
+yMinCC: -3
+
+ [-32, -24],     [-24, -24],     [-16, -24],     [-8, -24],      [0, -24],       [8, -24],       [16, -24],      [24, -24],      [32, -24],
+ [-32, -16],     [-24, -16],     [-16, -16],     [-8, -16],      [0, -16],       [8, -16],       [16, -16],      [24, -16],      [32, -16],
+ [-32, -8],      [-24, -8],      [-16, -8],      [-8, -8],       [0, -8],        [8, -8],        [16, -8],       [24, -8],       [32, -8],
+ [-32, 0],       [-24, 0],       [-16, 0],       [-8, 0],        [0, 0],         [8, 0],         [16, 0],        [24, 0],        [32, 0],
+ [-32, 8],       [-24, 8],       [-16, 8],       [-8, 8],        [0, 8],         [8, 8],         [16, 8],        [24, 8],        [32, 8],
+ [-32, 16],      [-24, 16],      [-16, 16],      [-8, 16],       [0, 16],        [8, 16],        [16, 16],       [24, 16],       [32, 16],
+ [-32, 24],      [-24, 24],      [-16, 24],      [-8, 24],       [0, 24],        [8, 24],        [16, 24],       [24, 24],       [32, 24],
+
+
+
+
+
+
+ 
