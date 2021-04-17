@@ -74,9 +74,6 @@ namespace Boomerang::Core::Graphics {
 
         // Render Chunk (debug_mode) -> this should be called from render world
         static void RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const float _CellSize, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _zoom = 1.f);
-
-        // Render Debug
-        static void RenderDebug(const glm::vec3& _position, const std::shared_ptr<Texture>& _texture);
     };
 }
 

@@ -100,8 +100,6 @@ int main() {
 
     glm::vec3 position = { 0, 0, 0 };
 
-    std::shared_ptr<Boomerang::Core::Graphics::Texture> t = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_250.png");
-
     ASWL::Utilities::FramesPerSecond::UpdateFPS();
 
     while (manager.run(engine.GetWindow())) {
@@ -134,12 +132,13 @@ int main() {
         __camera_1->SetPosition(position);
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
         for (auto const& [key, chunk] : WorldGrid.GetMap()) {
-        
+
             if (chunk->InFrame(__camera_1->GetPosition(), engine.GetWindowDimensions())) {
                 Boomerang::Core::Graphics::Renderer::RenderChunk(chunk, WorldGrid.GetCellSize(), engine.GetWindowDimensions(), position);
                 chunks_rendered++;
             }
         }
+
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_g, "grid");
@@ -153,8 +152,6 @@ int main() {
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
-
-        std::cout << fps << std::endl;
     }
 
     Boomerang::Core::Graphics::Renderer::shutdown();
