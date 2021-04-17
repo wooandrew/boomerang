@@ -147,7 +147,7 @@ int main() {
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
         Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 1nv0.1.0-pre.3-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), nsjpl_56);
-        Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps), { 900, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
+        Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps), { 885, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
         Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { -130, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
         Boomerang::Core::Graphics::Renderer::EndScene();
 

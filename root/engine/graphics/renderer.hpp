@@ -60,8 +60,8 @@ namespace Boomerang::Core::Graphics {
         static void RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
 
         // Render Text
-        static void RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
-        static void RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
+        static void RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
+        static void RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
 
         // Draw Static Quad
         static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);

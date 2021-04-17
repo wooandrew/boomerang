@@ -107,15 +107,14 @@ namespace Boomerang::Core::Graphics {
 
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
 
-        RenderData->__quad_vtx_array->Bind();
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }
 
     // Render text functions
-    void Renderer::RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
+    void Renderer::RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
         RenderText(_string, glm::vec3(_position, 0), _scale, _color, _font);
     }
-    void Renderer::RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
+    void Renderer::RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
 
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("text")->second;
         shader->SetFloat3("u_Color", _color);
@@ -127,26 +126,28 @@ namespace Boomerang::Core::Graphics {
          *       and then rendering that bitmap.
          */
 
+        float px = _position.x;
+        float pz = _position.z;
+
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
 
-            Character ch = _font->GetCharacters()[*i];
+            Character ch = _font->GetCharacters().find(*i)->second;
             ch.Bind();
 
-            float xPos = _position.x + ch.bearing.x + ch.size.x / 2.f;
+            float xPos = px + ch.bearing.x + ch.size.x / 2.f;
             float yPos = _position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font->GetSize() / 2.f) * 0.75f;
 
             float t_Width = static_cast<float>(ch.size.x) * _scale.x;
             float t_Height = static_cast<float>(ch.size.y) * _scale.y;
 
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, _position.z += 0.00001 }) * 
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, pz += 0.00001 }) * 
                                   glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
 
             shader->SetMat4("u_Transform", transform);
 
-            RenderData->__quad_vtx_array->Bind();
             Manager::DrawIndexed(RenderData->__quad_vtx_array);
 
-            _position.x += ((ch.advance >> 6) - (ch.bearing.x / 2.f)) * _scale.x;
+            px += ((ch.advance >> 6) - (ch.bearing.x / 2.f)) * _scale.x;
         }
     }
 
@@ -163,7 +164,6 @@ namespace Boomerang::Core::Graphics {
                               glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
 
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
-        RenderData->__quad_vtx_array->Bind();
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }
@@ -180,7 +180,6 @@ namespace Boomerang::Core::Graphics {
 
         transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
-        RenderData->__quad_vtx_array->Bind();
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }
@@ -199,8 +198,6 @@ namespace Boomerang::Core::Graphics {
         shader->SetFloat2("u_Resolution", _WindowSize);
         shader->SetFloat3("u_CameraPosition", _CameraPosition);
 
-        RenderData->__quad_vtx_array->Bind();
-
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }
 
@@ -217,7 +214,6 @@ namespace Boomerang::Core::Graphics {
                 node->GetTexture()->Bind();
                 shader->SetMat4("u_Transform", node->GetTransform());
 
-                RenderData->__quad_vtx_array->Bind();
                 Manager::DrawIndexed(RenderData->__quad_vtx_array);
             }
         }

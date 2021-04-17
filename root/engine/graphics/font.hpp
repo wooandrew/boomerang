@@ -60,7 +60,7 @@ namespace Boomerang::Core::Graphics {
         int init(std::string _FontName, std::string _FontPath, int _FontSize = 48);
 
         // Getters
-        std::map<char, Character> GetCharacters() const;
+        const std::map<char, Character>& GetCharacters() const;
         const int GetSize() const;
 
     private:

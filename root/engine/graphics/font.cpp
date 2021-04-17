@@ -107,7 +107,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Getters
-    std::map<char, Character> Font::GetCharacters() const {
+    const std::map<char, Character>& Font::GetCharacters() const {
         return characters;
     }
 
