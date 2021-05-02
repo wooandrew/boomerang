@@ -28,6 +28,7 @@
 
 // Include standard library
 #include <map>
+#include <future>
 
 // Include dependencies
 #include <GLM/glm/glm.hpp>
@@ -61,10 +62,14 @@ namespace Boomerang::Core::World {
 
         void GenerateChunk(const glm::vec3& _position);
         void LoadChunk(const ASWL::eXperimental::SetHash& hash, const float layer);
-        void UnloadChunk();
+        void UnloadChunk(const ASWL::eXperimental::SetHash& hash);
 
-        std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>> map;          // Loaded chunk map
+        std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>> map;     // Loaded chunk map
         std::shared_ptr<Boomerang::Core::Graphics::Texture> texture;
+
+        std::future<std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>>> MapFuture1;
+        std::future<std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>>> MapFuture2;
+
         BIOME_TEXTURES bt;
     };
 }

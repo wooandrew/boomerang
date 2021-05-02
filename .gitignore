@@ -2,5 +2,6 @@
 .vscode
 out
 includes/GLAD
+CMakeFiles
 
 CMakeSettings.json

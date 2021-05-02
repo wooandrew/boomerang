@@ -66,7 +66,7 @@ namespace Boomerang::Core::World {
 
         std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Node>> map;       // 64 nodes per chunk
 
-        glm::vec3 position;
+        glm::vec3 position;     // Must be stored as a grid coord, not pixel coord
     };
 }
 

@@ -2,11 +2,18 @@
 
 #pragma once
 
+#include <chrono>
+#include <future>
 #include <bitset>
 #include <vector>
 #include <ostream>
+#include <functional>
 
 namespace ASWL::eXperimental {
+
+    template<typename T> bool is_ready(std::future<T> const& f) {
+        return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+    }
 
     template<size_t N> std::vector<unsigned char> Bitset2Bytes(const std::bitset<N>& bs) {
 
@@ -54,6 +61,16 @@ namespace ASWL::eXperimental {
         std::bitset<32> x;
         std::bitset<32> y;
         std::bitset<64> xy;
+        std::hash<std::bitset<64>> hash();
+
+        std::size_t operator() (const SetHash& sh) const {
+            std::hash<std::bitset<64>> h;
+            return h(sh.xy);
+        }
+
+        friend bool operator== (const SetHash& left, const SetHash& right) {
+            return left.xy.to_ullong() == right.xy.to_ullong();
+        }
 
         friend bool operator< (const SetHash& left, const SetHash& right) {
             return left.xy.to_ullong() < right.xy.to_ullong();

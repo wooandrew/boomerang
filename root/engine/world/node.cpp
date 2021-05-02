@@ -37,10 +37,11 @@ namespace Boomerang::Core::World {
         size = _size;
         scale = _scale;
 
-        texture = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
+        //texture = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
         rigidbody = std::make_shared<Boomerang::Core::Physics::Rigidbody>(GridToPixelCoord(position, size.x), size, scale);
 
-        UpdateTransform();
+        if (texture != nullptr)
+            UpdateTransform();
 
         biome = BIOME::PLAINS;
     }

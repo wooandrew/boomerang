@@ -22,6 +22,7 @@
 
 
 #include <iostream>
+#include <cmath>
 
 struct vec3 {
 
