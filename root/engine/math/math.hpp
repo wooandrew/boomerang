@@ -26,6 +26,11 @@
 #ifndef BOOMERANG_ENGINE_MATH_MATH
 #define BOOMERANG_ENGINE_MATH_MATH
 
+// Include standard library
+#include <vector>
+#include <random>
+#include <functional>
+
 // Include dependencies
 #include <GLM/glm/glm.hpp>
 #include <GLM/glm/gtc/constants.hpp>
@@ -48,6 +53,17 @@ namespace Boomerang::Core::Math {
     }
 
     const glm::vec3& RotatePoint(glm::vec3& point, const glm::vec3& pivot, float rotation, AngleType type = AngleType::DEGREES);
+
+    const float SmoothNoise2D(float x, float y, std::function<float(int, int)> Noise2D);
+    const float Interpolate2D(float x, float y, std::function<float(int, int)> Noise2D);
+    const float Interpolate(float a, float b, float x);
+    const float Perlin2D(const float x, const float y, const float persistence, const float offset, const std::vector<std::function<float(int, int)>>& Noises);
+
+    const int IsPrime(unsigned long i);
+    const std::vector<int> GenPrime(unsigned long lo, unsigned long hi);
+
+    // TODO: this doesn't belong in the math class. find another, more appropriate locaiton.
+    std::vector<std::function<float(int, int)>> NoiseFactory(std::mt19937_64& mte, int n);
 }
 
 #endif // !BOOMERANG_ENGINE_MATH_MATH

@@ -23,6 +23,9 @@
 
 #include "world.hpp"
 
+#include <iostream>
+#include "../math/math.hpp"
+
 namespace Boomerang::Core::World {
 
     glm::vec3 GridToPixelCoord(const glm::vec3& _GridCoord, const float _CellSize) {
@@ -45,5 +48,51 @@ namespace Boomerang::Core::World {
         ret.z = _PixlCoord.z;
 
         return ret;
+    }
+
+    const BIOME DetermineBiome(std::mt19937_64& mte, const glm::vec2& position,
+                               const std::vector<std::function<float(int, int)>>& nt,
+                               const std::vector<std::function<float(int, int)>>& nr) {
+
+        // Perlin for Temerature
+        float temp = Boomerang::Core::Math::Perlin2D(position.x, position.y, 0.25, 0.25, nt);
+
+        // Perlin for Rainfall
+        float rain = Boomerang::Core::Math::Perlin2D(position.x, position.y, 0.25, 0.0f, nr);
+
+        if (temp < -0.35)
+            return BIOME::POLAR;
+        else if (temp < 0.00)
+            return BIOME::TUNDRA;
+        else if (temp < 0.35)
+            return BIOME::BORL_FOREST;
+
+        else if (temp < 0.85) {
+
+            if (rain < -0.33)
+                return BIOME::COLD_DESERT;
+            else if (rain < 0.33)
+                return BIOME::PLAINS;
+            else if (rain < 1.00)
+                return BIOME::TEMP_FOREST;
+        }
+
+        else if (temp < 1.25) {
+
+            if (rain < -0.60)
+                return BIOME::WARM_DESERT;
+            else if (rain < -0.20)
+                return BIOME::GRASSLAND;
+            else if (rain < 0.20)
+                return BIOME::SAVANNA;
+            else if (rain < 0.60)
+                return BIOME::TROP_FOREST;
+            else if (rain < 1.00)
+                return BIOME::RAIN_FOREST;
+        }
+
+        std::cout << temp << " , " << rain << std::endl;
+        
+        return BIOME::OCEAN;
     }
 }

@@ -2,11 +2,15 @@
 
 #pragma once
 
+#ifndef ASWL_ExPERIMENTAL
+#define ASWL_ExPERIMENTAL
+
 #include <chrono>
 #include <future>
 #include <bitset>
 #include <vector>
 #include <ostream>
+#include <iostream>
 #include <functional>
 
 namespace ASWL::eXperimental {
@@ -86,4 +90,16 @@ namespace ASWL::eXperimental {
             return stream;
         };
     };
+
+    static void HandleArgs(int argc, char* argv[]) {
+
+        if (argc > 1) {
+
+            for (int i = 1; i < argc; i++) {
+                std::cout << argv[i] << std::endl;
+            }
+        }
+    }
 }
+
+#endif

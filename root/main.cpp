@@ -37,6 +37,7 @@
 #include "engine/graphics/camera/orthocam.hpp"
 #include "engine/physics/rigidbody.hpp"
 #include "engine/physics/collision.hpp"
+#include "engine/math/math.hpp"
 
 #include "engine/world/world.hpp"
 #include "engine/world/grid.hpp"
@@ -55,8 +56,9 @@ namespace RENDER_LAYER {
     constexpr float LAYER4 = 0.4f;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
+    //ASWL::eXperimental::HandleArgs(argc, argv);
     ASWL::Logger::logger("     ", "Hello, Project Boomerang!");
 
     Boomerang::Core::Engine engine;
@@ -95,7 +97,7 @@ int main() {
     std::shared_ptr<Boomerang::Core::Graphics::Font> nsjpl_32 = std::make_shared<Boomerang::Core::Graphics::Font>();
     nsjpl_32->init("nsjpl_32", "assets/fonts/nsjpl.otf", 32);
 
-    Boomerang::Core::World::Grid WorldGrid(114);
+    Boomerang::Core::World::Grid WorldGrid;
     WorldGrid.init({ 0, 0, 0 }, engine.GetWindowDimensions());
 
     glm::vec3 position = { 0, 0, 0 };
@@ -148,7 +150,7 @@ int main() {
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 1nv0.1.0-pre.3-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), nsjpl_56);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 2wv0.1.0-pre.3-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), nsjpl_56);
         Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps), { 885, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
         Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { -130, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
         Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(WorldGrid.GetMap().size()), { -140, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);

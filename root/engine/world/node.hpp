@@ -53,6 +53,7 @@ namespace Boomerang::Core::World {
         void SetSize(const glm::vec2& _size);
         void SetScale(const glm::vec2& _scale);
         void SetTexture(const std::shared_ptr<Boomerang::Core::Graphics::Texture>& _texture);
+        void SetBiome(const BIOME _biome, const BIOME_TEXTURES bt);
         
         // Getters
         const glm::vec3& GetPosition() const;
@@ -68,7 +69,7 @@ namespace Boomerang::Core::World {
 
         void UpdateTransform();
 
-        glm::vec3 position;     // Node's position on the grid
+        glm::vec3 position;     // Node's position on the grid in grid coords
         glm::vec2 size;
         glm::vec2 scale;
 

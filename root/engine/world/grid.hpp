@@ -28,7 +28,7 @@
 
 // Include standard library
 #include <map>
-#include <future>
+#include <random>
 
 // Include dependencies
 #include <GLM/glm/glm.hpp>
@@ -46,6 +46,7 @@ namespace Boomerang::Core::World {
     public:
 
         Grid(float _CellSize = 80.f, float _scale = 1.f);
+        Grid(float seed, float _CellSize = 80.f, float _scale = 1.f);
         ~Grid();
 
         void init(const glm::vec3& _position, const glm::vec2& _windowSize);
@@ -57,6 +58,8 @@ namespace Boomerang::Core::World {
 
     private:
 
+        unsigned long long seed;
+        
         float CellSize;
         float scale;
 
@@ -65,10 +68,12 @@ namespace Boomerang::Core::World {
         void UnloadChunk(const ASWL::eXperimental::SetHash& hash);
 
         std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>> map;     // Loaded chunk map
-        std::shared_ptr<Boomerang::Core::Graphics::Texture> texture;
 
-        std::future<std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>>> MapFuture1;
-        std::future<std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>>> MapFuture2;
+        std::mt19937_64 mte;
+        std::vector<std::function<float(int, int)>> TempNoises;
+        std::vector<std::function<float(int, int)>> RainNoises;
+
+        glm::vec3 LastPosition;
 
         BIOME_TEXTURES bt;
     };

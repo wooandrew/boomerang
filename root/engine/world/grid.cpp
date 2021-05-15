@@ -27,23 +27,62 @@
 #include <iostream>
 #include <future>
 #include <thread>
+#include <chrono>
 #include <utility>
 
 // Include boomerang libraries
+#include "../math/math.hpp"
 #include "world.hpp"
 
 namespace Boomerang::Core::World {
 
     Grid::Grid(float _CellSize, float _scale) {
+
         CellSize = _CellSize;
         scale = _scale;
+
+        seed = std::chrono::system_clock::now().time_since_epoch().count();
+        mte = std::mt19937_64(seed);
+
+        seed = mte();                       // Randomly generate seed, which is seeded by current_time
+        mte = std::mt19937_64(seed);        // Create a Mersenne Twister (19937_64) generator
+
+        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 9);
+        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
+
+        LastPosition = { 0, 0, 0 };
+    }
+
+    Grid::Grid(float seed, float _CellSize, float _scale) {
+
+        CellSize = _CellSize;
+        scale = _scale;
+
+        mte = std::mt19937_64(seed);        // Create a Mersenne Twister (19937_64) generator
+
+        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
+        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
+
+        LastPosition = { 0, 0, 0 };
     }
 
     Grid::~Grid() { }
 
     void Grid::init(const glm::vec3& _position, const glm::vec2& _windowSize) {
 
-        bt.test = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
+        bt.test        = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
+        bt.POLAR       = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/polar_125.png");
+        bt.TUNDRA      = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/tundra_125.png");
+        bt.BORL_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/borl_forest_125.png");
+        bt.COLD_DESERT = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/cold_desert_125.png");
+        bt.PLAINS      = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/plains_125.png");
+        bt.TEMP_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/temp_forest_125.png");
+        bt.WARM_DESERT = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/warm_desert_125.png");
+        bt.GRASSLAND   = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/grassland_125.png");
+        bt.SAVANNA     = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/savanna_125.png");
+        bt.TROP_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/trop_forest_125.png");
+        bt.RAIN_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/rain_forest_125.png");
+        bt.OCEAN       = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/ocean_125.png");
 
         // Return pixel position as grid position
         glm::vec3 gridCoord = PixelToGridCoord(_position, CellSize);
@@ -75,21 +114,21 @@ namespace Boomerang::Core::World {
         // Return pixel position as grid position
         glm::vec3 gridCoord = PixelToGridCoord(_position, CellSize);
 
-        // Calculate xMax, xMin, yMax, yMin in terms of grid coords.
-        float xMax = std::round((_position.x + _windowSize.x / 2) / CellSize);
-        float xMin = std::round((_position.x - _windowSize.x / 2) / CellSize) + 1.f;        // +1 to normalize xMin
-        float yMax = std::round((_position.y + _windowSize.y / 2) / CellSize) - 1.f;        // -1 to normalize yMax
-        float yMin = std::round((_position.y - _windowSize.y / 2) / CellSize);
-
-        // Calculate which chunk coord xMax, xMin, yMax, yMin are in
-        float xMaxCC = std::round(xMax / 8) + 1;
-        float xMinCC = std::round(xMin / 8) - 1;
-        float yMaxCC = std::round(yMax / 8) + 1;
-        float yMinCC = std::round(yMin / 8) - 1;
-
         auto f = std::async(std::launch::async,
         
             [&]() {
+
+                // Calculate xMax, xMin, yMax, yMin in terms of grid coords.
+                float xMax = std::round((_position.x + _windowSize.x / 2) / CellSize);
+                float xMin = std::round((_position.x - _windowSize.x / 2) / CellSize) + 1.f;        // +1 to normalize xMin
+                float yMax = std::round((_position.y + _windowSize.y / 2) / CellSize) - 1.f;        // -1 to normalize yMax
+                float yMin = std::round((_position.y - _windowSize.y / 2) / CellSize);
+
+                // Calculate which chunk coord xMax, xMin, yMax, yMin are in
+                float xMaxCC = std::round(xMax / 8) + 1;
+                float xMinCC = std::round(xMin / 8) - 1;
+                float yMaxCC = std::round(yMax / 8) + 1;
+                float yMinCC = std::round(yMin / 8) - 1;
 
                 std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>> cpy = map;
 
@@ -114,7 +153,7 @@ namespace Boomerang::Core::World {
                             glm::vec3 p = { static_cast<int>(hash.x.to_ulong()), static_cast<int>(hash.y.to_ulong()), _position.z };
                             cpy.insert({ hash, std::make_shared<Chunk>(p, CellSize, 80.f / 125.f) });
                             for (auto const& [key, val] : cpy[hash]->GetMap())
-                                val->SetTexture(bt.test);
+                                val->SetBiome(DetermineBiome(mte, { val->GetPosition().x, val->GetPosition().y }, TempNoises, RainNoises), bt);
                         }
                     }
                 }
@@ -123,7 +162,10 @@ namespace Boomerang::Core::World {
             }
         );
 
-        map = f.get();
+        if (LastPosition != gridCoord) {
+            LastPosition = gridCoord;
+            map = f.get();
+        }
     }
 
     void Grid::GenerateChunk(const glm::vec3& _position) {
@@ -133,7 +175,7 @@ namespace Boomerang::Core::World {
         map.insert({ hash, std::make_shared<Chunk>(c) });
         
         for (auto const& [key, val] : map[hash]->GetMap())
-            val->SetTexture(bt.test);
+            val->SetBiome(DetermineBiome(mte, { val->GetPosition().x, val->GetPosition().y }, TempNoises, RainNoises), bt);
     }
 
     void Grid::LoadChunk(const ASWL::eXperimental::SetHash& hash, const float layer) {

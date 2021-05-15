@@ -28,6 +28,9 @@
 
 // Include standard library
 #include <memory>
+#include <random>
+#include <vector>
+#include <functional>
 
 // Include dependencies
 #include <GLM/glm/glm.hpp>
@@ -54,14 +57,39 @@ namespace Boomerang::Core::World {
     glm::vec3 PixelToGridCoord(const glm::vec3& _PixlCoord, const float _CellSize);
 
     enum class BIOME {
+        POLAR,
+        TUNDRA,
+        BORL_FOREST,
+        COLD_DESERT,
         PLAINS,
-        TUNDRA
+        TEMP_FOREST,
+        WARM_DESERT,
+        GRASSLAND,
+        SAVANNA,
+        TROP_FOREST,
+        RAIN_FOREST,
+        OCEAN
     };
 
-    //std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png")
     struct BIOME_TEXTURES {
         std::shared_ptr<Boomerang::Core::Graphics::Texture> test;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> POLAR;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> TUNDRA;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> BORL_FOREST;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> COLD_DESERT;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> PLAINS;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> TEMP_FOREST;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> WARM_DESERT;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> GRASSLAND;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> SAVANNA;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> TROP_FOREST;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> RAIN_FOREST;
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> OCEAN;
     };
+
+    const BIOME DetermineBiome(std::mt19937_64& mte, const glm::vec2& position, 
+                               const std::vector<std::function<float(int, int)>>& nt,
+                               const std::vector<std::function<float(int, int)>>& nr);
 }
 
 #endif // !BOOMERANG_ENGINE_WORLD_WORLD
