@@ -1,8 +1,8 @@
-# Project Boomerang : root (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+# Project Boomerang : root (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 # Modified MIT License
 # 
-# Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+# Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 # 
 #  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
 #  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -34,6 +34,7 @@ add_library(
     # Main
     "engine/engine.hpp"         "engine/engine.cpp"
     "engine/manager.hpp"        "engine/manager.cpp"
+    "engine/settings.hpp"       "engine/settings.cpp"
 
     # Input
     "engine/input/mouse.hpp"                        "engine/input/mouse.cpp"
@@ -50,25 +51,30 @@ add_library(
 
     # Graphics / Camera
     "engine/graphics/camera/orthocam.hpp"           "engine/graphics/camera/orthocam.cpp"
+
+    # Math
+    "engine/math/math.hpp"                          "engine/math/math.cpp"
+
+    # Physics
+    "engine/physics/object.hpp"                     "engine/physics/object.cpp"
+    "engine/physics/rigidbody.hpp"                  "engine/physics/rigidbody.cpp"
+    "engine/physics/collision.hpp"                  "engine/physics/collision.cpp"
+
+    # World
+    "engine/world/world.hpp"                        "engine/world/world.cpp"
+    "engine/world/grid.hpp"                         "engine/world/grid.cpp"
+    "engine/world/chunk.hpp"                        "engine/world/chunk.cpp"
+    "engine/world/node.hpp"                         "engine/world/node.cpp"
 )
 
-add_library(
-    
-    # Add misc
-    BoomerangMisc STATIC
-
-    # files
-    "misc/utilities.hpp"            "misc/utilities.cpp"
-    "misc/logger.hpp"               "misc/logger.cpp"
-)
 # Link engine against main
 target_link_libraries(main PRIVATE BoomerangEngine)
-target_link_libraries(main PRIVATE BoomerangMisc)
 
 # Make Engine depend on GLFW, GLAD
-add_dependencies(BoomerangEngine glfw glad freetype)
+add_dependencies(BoomerangEngine libaswl glfw glad freetype)
 
 # Link dependencies against project executable
+target_link_libraries(main PRIVATE libaswl)                 # Link ASWL
 target_link_libraries(main PRIVATE glfw)                    # Link GLFW
 target_link_libraries(main PRIVATE glad)                    # Link GLAD
 # GLM is header only, no library to link                    # Link GLM

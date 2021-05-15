@@ -1,8 +1,8 @@
-// Project Boomerang : engine/graphics/vertex.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/vertex.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,6 +22,8 @@
 */
 
 #include "vertex.hpp"
+
+#include <ASWL/logger.hpp>
 
 namespace Boomerang::Core::Graphics {
 
@@ -43,7 +45,7 @@ namespace Boomerang::Core::Graphics {
     void Vertex::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vtxBuffer) {
 
         if (vtxBuffer->GetLayout().GetElements().size() == 0) {
-            Boomerang::Misc::Logger::logger("VA001", "Error: Vertex Buffer has no layout.");
+            ASWL::Logger::logger("VA001", "Error: Vertex Buffer has no layout.");
             return;
         }
 
@@ -67,13 +69,13 @@ namespace Boomerang::Core::Graphics {
         glad_glBindVertexArray(RendererID);
         idxBuffer->Bind();
 
-        IndexBuffer = idxBuffer;
+        ptrIndexBuffer = idxBuffer;
     }
 
     const std::vector<std::shared_ptr<VertexBuffer>>& Vertex::GetVertexBuffers() const {
         return VertexBuffers;
     }
     const std::shared_ptr<IndexBuffer>& Vertex::GetIndexBuffer() const {
-        return IndexBuffer;
+        return ptrIndexBuffer;
     }
 }

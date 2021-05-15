@@ -1,8 +1,8 @@
-// Project Boomerang : engine/graphics/renderer.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/renderer.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,16 +23,18 @@
 
 #include "renderer.hpp"
 
+// Include standard library
 #include <vector>
 
+// Include dependencies
 #include <GLM/glm/gtc/matrix_transform.hpp>
-#include <GLM/glm/gtc/color_space.hpp>
+//#include <GLM/glm/gtc/color_space.hpp>
 
+// Include boomerang libraries
 #include "manager.hpp"
 #include "shaders.hpp"
 #include "vertex.hpp"
-
-#include "../../misc/utilities.hpp"
+#include "../world/world.hpp"
 
 namespace Boomerang::Core::Graphics {
 
@@ -40,10 +42,8 @@ namespace Boomerang::Core::Graphics {
 
         RenderStorage() = default;
 
-        //std::shared_ptr<Vertex>
+        std::shared_ptr<ShaderLibrary> __shader_library;
         std::shared_ptr<Vertex> __quad_vtx_array;
-        std::shared_ptr<Shader> __basic_shader;
-        std::shared_ptr<Shader> __text_shader;
         std::shared_ptr<Texture> __white;
     };
 
@@ -71,30 +71,21 @@ namespace Boomerang::Core::Graphics {
         std::shared_ptr<IndexBuffer> __quadIB = std::make_shared<IndexBuffer>(__quad_indices, sizeof(__quad_indices) / sizeof(uint32_t));
         RenderData->__quad_vtx_array->SetIndexBuffer(__quadIB);
 
-        RenderData->__white = std::make_shared<Texture>(util::dimen2d<int>(1, 1));
+        RenderData->__white = std::make_shared<Texture>(glm::vec2(1, 1));
         uint32_t __white_data = 0xffffffff;
         RenderData->__white->SetData(&__white_data, sizeof(uint32_t));
 
-        RenderData->__basic_shader = std::make_shared<Shader>("assets/shaders/basic-vert.glsl", "assets/shaders/basic-frag.glsl");
-        RenderData->__basic_shader->Bind();
-        RenderData->__basic_shader->SetInt("u_Texture", 0);
-
-        RenderData->__text_shader = std::make_shared<Shader>("assets/shaders/text-vert.glsl", "assets/shaders/text-frag.glsl");
-        RenderData->__text_shader->Bind();
-        RenderData->__text_shader->SetInt("u_Texture", 0);
+        RenderData->__shader_library = std::make_shared<ShaderLibrary>(ShaderLibrary("assets/shaders/.shaders"));
     }
 
     void Renderer::shutdown() {
         delete RenderData;
     }
 
-    void Renderer::StartScene(const std::shared_ptr<OrthoCam>& camera) {
+    void Renderer::StartScene(const std::shared_ptr<OrthoCam>& camera, const std::string& _shader) {
 
-        RenderData->__basic_shader->Bind();
-        RenderData->__basic_shader->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
-        
-        RenderData->__text_shader->Bind();
-        RenderData->__text_shader->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
+        RenderData->__shader_library->GetMap().find(_shader)->second->Bind();
+        RenderData->__shader_library->GetMap().find(_shader)->second->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
     }
 
     void Renderer::EndScene() { }
@@ -105,66 +96,126 @@ namespace Boomerang::Core::Graphics {
     }
     void Renderer::RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
 
-        RenderData->__basic_shader->Bind();
-
-        RenderData->__basic_shader->SetFloat4("u_Color", glm::vec4(1.0f));
+        RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", glm::vec4(1.0f));
         _texture->Bind();
 
         float t_Width = static_cast<float>(_texture->GetDimensions().x) * _scale.x;
         float t_Height = static_cast<float>(_texture->GetDimensions().y) * _scale.y;
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
-        RenderData->__basic_shader->SetMat4("u_Transform", transform);
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * 
+                              glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
 
-        RenderData->__quad_vtx_array->Bind();
+        RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
+
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }
 
     // Render text functions
-    void Renderer::RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
+    void Renderer::RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
         RenderText(_string, glm::vec3(_position, 0), _scale, _color, _font);
     }
-    void Renderer::RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
+    void Renderer::RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
 
-        RenderData->__text_shader->Bind();
-        RenderData->__text_shader->SetFloat3("u_Color", _color);
+        std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("text")->second;
+        shader->SetFloat3("u_Color", _color);
 
-        for (std::string::const_iterator i = _string.begin(); i != _string.end(); i++) {
+        /* 
+         * TODO: Rewrite this horrible code. Why did I ever think it was a good idea to
+         *       bind/render a single glyph at a time? Stupid, silly Andrew. What we
+         *       SHOULD be doing is packing the relevant glyphs into a single bitmap
+         *       and then rendering that bitmap.
+         */
 
-            Character ch = _font->GetCharacters()[*i];
+        float px = _position.x;
+        float pz = _position.z;
+
+        for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
+
+            Character ch = _font->GetCharacters().find(*i)->second;
             ch.Bind();
 
-            float xPos = _position.x + ch.bearing.x + ch.size.x / 2.f;
+            float xPos = px + ch.bearing.x + ch.size.x / 2.f;
             float yPos = _position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font->GetSize() / 2.f) * 0.75f;
 
             float t_Width = static_cast<float>(ch.size.x) * _scale.x;
             float t_Height = static_cast<float>(ch.size.y) * _scale.y;
 
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, _position.z += 0.00001 }) * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
-            RenderData->__text_shader->SetMat4("u_Transform", transform);
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), { xPos, yPos, pz += 0.00001 }) * 
+                                  glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
 
-            RenderData->__quad_vtx_array->Bind();
+            shader->SetMat4("u_Transform", transform);
+
             Manager::DrawIndexed(RenderData->__quad_vtx_array);
 
-            _position.x += ((ch.advance >> 6) - (ch.bearing.x / 2.f)) * _scale.x;
+            px += ((ch.advance >> 6) - (ch.bearing.x / 2.f)) * _scale.x;
         }
     }
 
-    // Render static quad functions
+    // Draw static quad functions
     void Renderer::DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color) {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _color);
     }
     void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color) {
-        
-        RenderData->__basic_shader->Bind();
 
-        RenderData->__basic_shader->SetFloat4("u_Color", _color);
+        RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), { _size.x, _size.y, 1.0f });
-        RenderData->__basic_shader->SetMat4("u_Transform", transform);
-        RenderData->__quad_vtx_array->Bind();
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * 
+                              glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
+
+        RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
+    }
+    void Renderer::DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
+        DrawQuad({ _position.x, _position.y, 0.0f }, _size, _rotation, _color);
+    }
+    void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
+
+        RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
+        RenderData->__white->Bind();
+
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * 
+                              glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
+
+        transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
+        RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
+
+        Manager::DrawIndexed(RenderData->__quad_vtx_array);
+    }
+
+    // Render Grid (debug_mode)
+    void Renderer::RenderGrid(const glm::vec2& _WindowSize,  const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
+
+        std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("grid")->second;
+        shader->SetFloat4("u_Color", glm::vec4(1.f));
+
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 1.f)) * 
+                              glm::scale(glm::mat4(1.0f), { _WindowSize.x, _WindowSize.y, 1.0f });
+
+        shader->SetMat4("u_Transform", transform);
+        shader->SetFloat("u_CellSize", _CellSize);
+        shader->SetFloat2("u_Resolution", _WindowSize);
+        shader->SetFloat3("u_CameraPosition", _CameraPosition);
+
+        Manager::DrawIndexed(RenderData->__quad_vtx_array);
+    }
+
+    // Render Chunk (debug_mode) -> this should be called from render world
+    void Renderer::RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const float _CellSize, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _zoom) {
+
+        std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("basic")->second;
+        shader->SetFloat4("u_Color", glm::vec4(1.f));
+
+        for (auto const& [key, node] : chunk->GetMap()) {
+
+            if (node->InFrame(_CameraPosition, _WindowSize)) {
+
+                node->GetTexture()->Bind();
+                shader->SetMat4("u_Transform", node->GetTransform());
+
+                Manager::DrawIndexed(RenderData->__quad_vtx_array);
+            }
+        }
     }
 }

@@ -1,8 +1,8 @@
-// Project Boomerang : engine/graphics/vertex.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/vertex.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -59,7 +59,7 @@ namespace Boomerang::Core::Graphics {
         unsigned int VertexBufferIndex;
 
         std::vector<std::shared_ptr<VertexBuffer>> VertexBuffers;
-        std::shared_ptr<IndexBuffer> IndexBuffer;
+        std::shared_ptr<IndexBuffer> ptrIndexBuffer;
     };
 }
 

@@ -1,8 +1,8 @@
-// Project Boomerang : engine/graphics/renderer.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/renderer.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -37,6 +37,7 @@
 #include "font.hpp"
 #include "texture.hpp"
 #include "camera/orthocam.hpp"
+#include "../world/chunk.hpp"
 
 namespace Boomerang::Core::Graphics {
 
@@ -51,7 +52,7 @@ namespace Boomerang::Core::Graphics {
         static void init();
         static void shutdown();
 
-        static void StartScene(const std::shared_ptr<OrthoCam>& camera);
+        static void StartScene(const std::shared_ptr<OrthoCam>& camera, const std::string& _shader = "basic");
         static void EndScene();
 
         // Render Texture
@@ -59,12 +60,20 @@ namespace Boomerang::Core::Graphics {
         static void RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
 
         // Render Text
-        static void RenderText(const std::string _string, glm::vec2 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
-        static void RenderText(const std::string _string, glm::vec3 _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
+        static void RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
+        static void RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
 
-        // Render Static Quad
+        // Draw Static Quad
         static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
         static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
+        static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
+        static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
+
+        // Render Grid (debug_mode)
+        static void RenderGrid(const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
+
+        // Render Chunk (debug_mode) -> this should be called from render world
+        static void RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const float _CellSize, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _zoom = 1.f);
     };
 }
 

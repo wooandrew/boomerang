@@ -1,8 +1,8 @@
-// Project Boomerang : engine/graphics/shaders.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/shaders.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,10 +26,14 @@
 #ifndef BOOMERANG_ENGINE_GRAPHICS_SHADERS
 #define BOOMERANG_ENGINE_GRAPHICS_SHADERS
 
-#include <GLAD/glad.h>
-#include <GLM/glm/glm.hpp>
+// Include standard library
+#include <map>
+#include <string>
+#include <memory>
 
-#include "../../misc/logger.hpp"
+// Include dependencies
+#include <glad/glad.h>
+#include <GLM/glm/glm.hpp>
 
 namespace Boomerang::Core::Graphics {
 
@@ -55,13 +59,17 @@ namespace Boomerang::Core::Graphics {
 
         Shader() = default;
         Shader(const std::string& vtxPath, const std::string& frgPath);
+        Shader(const std::string& _name, const std::string& vtxPath, const std::string& frgPath);
 
         void init(const std::string& vtxPath, const std::string& frgPath);
+        void init(const std::string& _name, const std::string& vtxPath, const std::string& frgPath);
 
         void Bind() const;
         void Unbind() const;
 
         void SetInt(const std::string& _name, int _value);
+        void SetFloat(const std::string& _name, const float _value);
+        void SetFloat2(const std::string& _name, const glm::vec2& _value);
         void SetFloat3(const std::string& _name, const glm::vec3& _value);
         void SetFloat4(const std::string& _name, const glm::vec4& _value);
         void SetMat4(const std::string& _name, const glm::mat4& _value);
@@ -77,12 +85,36 @@ namespace Boomerang::Core::Graphics {
         void UploadUniformMat4(const std::string& _name, const glm::mat4& _matrix);
 
         // Getters
-        std::string GetName() const;
+        const std::string& GetName() const;
 
     private:
 
         unsigned int RendererID;
         std::string name;
+    };
+
+
+    // TODO
+    class ShaderLibrary {
+        
+    public:
+
+        ShaderLibrary() = default;
+        ShaderLibrary(const std::string& _LibraryPath);
+        ~ShaderLibrary();
+
+        int init(const std::string& _LibraryPath);
+
+        void AddShader(std::shared_ptr<Shader>& _shader);
+        void AddShader(const std::string& _name, const std::string& _vtxPath, const std::string& _frgPath);
+        void AddLibrary(const std::string& _LibraryPath);
+
+        const std::map<std::string, std::shared_ptr<Shader>>& GetMap() const;
+
+    private:
+
+        std::string LibraryPath;
+        std::map<std::string, std::shared_ptr<Shader>> map;
     };
 }
 

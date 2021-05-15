@@ -1,8 +1,8 @@
-// Project Boomerang : engine/graphics/camera/orthocam.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/camera/orthocam.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -32,7 +32,7 @@
 
 namespace Boomerang::Core::Graphics {
 
-    OrthoCam::OrthoCam(glm::mat4& _ProjectionMat, float _speed, bool _lock) {
+    OrthoCam::OrthoCam(const glm::mat4& _ProjectionMat, float _speed, bool _lock) {
 
         zoom = 1.f;
         speed = _speed;
@@ -49,7 +49,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Setters
-    void OrthoCam::SetZoom(float _zoom, const util::dimen2d<int>& windowSize) {
+    void OrthoCam::SetZoom(float _zoom, const glm::vec2& windowSize) {
 
         if (_zoom > 0.0f) {
 
@@ -76,7 +76,7 @@ namespace Boomerang::Core::Graphics {
         lock = _lock;
     }
 
-    void OrthoCam::SetProjection(glm::mat4& _projection) {
+    void OrthoCam::SetProjection(const glm::mat4& _projection) {
         ProjectionMatrix = _projection;
         ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
     }
@@ -114,6 +114,7 @@ namespace Boomerang::Core::Graphics {
 
         if (!lock) {
 
+            // TODO: Remove trig movement
             if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W)) {               // UP
                 position.x -= std::sin(glm::radians(rotation)) * speed * dt;
                 position.y += std::cos(glm::radians(rotation)) * speed * dt;

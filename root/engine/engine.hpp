@@ -1,8 +1,8 @@
-// Project Boomerang : engine/engine.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/engine.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -31,11 +31,10 @@
 #include <vector>
 
 // Include dependencies
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-// Include boomerang libraries
-#include "../misc/utilities.hpp"
+#include <GLM/glm/glm.hpp>
+#include <ASWL/utilities.hpp>
 
 namespace Boomerang::Core {
 
@@ -46,7 +45,7 @@ namespace Boomerang::Core {
     public:
 
         // Constructor
-        Engine(std::string _WindowTitle = "Boomerang", util::dimen2d<int> _WindowDimensions = util::dimen2d<int>(1000, 618));
+        Engine(const std::string& _WindowTitle = "Boomerang", const glm::vec2& _WindowDimensions = glm::vec2(1000, 618));
 
         // Destructor
         ~Engine();
@@ -61,6 +60,7 @@ namespace Boomerang::Core {
             bool autoinit = true;               // Automatically initialize engine components
             bool debugmode = false;             // Enable debug mode
             bool loggingEnabled = true;         // Enable logging
+            bool fullscreenmode = true;         // Enable full screen mode
 
             std::vector<float> clearcolor = { 1.f, 1.f, 1.f, 0.f };     // Render surface clear color
             //RendererType rendermode = RendererType::Render_2D;        // Engine render mode
@@ -68,8 +68,9 @@ namespace Boomerang::Core {
             //Version version;                                // Application version
 
             // GLFW window initialization metadata
-            std::vector<std::pair<int, int>> windowHints{ { std::make_pair(GLFW_CLIENT_API, GLFW_OPENGL_API),       // Window hints _ default (GLFW_CLIENT_API, GLFW_OPENGL_API)
-                                                            std::make_pair(GLFW_RESIZABLE, GLFW_FALSE) } };         // Window hints _ default (GLFW_RESIZABLE, GLFW_FALSE)
+            std::vector<std::pair<int, int>> windowHints { { std::make_pair(GLFW_CLIENT_API, GLFW_OPENGL_API),      // Window hints _ default (GLFW_CLIENT_API, GLFW_OPENGL_API)
+                                                             std::make_pair(GLFW_RESIZABLE, GLFW_TRUE),             // Window hints _ default (GLFW_RESIZABLE, GLFW_FALSE)
+                                                             std::make_pair(GLFW_SAMPLES, 4) } };                   // Window hints _ default (GLFW_SAMPLES, 4)
 
         }; Metadata metadata;
 
@@ -78,14 +79,18 @@ namespace Boomerang::Core {
 
         // Getters
         GLFWwindow* GetWindow();
-        const util::dimen2d<int> GetWindowDimensions() const;
+        const glm::vec2& GetWindowDimensions() const;
+        const glm::vec2& GetFramebufferDimensions() const;
 
     private:
+
+        void SetWindowSize(int _width, int _height);
 
         GLFWwindow* window;
 
         std::string WindowTitle;
-        util::dimen2d<int> WindowDimensions;
+        glm::vec2 WindowDimensions;
+        glm::vec2 FramebufferDimensions;
     };
 }
 

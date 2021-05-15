@@ -1,8 +1,8 @@
-# Project Boomerang (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+# Project Boomerang (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 # Modified MIT License
 # 
-# Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+# Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 # 
 #  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
 #  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -33,7 +33,7 @@ project(boomerang VERSION ${PROJECT_VERSION} DESCRIPTION ${PROJECT_DESCRIPTION})
 find_package(OpenGL REQUIRED)
 
 # Set up defaults
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -42,11 +42,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # set(VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/root/)          # this crap doesnt work whyyyyyyyyyyy
 
 # Include directories
+include_directories("${CMAKE_SOURCE_DIR}/includes/ASWL/root/include")
 include_directories("${CMAKE_SOURCE_DIR}/includes/GLFW/include")
 include_directories("${CMAKE_SOURCE_DIR}/includes/GLAD/include")
 include_directories("${CMAKE_SOURCE_DIR}/includes/FREETYPE/include")
+
 include_directories("${CMAKE_SOURCE_DIR}/includes")
 
+add_subdirectory("includes/ASWL")
 add_subdirectory("includes/GLFW")
 add_subdirectory("includes/GLAD-master")
 add_subdirectory("includes/GLM")

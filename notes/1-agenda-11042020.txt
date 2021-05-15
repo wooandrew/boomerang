@@ -1,0 +1,61 @@
+Project Boomerang Dev Meeting - 11/04/2020
+---------------------------------------------------------------------------------
+
+Agenda:
+
+- Administrative stuff
+    > Review license
+    > Review logo
+    > Review Code of Conduct
+    > Review Contributing
+    > Review Contact info
+    > Start project wiki
+    > GitHub pages
+    > Discuss collaborator positions
+    > Stuff to install
+        # git
+        # cmake
+        # python 3.8
+
+- Git review
+    > git checkout
+    > git submodules
+- Git workflow review
+    > master branch
+    > develop branch
+    > feature/other branch
+    > Commit message style
+    > Pull requests
+- GitHub actions
+    > cmake.yml
+    > code review/linting python
+
+- Development
+    > Look into C++20, for now C++17
+    > Rough timeline
+        # Week 1: Start engine
+        # Week 2: Develop code linter/review & integrate with GitHub actions
+        # Week 3: Finish engine & and release build 1 (base engine)
+        # Week 4: Object design -> modular programming
+        # Week 5: Start integrating objects and base features
+        # Week X: Introduce Lua scripting
+    ->  Release major builds
+    > C++ style guide
+        # File extensions
+        # Core C++ style
+        # Header guards
+    > CMake basics
+        # Adding header files
+        # Adding libraries
+        # Adding executables
+    > Integrating dependencies
+        # Building on Windows
+        # Automated build system?
+    > Folder structure
+    > Visual Studio
+        # Cloning and commiting directly
+        # Live share
+        # Local project building
+---------------------------------------------------------------------------------
+
+Meeting Notes:

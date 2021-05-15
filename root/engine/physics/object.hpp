@@ -1,0 +1,105 @@
+// Project Boomerang : engine/physics/object.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+
+/* Modified MIT License
+ *
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * Restrictions:
+ >  The Software may not be sold unless significant, mechanics changing modifications are made by the seller, or unless the buyer
+ >  understands an unmodified version of the Software is available elsewhere free of charge, and agrees to buy the Software given
+ >  this knowledge.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+#pragma once
+
+#ifndef BOOMERANG_ENGINE_PHYSICS_OBJECT
+#define BOOMERANG_ENGINE_PHYSICS_OBJECT
+
+// Include standard library
+#include <vector>
+#include <memory>
+
+// Include dependencies
+#include <GLM/glm/glm.hpp>
+
+// Include boomerang libraries
+#include "../graphics/texture.hpp"
+#include "rigidbody.hpp"
+
+namespace Boomerang::Core::Physics {
+
+    // TODO: Object class should inherit from Serializable class
+    class Object {
+
+        /// Inheritable object base class. All objects should inherit from this class.
+
+        /*
+         * This class is a virtual class. All video game objects 
+         * should inherit from this class. No object should directly 
+         * be instantiated using this class as its type; all objects
+         * should be instantiated via inherited classes.
+         */
+
+    public:
+
+        // Constructor
+        Object(glm::vec3& _position, glm::vec2& _size, glm::vec4& _color, std::shared_ptr<Graphics::Texture> _texture = nullptr);
+
+        // Destructor
+        virtual ~Object() = 0;
+
+        // Setters
+        void SetRotation(const float _rotation);
+        void SetSize(const glm::vec2& _size);
+        void SetScale(const glm::vec2& _scale);
+        void SetPosition(const glm::vec3& _position);
+        void SetColor(const glm::vec4& _color);
+        void SetVisible(bool _visible);
+
+        // Getters
+        const float GetRotation() const;
+        const glm::vec2& GetSize() const;
+        const glm::vec2& GetScale() const;
+        const glm::vec3& GetPosition() const;
+        const glm::vec4& GetColor() const;
+        const std::vector<std::string>& GetTags() const;
+
+        const bool GetVisible() const;
+		
+		// Functions
+		virtual void update() = 0;
+        virtual void interact() = 0;
+        virtual int serialize() = 0;
+		
+    protected:
+
+        float rotation;         // in degrees
+        glm::vec2 size;         // { w, h }
+        glm::vec2 scale;        // { x, y }
+        glm::vec3 position;     // { x, y, z }
+        glm::vec4 color;        // { r, g, b, a } // ?? is color necessary ? Color should be handled via shaders
+
+        std::shared_ptr<Boomerang::Core::Graphics::Texture> texture;
+        std::shared_ptr<Rigidbody> rigidbody;
+
+        bool visible;           // visibility determines render mode
+        bool DisplayVertices;   // to be deprecated; handled by Rigidbody
+
+        int id;                             // Object ID
+        std::string DisplayName;            // This Cool Item
+        std::vector<std::string> tags;      // Object medadata
+    };
+}
+
+#endif // !BOOMERANG_ENGINE_PHYSICS_OBJECT

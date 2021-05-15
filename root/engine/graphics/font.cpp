@@ -1,8 +1,8 @@
-// Project Boomerang : engine/graphics/font.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/font.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,10 +28,8 @@
 #include <fstream>
 
 // Include dependencies
-#include <GLAD/glad.h>
-
-// Include boomerang libraries
-#include "../../misc/logger.hpp"
+#include <glad/glad.h>
+#include <ASWL/logger.hpp>
 
 namespace Boomerang::Core::Graphics {
 
@@ -54,13 +52,13 @@ namespace Boomerang::Core::Graphics {
         
         FT_Library library;
         if (FT_Init_FreeType(&library)) {
-            Boomerang::Misc::Logger::logger("F0000", "Error: Failed to initialize FreeType2.");
+            ASWL::Logger::logger("F0000", "Error: Failed to initialize FreeType2.");
             return 1;
         }
 
         FT_Face face;
         if (FT_New_Face(library, _FontPath.c_str(), 0, &face)) {
-            Boomerang::Misc::Logger::logger<std::string, std::string>("F0001", "Error: Failed to load font face [", _FontPath, "].");
+            ASWL::Logger::logger("F0001", "Error: Failed to load font face [", _FontPath, "].");
             return 2;
         }
 
@@ -74,7 +72,7 @@ namespace Boomerang::Core::Graphics {
 
             // Load glyph 
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-                Boomerang::Misc::Logger::logger<std::string, std::string>("F0002", "Error: Failed to load glyph [", std::to_string(c), "].");
+                ASWL::Logger::logger("F0002", "Error: Failed to load glyph [", std::to_string(c), "].");
                 continue;
             }
 
@@ -109,7 +107,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Getters
-    std::map<char, Character> Font::GetCharacters() const {
+    const std::map<char, Character>& Font::GetCharacters() const {
         return characters;
     }
 

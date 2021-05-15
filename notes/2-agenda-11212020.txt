@@ -1,0 +1,43 @@
+Project Boomerang Dev Meeting - 11/21/2020
+---------------------------------------------------------------------------------
+
+Agenda:
+
+- Administrative Stuff
+    > Review changes
+    > Review linter
+    > Code review
+    > Going into week 3
+
+- Development
+    > Merging and Release v0.1.0-alpha
+    > Partial Engine Completed
+    > Stuff left to implement in Engine
+        # Text rendering
+        # UI Elements -> imgui
+        # Sprites & Spritesheets
+        # Physics
+        # Objects
+        # Terrain generation
+    > Stuff to implement in main game
+        # Game Manager
+        # Settings
+        # Decide on save file format
+        # Decide on save file encryption
+    > Review Python Scripts
+        # rm.py
+        # mv.py
+        # nclass.py
+    > Storyboarding!
+        # "Home base" design
+        # Beginner quests
+        # Style design
+---------------------------------------------------------------------------------
+
+Meeting Notes:
+-> Passive Regeneration
+-> Poitions/Food for regen
+-> Wizard/mentor -> turns into a chicken
+-> Chief Normal Weapons tutorial
+-> Mother sends protagonist to chief/or market
+-> Player House -> Chief of Village -> Wizard

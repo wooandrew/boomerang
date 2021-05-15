@@ -1,8 +1,8 @@
-// Project Boomerang : engine/engine.cpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/engine.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,15 +26,16 @@
 #include "input/mouse.hpp"
 #include "input/keyboard.hpp"
 
-#include "../misc/logger.hpp"
+#include <ASWL/logger.hpp>
 
 namespace Boomerang::Core {
 
     // Define default engine constructor
-    Engine::Engine(std::string _WindowTitle, util::dimen2d<int> _WindowDimensions) {
+    Engine::Engine(const std::string& _WindowTitle, const glm::vec2& _WindowDimensions) {
 
         WindowTitle = _WindowTitle;
         WindowDimensions = _WindowDimensions;
+        FramebufferDimensions = glm::vec2(0);
     }
     // Define defalt engine destructor
     Engine::~Engine() {
@@ -46,11 +47,12 @@ namespace Boomerang::Core {
 
         // Initialize GLFW
         if (!glfwInit()) {
-            Boomerang::Misc::Logger::logger("E0001", "Fatal Error: Failed to initialize GLFW -> !glfwInit().");
+            ASWL::Logger::logger("E0001", "Fatal Error: Failed to initialize GLFW -> !glfwInit().");
             return 1;
         }
 
-        // Set the window hints using engine metadata. Defaulted to (GLFW_CLIENT_API, GLFW_OPENGL_API) and (GLFW_RESIZABLE, GLFW_FALSE).                    
+        // Set the window hints using engine metadata. Defaulted to (GLFW_CLIENT_API, GLFW_OPENGL_API), 
+        // (GLFW_RESIZABLE, GLFW_FALSE), and (GLFW_SAMPLES, 4).
         for (const auto& hint : metadata.windowHints)
             glfwWindowHint(hint.first, hint.second);
 
@@ -58,7 +60,7 @@ namespace Boomerang::Core {
         window = glfwCreateWindow(WindowDimensions.x, WindowDimensions.y, WindowTitle.c_str(), NULL, NULL);
         if (!window) {
             
-            Boomerang::Misc::Logger::logger("E0002", "Fatal Error: Failed to create window -> !glfwCreateWindow().");
+            ASWL::Logger::logger("E0002", "Fatal Error: Failed to create window -> !glfwCreateWindow().");
             glfwTerminate();
 
             return 2;
@@ -70,7 +72,7 @@ namespace Boomerang::Core {
         // Initialize GLAD
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 
-            Boomerang::Misc::Logger::logger("E0003", "Fatal Error: Failed to initialize GLAD -> !gladLoadGLLoader().");
+            ASWL::Logger::logger("E0003", "Fatal Error: Failed to initialize GLAD -> !gladLoadGLLoader().");
             glfwTerminate();
 
             return 3;
@@ -78,9 +80,9 @@ namespace Boomerang::Core {
 
         // Framebuffer initialization
         int width = 0;
-        int height = 0;
-
+        int height = 0;        
         glfwGetFramebufferSize(window, &width, &height);
+        FramebufferDimensions = glm::vec2(width, height);
         glfwSwapInterval(1);
 
         // Window Setup
@@ -90,14 +92,19 @@ namespace Boomerang::Core {
         glfwSetWindowPos(window, xPos, yPos);
 
         // Full screen
-        //glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+        if (metadata.fullscreenmode) {
+
+            glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+            SetWindowSize(mode->width, mode->height);
+            glad_glViewport(0, 0, mode->width, mode->height);
+        }
+        else // To be deprecated
+            glfwSetWindowSizeLimits(window, WindowDimensions.x, WindowDimensions.y, WindowDimensions.x, WindowDimensions.y);
 
         // Input Callback
         glfwSetCursorPosCallback(window, Boomerang::Core::Input::Mouse::MousePositionCallback);
         glfwSetMouseButtonCallback(window, Boomerang::Core::Input::Mouse::MouseButtonCallback);
         glfwSetKeyCallback(window, Boomerang::Core::Input::Keyboard::KeyCallback);
-
-        glfwSetWindowSizeLimits(window, WindowDimensions.x, WindowDimensions.y, WindowDimensions.x, WindowDimensions.y);
 
         return 0;
     }
@@ -107,12 +114,22 @@ namespace Boomerang::Core {
         glfwPollEvents();
     }
 
+    // Private member functions
+    void Engine::SetWindowSize(int _width, int _height) {
+        glfwSetWindowSize(window, _width, _height);
+        WindowDimensions = { _width, _height };
+    }
+
     // Getters
     GLFWwindow* Engine::GetWindow() {
         return window;
     }
 
-    const util::dimen2d<int> Engine::GetWindowDimensions() const {
+    const glm::vec2& Engine::GetWindowDimensions() const {
         return WindowDimensions;
+    }
+
+    const glm::vec2& Engine::GetFramebufferDimensions() const {
+        return FramebufferDimensions;
     }
 }

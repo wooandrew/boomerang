@@ -1,0 +1,3 @@
+basic;assets/shaders/basic-frag.glsl;assets/shaders/basic-vert.glsl
+text;assets/shaders/text-frag.glsl;assets/shaders/text-vert.glsl
+grid;assets/shaders/grid-frag.glsl;assets/shaders/grid-vert.glsl

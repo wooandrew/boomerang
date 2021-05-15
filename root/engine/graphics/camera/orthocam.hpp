@@ -1,8 +1,8 @@
-// Project Boomerang : engine/graphics/camera/orthocam.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/graphics/camera/orthocam.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,9 +29,6 @@
 // Include dependencies
 #include <GLM/glm/glm.hpp>
 
-// Include boomerang libraries
-#include "../../../misc/utilities.hpp"
-
 namespace Boomerang::Core::Graphics {
 
     class OrthoCam {
@@ -42,17 +39,17 @@ namespace Boomerang::Core::Graphics {
 
         // Constructors
         OrthoCam() = default;
-        OrthoCam(glm::mat4& _ProjectionMat, float _speed = 0, bool _lock = false);
+        OrthoCam(const glm::mat4& _ProjectionMat, float _speed = 0, bool _lock = false);
         
         // Setters
-        void SetZoom(float _zoom, const util::dimen2d<int>& windowSize);
+        void SetZoom(float _zoom, const glm::vec2& windowSize);
         void SetSpeed(float _speed);
         void SetRotation(float _rotation);
         void SetPosition(glm::vec3& _position);
 
         void SetLock(bool _lock);
 
-        void SetProjection(glm::mat4& _projection);
+        void SetProjection(const glm::mat4& _projection);
 
         // Getters
         const float GetSpeed() const;

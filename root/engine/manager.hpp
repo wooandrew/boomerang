@@ -1,8 +1,8 @@
-// Project Boomerang : engine/manager.hpp (c) 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+// Project Boomerang : engine/manager.hpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 /* Modified MIT License
  *
- * Copyright 2020 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,15 +28,13 @@
 
 // Include dependencies
 #include <GLFW/glfw3.h>
-
-// Include boomerang libraries
-#include "../misc/utilities.hpp"
+#include <ASWL/utilities.hpp>
 
 namespace Boomerang::Core {
 
     class Manager {
 
-        /// This class manages background tasks for the game.
+        /// This class manages background tasks for the game. Process Manager.
 
     public:
 
@@ -51,11 +49,12 @@ namespace Boomerang::Core {
         const bool run(GLFWwindow* window) const;
         void update();
 
+        // Getters
         const float dt();
 
     private:
 
-        Boomerang::Misc::Utilities::DeltaTime DeltaTime;
+        ASWL::Utilities::DeltaTime DeltaTime;
     };
 }
 

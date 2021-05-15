@@ -1,0 +1,143 @@
+// Project Boomerang : engine/world/node.cpp (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+
+/* Modified MIT License
+ *
+ * Copyright 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * Restrictions:
+ >  The Software may not be sold unless significant, mechanics changing modifications are made by the seller, or unless the buyer
+ >  understands an unmodified version of the Software is available elsewhere free of charge, and agrees to buy the Software given
+ >  this knowledge.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+#include "node.hpp"
+#include <iostream>
+
+// Include dependencies
+#include <GLM/glm/gtc/matrix_transform.hpp>
+
+// Include boomerang libraries
+#include "world.hpp"
+
+namespace Boomerang::Core::World {
+
+    Node::Node(const glm::vec3& _position, const glm::vec2& _size, const glm::vec2& _scale) {
+        
+        position = _position;
+        size = _size;
+        scale = _scale;
+
+        //texture = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
+        rigidbody = std::make_shared<Boomerang::Core::Physics::Rigidbody>(GridToPixelCoord(position, size.x), size, scale);
+
+        if (texture != nullptr)
+            UpdateTransform();
+
+        biome = BIOME::OCEAN;
+    }
+
+    Node::~Node() { };
+
+    void Node::UpdateTransform() {
+
+        float t_Width = static_cast<float>(texture->GetDimensions().x) * scale.x;
+        float t_Height = static_cast<float>(texture->GetDimensions().y) * scale.y;
+
+        transform = glm::translate(glm::mat4(1.0f), Boomerang::Core::World::GridToPixelCoord(position, size.x))
+            * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+    }
+
+    // Setters
+    void Node::SetPosition(const glm::vec3& _position) {
+        position = _position;
+        UpdateTransform();
+    }
+    void Node::SetSize(const glm::vec2& _size) {
+        size = _size;
+        UpdateTransform();
+    }
+    void Node::SetScale(const glm::vec2& _scale) {
+        scale = _scale;
+        UpdateTransform();
+    }
+    void Node::SetTexture(const std::shared_ptr<Boomerang::Core::Graphics::Texture>& _texture) {
+        texture = _texture;
+        UpdateTransform();
+    }
+    void Node::SetBiome(const BIOME _biome, const BIOME_TEXTURES bt) {
+        
+        biome = _biome;
+
+        if (biome == BIOME::POLAR)
+            SetTexture(bt.POLAR);
+        if (biome == BIOME::TUNDRA)
+            SetTexture(bt.TUNDRA);
+        if (biome == BIOME::BORL_FOREST)
+            SetTexture(bt.BORL_FOREST);
+        if (biome == BIOME::COLD_DESERT)
+            SetTexture(bt.COLD_DESERT);
+        if (biome == BIOME::PLAINS)
+            SetTexture(bt.PLAINS);
+        if (biome ==  BIOME::TEMP_FOREST)
+            SetTexture(bt.TEMP_FOREST);
+        if (biome ==  BIOME::WARM_DESERT)
+            SetTexture(bt.WARM_DESERT);
+        if (biome ==  BIOME::GRASSLAND)
+            SetTexture(bt.GRASSLAND);
+        if (biome ==  BIOME::SAVANNA)
+            SetTexture(bt.SAVANNA);
+        if (biome ==  BIOME::TROP_FOREST)
+            SetTexture(bt.TROP_FOREST);
+        if (biome ==  BIOME::RAIN_FOREST)
+            SetTexture(bt.RAIN_FOREST);
+        if (biome ==  BIOME::OCEAN)
+            SetTexture(bt.OCEAN);
+    }
+
+    // Getters
+    const glm::vec3& Node::GetPosition() const {
+        return position;
+    }
+
+    const glm::vec2& Node::GetSize() const {
+        return size;
+    }
+
+    const glm::vec2& Node::GetScale() const {
+        return scale;
+    }
+
+    const std::shared_ptr<Boomerang::Core::Graphics::Texture> Node::GetTexture() const {
+        return texture;
+    }
+    
+    const glm::mat4& Node::GetTransform() const {
+        return transform;
+    }
+
+    bool Node::InFrame(const glm::vec3& _position, const glm::vec2& _windowSize) {
+        
+        glm::vec3 p = PixelToGridCoord(_position, size.x);
+
+        float xMax = std::round((_position.x + _windowSize.x / 2) / size.x) + 1;
+        float xMin = std::round((_position.x - _windowSize.x / 2) / size.x) - 1;
+        float yMax = std::round((_position.y + _windowSize.y / 2) / size.y) + 1;
+        float yMin = std::round((_position.y - _windowSize.y / 2) / size.y) - 1;
+
+        if (position.x > xMax || position.x < xMin || position.y > yMax || position.y < yMin)
+            return false;
+
+        return true;
+    }
+}
