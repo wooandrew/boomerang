@@ -47,8 +47,9 @@ namespace Boomerang::Core::World {
 
     public:
 
-        Chunk(const glm::vec3& _position, const float _CellSize, const float _scale);
-        Chunk(const glm::vec3& _position, const glm::vec2& _CellSize, const glm::vec2& _scale);
+        Chunk() = delete;
+        Chunk(const glm::vec3& _position, const float _CellSize, const float _scale, const VoronoiPoint& _vp);
+        Chunk(const glm::vec3& _position, const glm::vec2& _CellSize, const glm::vec2& _scale, const VoronoiPoint& _vp);
         ~Chunk();
 
         // Getters
@@ -66,7 +67,10 @@ namespace Boomerang::Core::World {
 
         std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Node>> map;       // 64 nodes per chunk
 
-        glm::vec3 position;     // Must be stored as a grid coord, not pixel coord
+        glm::vec3 position;         // Must be stored as a grid coord, not pixel coord
+        glm::vec2 ChunkCoord;       // Normalized chunk coordinates
+
+        VoronoiPoint vp;
     };
 }
 

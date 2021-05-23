@@ -71,6 +71,8 @@ namespace Boomerang::Core::World {
         OCEAN
     };
 
+    std::ostream& operator<< (std::ostream& stream, const BIOME& biome);
+
     struct BIOME_TEXTURES {
         std::shared_ptr<Boomerang::Core::Graphics::Texture> test;
         std::shared_ptr<Boomerang::Core::Graphics::Texture> POLAR;
@@ -85,11 +87,36 @@ namespace Boomerang::Core::World {
         std::shared_ptr<Boomerang::Core::Graphics::Texture> TROP_FOREST;
         std::shared_ptr<Boomerang::Core::Graphics::Texture> RAIN_FOREST;
         std::shared_ptr<Boomerang::Core::Graphics::Texture> OCEAN;
+
+        const std::shared_ptr<Boomerang::Core::Graphics::Texture>& GetBiomeTexture(BIOME biome) const;
     };
 
-    const BIOME DetermineBiome(std::mt19937_64& mte, const glm::vec2& position, 
+    const BIOME DetermineBiome(const glm::vec2& position, 
+                               const std::vector<std::function<float(int, int)>>& nh,
                                const std::vector<std::function<float(int, int)>>& nt,
                                const std::vector<std::function<float(int, int)>>& nr);
+
+    struct VoronoiPoint {
+
+        VoronoiPoint() = default;
+
+        VoronoiPoint(const glm::vec2& _ChunkCoord,
+                     const std::function<glm::vec2(int, int)>& vf,
+                     const std::vector<std::function<float(int, int)>>& nh,
+                     const std::vector<std::function<float(int, int)>>& nt,
+                     const std::vector<std::function<float(int, int)>>& nr);
+
+        static std::pair<BIOME, std::shared_ptr<Boomerang::Core::Graphics::Texture>> 
+                        ClosestBiome(const glm::vec2& node, const VoronoiPoint& vp, const BIOME_TEXTURES& bt);
+
+        glm::vec2 TrueNode;
+        glm::vec2 ChunkCoord;
+
+        std::vector<glm::vec2> SurroundingVoronoi;
+        std::vector<BIOME> SurroundingBiomes;
+
+        BIOME biome;
+    };
 }
 
 #endif // !BOOMERANG_ENGINE_WORLD_WORLD

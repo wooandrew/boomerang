@@ -67,11 +67,11 @@ add_library(
     "engine/world/node.hpp"                         "engine/world/node.cpp"
 )
 
+# Make Engine depend on GLFW, GLAD, ASWL, FREETYPE
+add_dependencies(BoomerangEngine libaswl glfw glad freetype)
+
 # Link engine against main
 target_link_libraries(main PRIVATE BoomerangEngine)
-
-# Make Engine depend on GLFW, GLAD
-add_dependencies(BoomerangEngine libaswl glfw glad freetype)
 
 # Link dependencies against project executable
 target_link_libraries(main PRIVATE libaswl)                 # Link ASWL

@@ -104,6 +104,8 @@ int main(int argc, char* argv[]) {
 
     ASWL::Utilities::FramesPerSecond::UpdateFPS();
 
+    //__camera_1->SetZoom(5.0, engine.GetWindowDimensions());
+
     while (manager.run(engine.GetWindow())) {
 
         if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_Q))                 // QUIT
@@ -150,7 +152,7 @@ int main(int argc, char* argv[]) {
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 2wv0.1.0-pre.3-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), nsjpl_56);
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 1wv0.1.0-pre.4-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), nsjpl_56);
         Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps), { 885, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
         Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { -130, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
         Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(WorldGrid.GetMap().size()), { -140, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);

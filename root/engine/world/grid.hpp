@@ -70,8 +70,11 @@ namespace Boomerang::Core::World {
         std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>> map;     // Loaded chunk map
 
         std::mt19937_64 mte;
+        std::vector<std::function<float(int, int)>> HeightNoises;
         std::vector<std::function<float(int, int)>> TempNoises;
         std::vector<std::function<float(int, int)>> RainNoises;
+
+        std::function<glm::vec2(int, int)> VoronoiFunction;
 
         glm::vec3 LastPosition;
 

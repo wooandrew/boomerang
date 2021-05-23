@@ -25,10 +25,8 @@
 
 // Include standard library
 #include <iostream>
-#include <future>
 #include <thread>
 #include <chrono>
-#include <utility>
 
 // Include boomerang libraries
 #include "../math/math.hpp"
@@ -47,8 +45,24 @@ namespace Boomerang::Core::World {
         seed = mte();                       // Randomly generate seed, which is seeded by current_time
         mte = std::mt19937_64(seed);        // Create a Mersenne Twister (19937_64) generator
 
-        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 9);
-        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
+        HeightNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
+        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
+        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
+
+        int mult = mte() % 100;
+
+        VoronoiFunction = [=](int _x, int _y) {
+
+            int n = _x + _y * static_cast<int>(mult);
+            n ^= n >> 4 | n << 4;
+
+            n %= 64;
+
+            int nX = n % 8;
+            int nY = n / 8;
+
+            return glm::vec2(nX - 3, nY - 4);
+        };
 
         LastPosition = { 0, 0, 0 };
     }
@@ -60,8 +74,9 @@ namespace Boomerang::Core::World {
 
         mte = std::mt19937_64(seed);        // Create a Mersenne Twister (19937_64) generator
 
-        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
-        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
+        HeightNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
+        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
+        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
 
         LastPosition = { 0, 0, 0 };
     }
@@ -147,13 +162,21 @@ namespace Boomerang::Core::World {
 
                 for (int y = yMinCC * 8; y <= yMaxCC * 8; y += 8) {
                     for (int x = xMinCC * 8; x <= xMaxCC * 8; x += 8) {
+
                         ASWL::eXperimental::SetHash hash(x, y);
+
                         if (cpy.count(hash) == 0) {
 
                             glm::vec3 p = { static_cast<int>(hash.x.to_ulong()), static_cast<int>(hash.y.to_ulong()), _position.z };
-                            cpy.insert({ hash, std::make_shared<Chunk>(p, CellSize, 80.f / 125.f) });
-                            for (auto const& [key, val] : cpy[hash]->GetMap())
-                                val->SetBiome(DetermineBiome(mte, { val->GetPosition().x, val->GetPosition().y }, TempNoises, RainNoises), bt);
+
+                            VoronoiPoint vp({ p.x / 8, p.y / 8 }, VoronoiFunction, HeightNoises, TempNoises, RainNoises);
+                            cpy.insert({ hash, std::make_shared<Chunk>(p, CellSize, 80.f / 125.f, vp) });
+
+                            for (auto const& [key, val] : cpy[hash]->GetMap()) {
+                                std::pair<BIOME, std::shared_ptr<Boomerang::Core::Graphics::Texture>> pa;
+                                pa = VoronoiPoint::ClosestBiome({ val->GetPosition().x, val->GetPosition().y }, vp, bt);
+                                val->SetBiome(pa.first, pa.second);
+                            }
                         }
                     }
                 }
@@ -171,11 +194,16 @@ namespace Boomerang::Core::World {
     void Grid::GenerateChunk(const glm::vec3& _position) {
 
         ASWL::eXperimental::SetHash hash(_position.x, _position.y);
-        Chunk c(_position, CellSize, 80.f / 125.f);
-        map.insert({ hash, std::make_shared<Chunk>(c) });
+
+        VoronoiPoint vp({ _position.x / 8, _position.y / 8 }, VoronoiFunction, HeightNoises, TempNoises, RainNoises);
+        map.insert({ hash, std::make_shared<Chunk>(_position, CellSize, 80.f / 125.f, vp) });
         
-        for (auto const& [key, val] : map[hash]->GetMap())
-            val->SetBiome(DetermineBiome(mte, { val->GetPosition().x, val->GetPosition().y }, TempNoises, RainNoises), bt);
+        for (auto const& [key, val] : map[hash]->GetMap()) {
+            std::pair<BIOME, std::shared_ptr<Boomerang::Core::Graphics::Texture>> p;
+            p = VoronoiPoint::ClosestBiome({ val->GetPosition().x, val->GetPosition().y }, vp, bt);
+            val->SetBiome(p.first, p.second);
+        }
+            
     }
 
     void Grid::LoadChunk(const ASWL::eXperimental::SetHash& hash, const float layer) {

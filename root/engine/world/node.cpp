@@ -75,34 +75,9 @@ namespace Boomerang::Core::World {
         texture = _texture;
         UpdateTransform();
     }
-    void Node::SetBiome(const BIOME _biome, const BIOME_TEXTURES bt) {
-        
+    void Node::SetBiome(const BIOME _biome, const std::shared_ptr<Boomerang::Core::Graphics::Texture>& _texture) {
         biome = _biome;
-
-        if (biome == BIOME::POLAR)
-            SetTexture(bt.POLAR);
-        if (biome == BIOME::TUNDRA)
-            SetTexture(bt.TUNDRA);
-        if (biome == BIOME::BORL_FOREST)
-            SetTexture(bt.BORL_FOREST);
-        if (biome == BIOME::COLD_DESERT)
-            SetTexture(bt.COLD_DESERT);
-        if (biome == BIOME::PLAINS)
-            SetTexture(bt.PLAINS);
-        if (biome ==  BIOME::TEMP_FOREST)
-            SetTexture(bt.TEMP_FOREST);
-        if (biome ==  BIOME::WARM_DESERT)
-            SetTexture(bt.WARM_DESERT);
-        if (biome ==  BIOME::GRASSLAND)
-            SetTexture(bt.GRASSLAND);
-        if (biome ==  BIOME::SAVANNA)
-            SetTexture(bt.SAVANNA);
-        if (biome ==  BIOME::TROP_FOREST)
-            SetTexture(bt.TROP_FOREST);
-        if (biome ==  BIOME::RAIN_FOREST)
-            SetTexture(bt.RAIN_FOREST);
-        if (biome ==  BIOME::OCEAN)
-            SetTexture(bt.OCEAN);
+        SetTexture(_texture);
     }
 
     // Getters
