@@ -23,25 +23,127 @@
 
 #include "manager.hpp"
 
+// Include dependencies
+#include <GLM/glm/gtc/matrix_transform.hpp>
+#include <ASWL/logger.hpp>
+
+// Include boomerang libraries
+#include "input/mouse.hpp"
+#include "input/keyboard.hpp"
+#include "graphics/manager.hpp"
+#include "graphics/renderer.hpp"
+
 namespace Boomerang::Core {
 
     Manager::Manager() {
+        DefaultCameraOrtho = glm::ortho(-500, 500, -309, 309);
         state = GAME_STATE::RUN;
     }
 
     Manager::~Manager() {
         state = GAME_STATE::STOP;
+        //shutdown();
     }
 
-    const bool Manager::run(GLFWwindow* window) const {
-        return !glfwWindowShouldClose(window) && state == GAME_STATE::RUN;
+    int Manager::init() {
+
+        // Initialize the game engine
+        if (engine.init() != 0) {
+            ASWL::Logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
+            return -1;
+        }
+        else
+            ASWL::Logger::logger("  E  ", "Engine initialization success. All systems go!");
+
+        // Initialize mouse with origin
+        Input::Mouse::init({ engine.GetWindowDimensions().x / 2, engine.GetWindowDimensions().y / 2 });
+
+        // Initialize graphics manager
+        Graphics::Manager::init();
+
+        // Initialize 2d renderer
+        Graphics::Renderer::init();
+
+        // Set default camera ortho to fit window dimensions
+        DefaultCameraOrtho = glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
+                                        -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f);
+
+        // Create default cameras (main, text, debug/grid)
+        cameras.insert({ "main_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
+        cameras.insert({ "grid_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
+        cameras.insert({ "text_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
+
+        // Lock grid_0 & text_0 camera so it doesn't move
+        cameras["grid_0"]->SetLock(true);
+        cameras["text_0"]->SetLock(true);
+
+        // Create default fonts
+        FontLibrary.insert({ "nsjpl", std::make_unique<Graphics::FontLibrary>("nsjpl", "assets/fonts/nsjpl.otf") });
+        FontLibrary["nsjpl"]->AddSize(32);
+        FontLibrary["nsjpl"]->AddSize(56);
+
+        // Generate Terrain /// this will later be replaced so terrain can be generated from a save file.
+        // This should be done in a separate thread as to avoid runtime blocking
+        world = std::make_unique<World::Grid>();
+        world->init(cameras["main_0"]->GetPosition(), engine.GetWindowDimensions());
+
+        ASWL::Utilities::FramesPerSecond::UpdateFPS();
+
+        return 0;
+    }
+
+    void Manager::shutdown() {
+        Graphics::Renderer::shutdown();
+        Graphics::Manager::shutdown();
+    }
+
+    const bool Manager::run() {
+        return !glfwWindowShouldClose(engine.GetWindow()) && state == GAME_STATE::RUN;
     }
 
     void Manager::update() {
+
+        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_ESCAPE))        // QUIT
+            state = Boomerang::Core::Manager::GAME_STATE::STOP;
+
+        // Update clocks
         DeltaTime.UpdateDeltaTime();
+        ASWL::Utilities::FramesPerSecond::UpdateFPS();
+        
+        // Update engine (poll events)
+        engine.update();
+
+        // Update cameras
+        for (auto const& [key, val] : cameras) {
+            if (!val->locked())
+                val->update(dt());
+        }
+
+        // Update world
+        world->update(cameras["main_0"]->GetPosition(), engine.GetWindowDimensions());
     }
 
     const float Manager::dt() {
         return static_cast<float>(DeltaTime.GetDeltaTime());
+    }
+    const float Manager::fps() {
+        return static_cast<float>(ASWL::Utilities::FramesPerSecond::GetFPS());
+    }
+
+    const std::unique_ptr<Graphics::OrthoCam>& Manager::GetCamera(const std::string& _name) {
+        return cameras[_name];
+    }
+    const Graphics::Font& Manager::GetFont(const std::string& _name, int _size) {
+        return FontLibrary[_name]->GetFont(_size);
+    }
+    const std::unique_ptr<World::Grid>& Manager::GetWorld() const {
+        return world;
+    }
+
+    const glm::vec2& Manager::GetWindowDimensions() const {
+        return engine.GetWindowDimensions();
+    }
+    GLFWwindow* Manager::GetWindow() {
+        return engine.GetWindow();
     }
 }

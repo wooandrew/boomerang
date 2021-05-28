@@ -55,9 +55,10 @@ namespace Boomerang::Core::Graphics {
     public:
 
         Font();
+        Font(const std::string& _FontName, const std::string& _FontPath, int _FontSize = 48);
         ~Font();
 
-        int init(std::string _FontName, std::string _FontPath, int _FontSize = 48);
+        int init(const std::string& _FontName, const std::string& _FontPath, int _FontSize = 48);
 
         // Getters
         const std::map<char, Character>& GetCharacters() const;
@@ -71,6 +72,25 @@ namespace Boomerang::Core::Graphics {
         int FontSize;
 
         std::map<char, Character> characters;
+    };
+
+    class FontLibrary {
+
+        /// Font library manages a particular font
+
+    public:
+
+        FontLibrary(const std::string& _FontName, const std::string& _FontPath);
+
+        void AddSize(int _size);    // Creates a bew font object of the desired size
+        const Font& GetFont(int _size);
+
+    private:
+
+        std::string FontName;
+        std::string FontPath;
+
+        std::map<int, Font> fl;
     };
 }
 

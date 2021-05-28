@@ -26,9 +26,21 @@
 #ifndef BOOMERANG_ENGINE_MANAGER
 #define BOOMERANG_ENGINE_MANAGER
 
+// Include standard library
+#include <map>
+#include <string>
+#include <memory>
+
 // Include dependencies
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
+#include <GLM/glm/glm.hpp>
 #include <ASWL/utilities.hpp>
+
+// Include boomerang libraries
+#include "engine.hpp"
+#include "graphics/font.hpp"
+#include "graphics/camera/orthocam.hpp"
+#include "world/grid.hpp"
 
 namespace Boomerang::Core {
 
@@ -41,18 +53,37 @@ namespace Boomerang::Core {
         Manager();
         ~Manager();
 
+        int init();
+        void shutdown();
+
         enum class GAME_STATE {
             RUN,
             STOP
         }; GAME_STATE state;
 
-        const bool run(GLFWwindow* window) const;
+        const bool run();
         void update();
 
         // Getters
         const float dt();
+        const float fps();
+
+        const std::unique_ptr<Graphics::OrthoCam>& GetCamera(const std::string& _name);
+        const Graphics::Font& GetFont(const std::string& _name, int _size);
+        const std::unique_ptr<World::Grid>& GetWorld() const;
+        
+        const glm::vec2& GetWindowDimensions() const;
+        GLFWwindow* GetWindow();
 
     private:
+
+        Engine engine;
+        
+        glm::mat4 DefaultCameraOrtho;
+        std::map<std::string, std::unique_ptr<Graphics::OrthoCam>> cameras;
+        std::map<std::string, std::unique_ptr<Graphics::FontLibrary>> FontLibrary;
+
+        std::unique_ptr<World::Grid> world;
 
         ASWL::Utilities::DeltaTime DeltaTime;
     };

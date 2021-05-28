@@ -82,7 +82,7 @@ namespace Boomerang::Core::Graphics {
         delete RenderData;
     }
 
-    void Renderer::StartScene(const std::shared_ptr<OrthoCam>& camera, const std::string& _shader) {
+    void Renderer::StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader) {
 
         RenderData->__shader_library->GetMap().find(_shader)->second->Bind();
         RenderData->__shader_library->GetMap().find(_shader)->second->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
@@ -111,10 +111,10 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Render text functions
-    void Renderer::RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
+    void Renderer::RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font) {
         RenderText(_string, glm::vec3(_position, 0), _scale, _color, _font);
     }
-    void Renderer::RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font) {
+    void Renderer::RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font) {
 
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("text")->second;
         shader->SetFloat3("u_Color", _color);
@@ -131,11 +131,11 @@ namespace Boomerang::Core::Graphics {
 
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
 
-            Character ch = _font->GetCharacters().find(*i)->second;
+            Character ch = _font.GetCharacters().find(*i)->second;
             ch.Bind();
 
             float xPos = px + ch.bearing.x + ch.size.x / 2.f;
-            float yPos = _position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font->GetSize() / 2.f) * 0.75f;
+            float yPos = _position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font.GetSize() / 2.f) * 0.75f;
 
             float t_Width = static_cast<float>(ch.size.x) * _scale.x;
             float t_Height = static_cast<float>(ch.size.y) * _scale.y;
@@ -202,7 +202,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Render Chunk (debug_mode) -> this should be called from render world
-    void Renderer::RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const float _CellSize, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _zoom) {
+    void Renderer::RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
 
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("basic")->second;
         shader->SetFloat4("u_Color", glm::vec4(1.f));

@@ -24,7 +24,7 @@
 #include "font.hpp"
 
 // Include standard library
-#include <iostream>
+#include <map>
 #include <fstream>
 
 // Include dependencies
@@ -38,13 +38,23 @@ namespace Boomerang::Core::Graphics {
     }
 
     Font::Font() {
+        FontName = "null";
+        FontPath = "null";
         FontSize = 48;
+    }
+    Font::Font(const std::string& _FontName, const std::string& _FontPath, int _FontSize) {
+
+        FontName = _FontName;
+        FontPath = _FontPath;
+        FontSize = _FontSize;
+
+        init(_FontName, _FontPath, _FontSize);
     }
     Font::~Font() {
 
     };
 
-    int Font::init(std::string _FontName, std::string _FontPath, int _FontSize) {
+    int Font::init(const std::string& _FontName, const std::string& _FontPath, int _FontSize) {
 
         FontName = _FontName;
         FontPath = _FontPath;
@@ -113,5 +123,26 @@ namespace Boomerang::Core::Graphics {
 
     const int Font::GetSize() const {
         return FontSize;
+    }
+
+    // Font Library
+    FontLibrary::FontLibrary(const std::string& _FontName, const std::string& _FontPath) {
+        
+        FontName = _FontName;
+        FontPath = _FontPath;
+
+        fl.insert({ 48, Font(FontName, FontPath) });
+    }
+
+    void FontLibrary::AddSize(int _size) {
+        fl.insert({ _size, Font(FontName, FontPath, _size) });
+    }
+
+    const Font& FontLibrary::GetFont(int _size) {
+
+        if (fl.count(_size) == 0)
+            AddSize(_size);
+
+        return fl[_size];
     }
 }

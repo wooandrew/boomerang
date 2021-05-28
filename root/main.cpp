@@ -61,108 +61,44 @@ int main(int argc, char* argv[]) {
     //ASWL::eXperimental::HandleArgs(argc, argv);
     ASWL::Logger::logger("     ", "Hello, Project Boomerang!");
 
-    Boomerang::Core::Engine engine;
-    
-    if (engine.init() != 0) {
-        ASWL::Logger::logger("  E  ", "Fatal Error: Failed to initialize game engine.");
-        return -1;
-    }
-    else
-        ASWL::Logger::logger("  E  ", "Engine initialization success. All systems go!");
-
     // Initialize Engine components
     Boomerang::Core::Manager manager;
+    manager.init();
 
-    Boomerang::Core::Input::Mouse::init();
-    Boomerang::Core::Graphics::Manager::init();
-    Boomerang::Core::Graphics::Renderer::init();
+    while (manager.run()) {
 
-    //Boomerang::Core::Graphics::Manager::SetClearColor({ 1.f, 1.f, 1.f, 1.f });
-    
-    glm::mat4 ortho = glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
-                                 -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f);
-
-    // Initialize Primary Orthographic Camera
-    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_1 = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(ortho, 500.f);
-    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_f = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(ortho, 500.f);
-    std::shared_ptr<Boomerang::Core::Graphics::OrthoCam> __camera_g = std::make_shared<Boomerang::Core::Graphics::OrthoCam>(ortho, 500.f);
-
-    //__camera_1->SetLock(true);
-    __camera_f->SetLock(true);
-
-    std::shared_ptr<Boomerang::Core::Graphics::Texture> demo = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/projectboomerang.png");
-    std::shared_ptr<Boomerang::Core::Graphics::Font> nsjpl_56 = std::make_shared<Boomerang::Core::Graphics::Font>();
-    nsjpl_56->init("nsjpl_56", "assets/fonts/nsjpl.otf", 56);
-
-    std::shared_ptr<Boomerang::Core::Graphics::Font> nsjpl_32 = std::make_shared<Boomerang::Core::Graphics::Font>();
-    nsjpl_32->init("nsjpl_32", "assets/fonts/nsjpl.otf", 32);
-
-    Boomerang::Core::World::Grid WorldGrid;
-    WorldGrid.init({ 0, 0, 0 }, engine.GetWindowDimensions());
-
-    glm::vec3 position = { 0, 0, 0 };
-
-    ASWL::Utilities::FramesPerSecond::UpdateFPS();
-
-    //__camera_1->SetZoom(5.0, engine.GetWindowDimensions());
-
-    while (manager.run(engine.GetWindow())) {
-
-        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_Q))                 // QUIT
-            manager.state = Boomerang::Core::Manager::GAME_STATE::STOP;
-
-        ASWL::Utilities::FramesPerSecond::UpdateFPS();
-        double fps = ASWL::Utilities::FramesPerSecond::GetFPS();
-
-        engine.update();
         manager.update();
-
-        __camera_1->update(manager.dt());
-
-        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W))                 // UP
-            position.y += 300 * manager.dt();
-        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S))            // DOWN
-            position.y -= 300 * manager.dt();
-        
-        if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A))                 // LEFT
-            position.x -= 300 * manager.dt();
-        else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D))            // RIGHT
-            position.x += 300 * manager.dt();
-
-        WorldGrid.update(position, engine.GetWindowDimensions());
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
         int chunks_rendered = 0;
 
-        __camera_1->SetPosition(position);
-        Boomerang::Core::Graphics::Renderer::StartScene(__camera_1);
-        for (auto const& [key, chunk] : WorldGrid.GetMap()) {
+        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("main_0"));
+        for (auto const& [key, chunk] : manager.GetWorld()->GetMap()) {
 
-            if (chunk->InFrame(__camera_1->GetPosition(), engine.GetWindowDimensions())) {
-                Boomerang::Core::Graphics::Renderer::RenderChunk(chunk, WorldGrid.GetCellSize(), engine.GetWindowDimensions(), position);
+            if (chunk->InFrame(manager.GetCamera("main_0")->GetPosition(), manager.GetWindowDimensions())) {
+                Boomerang::Core::Graphics::Renderer::RenderChunk(chunk, manager.GetWindowDimensions(), manager.GetCamera("main_0")->GetPosition(), manager.GetWorld()->GetCellSize());
                 chunks_rendered++;
             }
         }
 
         Boomerang::Core::Graphics::Renderer::EndScene();
 
-        Boomerang::Core::Graphics::Renderer::StartScene(__camera_g, "grid");
-        Boomerang::Core::Graphics::Renderer::RenderGrid(engine.GetWindowDimensions(), __camera_1->GetPosition(), WorldGrid.GetCellSize());
+        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("grid_0"), "grid");
+        Boomerang::Core::Graphics::Renderer::RenderGrid(manager.GetWindowDimensions(), manager.GetCamera("main_0")->GetPosition(), manager.GetWorld()->GetCellSize());
         Boomerang::Core::Graphics::Renderer::EndScene();
 
-        Boomerang::Core::Graphics::Renderer::StartScene(__camera_f, "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 1wv0.1.0-pre.4-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), nsjpl_56);
-        Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps), { 885, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
-        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { -130, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
-        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(WorldGrid.GetMap().size()), { -140, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), nsjpl_32);
+        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("text_0"), "text");
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 2cv0.1.0-pre.4-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), manager.GetFont("nsjpl", 56));
+        Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)manager.fps()), { 885, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
+        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { -130, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
+        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(manager.GetWorld()->GetMap().size()), { -140, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
         Boomerang::Core::Graphics::Renderer::EndScene();
 
-        Boomerang::Core::Graphics::Manager::EndRender(engine.GetWindow());
+        Boomerang::Core::Graphics::Manager::EndRender(manager.GetWindow());
     }
 
-    Boomerang::Core::Graphics::Renderer::shutdown();
-    Boomerang::Core::Graphics::Manager::shutdown();
+    manager.shutdown();
 
     return 0;
 }
