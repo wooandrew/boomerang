@@ -23,6 +23,11 @@
 
 #include "manager.hpp"
 
+// Include standard library
+#include <atomic>
+#include <chrono>
+#include <thread>
+
 // Include dependencies
 #include <GLM/glm/gtc/matrix_transform.hpp>
 #include <ASWL/logger.hpp>
@@ -73,19 +78,68 @@ namespace Boomerang::Core {
         cameras.insert({ "grid_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
         cameras.insert({ "text_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
 
-        // Lock grid_0 & text_0 camera so it doesn't move
-        cameras["grid_0"]->SetLock(true);
-        cameras["text_0"]->SetLock(true);
+        // Lock all cameras initially
+        for (auto const& [key, val] : cameras)
+            val->SetLock(true);
 
         // Create default fonts
         FontLibrary.insert({ "nsjpl", std::make_unique<Graphics::FontLibrary>("nsjpl", "assets/fonts/nsjpl.otf") });
         FontLibrary["nsjpl"]->AddSize(32);
         FontLibrary["nsjpl"]->AddSize(56);
 
-        // Generate Terrain /// this will later be replaced so terrain can be generated from a save file.
-        // This should be done in a separate thread as to avoid runtime blocking
-        world = std::make_unique<World::Grid>();
-        world->init(cameras["main_0"]->GetPosition(), engine.GetWindowDimensions());
+        // Initialize world
+        world = std::make_unique<World::Grid>(40);
+       
+        // Terrain generation flag
+        std::atomic<bool> FinishedWorldInit = false;
+
+        // Generate terrain
+        auto f = std::thread(
+            [&]() {
+                world->init(cameras["main_0"]->GetPosition(), engine.GetWindowDimensions());
+                FinishedWorldInit = true;
+            }
+        );
+
+        f.detach();
+
+        auto start = std::chrono::high_resolution_clock::now();
+
+        // Wait while world initializes
+        while (!FinishedWorldInit && run()) {
+
+            if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_ESCAPE))        // QUIT
+                state = Boomerang::Core::Manager::GAME_STATE::STOP;
+
+            // Update clocks
+            DeltaTime.UpdateDeltaTime();
+            ASWL::Utilities::FramesPerSecond::UpdateFPS();
+
+            // Update engine (poll events)
+            engine.update();
+
+            // Update cameras
+            for (auto const& [key, val] : cameras) { 
+                if (!val->locked())
+                    val->update(dt());
+            }
+
+            Graphics::Manager::BeginRender();
+
+            Graphics::Renderer::StartScene(cameras["main_0"], "text");
+            Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 3cv0.1.0-pre.4-alpha", { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec3(1.f), GetFont("nsjpl", 22));
+            Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { 920, 520, 0.1f }, { 1.f, 1.f }, glm::vec3(0, 1, 0), GetFont("nsjpl", 32));
+            Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec3(1), GetFont("nsjpl", 32));
+            Graphics::Renderer::EndScene();
+
+            Graphics::Renderer::StartScene(cameras["grid_0"], "dots");
+            Graphics::Renderer::LoadingDots(engine.GetWindowDimensions(), 5, 12.f, 3.f, glm::vec4(0.9), std::chrono::high_resolution_clock::now() - start);
+            Graphics::Renderer::EndScene();
+
+            Graphics::Manager::EndRender(engine.GetWindow());
+        }
+
+        cameras["main_0"]->SetLock(false);
 
         ASWL::Utilities::FramesPerSecond::UpdateFPS();
 

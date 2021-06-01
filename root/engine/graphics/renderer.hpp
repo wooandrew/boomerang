@@ -28,6 +28,7 @@
 
 // Include standard library
 #include <string>
+#include <chrono>
 #include <memory>
 
 // Include dependencies
@@ -68,6 +69,10 @@ namespace Boomerang::Core::Graphics {
         static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
         static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
         static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
+
+        // Shader Only Rendering
+        //RESERVED FOR POSITION //static void LoadingDots(const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const float _runtime);
+        static void LoadingDots(const glm::vec2& _WindowSize, const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const std::chrono::steady_clock::duration& _clock);
 
         // Render Grid (debug_mode)
         static void RenderGrid(const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);

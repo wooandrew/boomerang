@@ -122,20 +122,35 @@ namespace Boomerang::Core::Graphics {
         /* 
          * TODO: Rewrite this horrible code. Why did I ever think it was a good idea to
          *       bind/render a single glyph at a time? Stupid, silly Andrew. What we
-         *       SHOULD be doing is packing the relevant glyphs into a single bitmap
-         *       and then rendering that bitmap.
+         *       SHOULD be doing is batch rendering the glyphs. Actually, we should be
+         *       batch rendering EVERYTHING.
          */
 
         float px = _position.x;
         float pz = _position.z;
+
+        float offset = 0;
+
+        // Calculate string offset
+        for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
+
+            Character ch = _font.GetCharacters().find(*i)->second;
+
+            offset = std::abs((px + ch.bearing.x + (ch.size.x / 2.f)) * _scale.x - _position.x);
+            px += ((ch.advance >> 6) - (ch.bearing.x / 2.f));
+        }
+
+        offset /= 2;
+
+        px = _position.x;
 
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
 
             Character ch = _font.GetCharacters().find(*i)->second;
             ch.Bind();
 
-            float xPos = px + ch.bearing.x + ch.size.x / 2.f;
-            float yPos = _position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font.GetSize() / 2.f) * 0.75f;
+            float xPos = (px + ch.bearing.x + (ch.size.x / 2.f)) * _scale.x - offset;
+            float yPos = (_position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font.GetSize() / 2.f) * 0.75f) * _scale.y;
 
             float t_Width = static_cast<float>(ch.size.x) * _scale.x;
             float t_Height = static_cast<float>(ch.size.y) * _scale.y;
@@ -145,9 +160,9 @@ namespace Boomerang::Core::Graphics {
 
             shader->SetMat4("u_Transform", transform);
 
-            Manager::DrawIndexed(RenderData->__quad_vtx_array);
+            px += ((ch.advance >> 6) - (ch.bearing.x / 2.f));
 
-            px += ((ch.advance >> 6) - (ch.bearing.x / 2.f)) * _scale.x;
+            Manager::DrawIndexed(RenderData->__quad_vtx_array);
         }
     }
 
@@ -180,6 +195,30 @@ namespace Boomerang::Core::Graphics {
 
         transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
+
+        Manager::DrawIndexed(RenderData->__quad_vtx_array);
+    }
+
+    // Shader Only Rendering
+    //void Renderer::LoadingDots(const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const float _runtime) {
+    //    LoadingDots({ _position.x, _position.y, 0.0f }, _radius, _color);
+    //}
+    void Renderer::LoadingDots(const glm::vec2& _WindowSize, const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const std::chrono::steady_clock::duration& _clock) {
+
+        std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("dots")->second;
+        shader->SetFloat4("u_Color", _color);
+
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 1.f)) *
+                              glm::scale(glm::mat4(1.0f), { 100, 100, 1.0f });
+
+        float runtime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(_clock).count() / 1000.f;
+
+        shader->SetFloat2("u_Resolution", _WindowSize);
+        shader->SetMat4("u_Transform", transform);
+        shader->SetInt("u_CircleCount", _count);
+        shader->SetFloat("u_Spacing", _spacing);
+        shader->SetFloat("u_Radius", _radius);
+        shader->SetFloat("u_RunTime", runtime);
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }

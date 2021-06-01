@@ -63,7 +63,12 @@ int main(int argc, char* argv[]) {
 
     // Initialize Engine components
     Boomerang::Core::Manager manager;
-    manager.init();
+    
+    int ret = manager.init();
+    if (ret != 0) {
+        ASWL::Logger::logger("  E  ", "FATAL ERROR: Failed to initialize game manager.");
+        return ret;
+    }
 
     while (manager.run()) {
 
@@ -89,10 +94,10 @@ int main(int argc, char* argv[]) {
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("text_0"), "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 2cv0.1.0-pre.4-alpha", { -950, 500, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), manager.GetFont("nsjpl", 56));
-        Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)manager.fps()), { 885, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
-        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { -130, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
-        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(manager.GetWorld()->GetMap().size()), { -140, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
+        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 3cv0.1.0-pre.4-alpha", { 0, 290, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), manager.GetFont("nsjpl", 22));
+        Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)manager.fps()), { 920, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
+        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
+        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(manager.GetWorld()->GetMap().size()), { 0, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         Boomerang::Core::Graphics::Manager::EndRender(manager.GetWindow());

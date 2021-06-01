@@ -46,7 +46,7 @@ namespace Boomerang::Core::World {
     public:
 
         Grid(float _CellSize = 80.f, float _scale = 1.f);
-        Grid(float seed, float _CellSize = 80.f, float _scale = 1.f);
+        Grid(float seed, float _CellSize, float _scale);
         ~Grid();
 
         void init(const glm::vec3& _position, const glm::vec2& _windowSize);

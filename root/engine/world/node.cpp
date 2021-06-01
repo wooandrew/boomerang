@@ -22,7 +22,6 @@
 */
 
 #include "node.hpp"
-#include <iostream>
 
 // Include dependencies
 #include <GLM/glm/gtc/matrix_transform.hpp>
@@ -51,11 +50,8 @@ namespace Boomerang::Core::World {
 
     void Node::UpdateTransform() {
 
-        float t_Width = static_cast<float>(texture->GetDimensions().x) * scale.x;
-        float t_Height = static_cast<float>(texture->GetDimensions().y) * scale.y;
-
         transform = glm::translate(glm::mat4(1.0f), Boomerang::Core::World::GridToPixelCoord(position, size.x))
-            * glm::scale(glm::mat4(1.0f), { t_Width, t_Height, 1.0f });
+                  * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
     }
 
     // Setters

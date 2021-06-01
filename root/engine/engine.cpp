@@ -36,6 +36,9 @@ namespace Boomerang::Core {
         WindowTitle = _WindowTitle;
         WindowDimensions = _WindowDimensions;
         FramebufferDimensions = glm::vec2(0);
+
+        if (metadata.autoinit)
+            init();
     }
     // Define defalt engine destructor
     Engine::~Engine() {
@@ -83,7 +86,7 @@ namespace Boomerang::Core {
         int height = 0;        
         glfwGetFramebufferSize(window, &width, &height);
         FramebufferDimensions = glm::vec2(width, height);
-        glfwSwapInterval(1);
+        glfwSwapInterval(metadata.enableVSync);
 
         // Window Setup
         const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -92,9 +95,15 @@ namespace Boomerang::Core {
         glfwSetWindowPos(window, xPos, yPos);
 
         // Full screen
-        if (metadata.fullscreenmode) {
+        if (metadata.vidmode == Metadata::VideoMode::FULLSCREEN) {
 
             glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+            SetWindowSize(mode->width, mode->height);
+            glad_glViewport(0, 0, mode->width, mode->height);
+        }
+        else if (metadata.vidmode == Metadata::VideoMode::WINDOWED_FULLSCREEN) {
+
+            glfwSetWindowMonitor(window, nullptr, 0, 0, mode->width, mode->height, mode->refreshRate);
             SetWindowSize(mode->width, mode->height);
             glad_glViewport(0, 0, mode->width, mode->height);
         }
