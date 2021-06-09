@@ -117,7 +117,7 @@ namespace Boomerang::Core::Graphics {
 
         unsigned int program = glad_glCreateProgram();
 
-        std::array<unsigned int, 2> ids;
+        std::array<unsigned int, 2> ids = {};
         int idIndex = 0;
 
         for (auto& source : sources) {

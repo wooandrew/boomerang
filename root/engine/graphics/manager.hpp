@@ -57,7 +57,7 @@ namespace Boomerang::Core::Graphics {
         static void BeginRender();
         static void EndRender(GLFWwindow* window);
 
-        static void DrawIndexed(const std::shared_ptr<Vertex>& vtxArray);
+        static void DrawIndexed(const std::unique_ptr<Vertex>& vtxArray);
     };
 }
 

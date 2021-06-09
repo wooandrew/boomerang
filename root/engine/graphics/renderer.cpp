@@ -42,9 +42,9 @@ namespace Boomerang::Core::Graphics {
 
         RenderStorage() = default;
 
-        std::shared_ptr<ShaderLibrary> __shader_library;
-        std::shared_ptr<Vertex> __quad_vtx_array;
-        std::shared_ptr<Texture> __white;
+        std::unique_ptr<ShaderLibrary> __shader_library;
+        std::unique_ptr<Vertex> __quad_vtx_array;
+        std::unique_ptr<Texture> __white;
     };
 
     static RenderStorage* RenderData;
@@ -52,7 +52,7 @@ namespace Boomerang::Core::Graphics {
     void Renderer::init() {
 
         RenderData = new RenderStorage();
-        RenderData->__quad_vtx_array = std::make_shared<Vertex>();
+        RenderData->__quad_vtx_array = std::make_unique<Vertex>();
 
         float __quad_vertices[] = {
 
@@ -71,11 +71,11 @@ namespace Boomerang::Core::Graphics {
         std::shared_ptr<IndexBuffer> __quadIB = std::make_shared<IndexBuffer>(__quad_indices, sizeof(__quad_indices) / sizeof(uint32_t));
         RenderData->__quad_vtx_array->SetIndexBuffer(__quadIB);
 
-        RenderData->__white = std::make_shared<Texture>(glm::vec2(1, 1));
+        RenderData->__white = std::make_unique<Texture>(glm::vec2(1, 1));
         uint32_t __white_data = 0xffffffff;
         RenderData->__white->SetData(&__white_data, sizeof(uint32_t));
 
-        RenderData->__shader_library = std::make_shared<ShaderLibrary>(ShaderLibrary("assets/shaders/.shaders"));
+        RenderData->__shader_library = std::make_unique<ShaderLibrary>(ShaderLibrary("assets/shaders/.shaders"));
     }
 
     void Renderer::shutdown() {
@@ -195,6 +195,9 @@ namespace Boomerang::Core::Graphics {
 
         transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
         RenderData->__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
+
+        auto s = glm::translate(glm::mat4(1.0f), _position);
+        
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }

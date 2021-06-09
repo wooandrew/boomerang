@@ -1,0 +1,56 @@
+4rv0.1.0-pre.4-alpha Rendering Rework Case Study
+
+INTRODUCTION
+
+    The current rendering scheme utilizes per-object rendering, where every object and/or texture
+    is rendered one by one. The current scheme utilizes a very rudimentary rendering technique:
+    first, set the color and bind a texture. Then, calculate and pass the transform to the
+    appropriate shader as a uniform. Finally, make a draw call. Wash, rinse, repeat.
+
+THE PROBLEM
+
+    This method is horribly inefficient. As one can imagine, a few draw calls per rendering cycle
+    does not impact the performance of the software too much. Make it a few thousand, and the
+    performance tanks. Clearly, this is not good, when several hundreds (even thousands when zoomed
+    out) are drawn every render cycle.
+
+THE SOLUTION
+
+    The solution to the problem is obvious: reduce the number of draw calls made to the GPU. This
+    is done through a method called batch rendering, where multiple vertex arrays are combined into
+    one massive vertex array, containing vertex data for all objects that are needed to be rendered.
+    Combining hundreds or thousands of vertices into one array means that all vertices can be rendered
+    by the GPU using only one draw call, thus resulting in significantly reduced frame times.
+
+    The idea behind batch rendering is drawing elements to the screen dynamically. To do so, memory
+    to the GPU must be allocated, but not populated. Instead, once the buffer is allocated, the data
+    is then subbed into the allotted stack whenever necessary.
+
+PSEUDOCODE
+
+    struct Vertex {
+        vec3 position
+        vec2 texcoord
+        vec4 color
+        float location
+    }
+
+    glCreateVertexArrays(1, &RendererID_VA)
+    glBindVertexArray(RendererID_VA)
+
+    glCreateBuffers(1, &RendererID_VB)
+    glBindBuffer(GL_ARRAY_BUFFER, RendererID_VB)
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4000, nullptr, GL_DYNAMIC_DRAW)
+
+    glEnableVertexAttribArray(RendererID_VB, 0)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, position))
+
+    glEnableVertexAttribArray(RendererID_VB, 1)
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texcoord))
+
+    glEnableVertexAttribArray(RendererID_VB, 2)
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color))
+
+    glEnableVertexAttribArray(RendererID_VB, 3)
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, location))
+

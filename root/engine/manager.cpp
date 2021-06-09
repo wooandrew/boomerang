@@ -127,7 +127,7 @@ namespace Boomerang::Core {
             Graphics::Manager::BeginRender();
 
             Graphics::Renderer::StartScene(cameras["main_0"], "text");
-            Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 3cv0.1.0-pre.4-alpha", { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec3(1.f), GetFont("nsjpl", 22));
+            Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 4rv0.1.0-pre.4-alpha", { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec3(1.f), GetFont("nsjpl", 22));
             Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { 920, 520, 0.1f }, { 1.f, 1.f }, glm::vec3(0, 1, 0), GetFont("nsjpl", 32));
             Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec3(1), GetFont("nsjpl", 32));
             Graphics::Renderer::EndScene();
