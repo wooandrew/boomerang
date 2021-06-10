@@ -43,6 +43,8 @@ namespace Boomerang::Core {
     Manager::Manager() {
         DefaultCameraOrtho = glm::ortho(-500, 500, -309, 309);
         state = GAME_STATE::RUN;
+
+        world_initialized = false;
     }
 
     Manager::~Manager() {
@@ -87,9 +89,16 @@ namespace Boomerang::Core {
         FontLibrary["nsjpl"]->AddSize(32);
         FontLibrary["nsjpl"]->AddSize(56);
 
+        ASWL::Utilities::FramesPerSecond::UpdateFPS();
+
+        return 0;
+    }
+
+    void Manager::InitializeWorld() {
+
         // Initialize world
         world = std::make_unique<World::Grid>(40);
-       
+
         // Terrain generation flag
         std::atomic<bool> FinishedWorldInit = false;
 
@@ -103,6 +112,7 @@ namespace Boomerang::Core {
 
         f.detach();
 
+        cameras["main_0"]->SetLock(true);
         auto start = std::chrono::high_resolution_clock::now();
 
         // Wait while world initializes
@@ -119,7 +129,7 @@ namespace Boomerang::Core {
             engine.update();
 
             // Update cameras
-            for (auto const& [key, val] : cameras) { 
+            for (auto const& [key, val] : cameras) {
                 if (!val->locked())
                     val->update(dt());
             }
@@ -127,7 +137,7 @@ namespace Boomerang::Core {
             Graphics::Manager::BeginRender();
 
             Graphics::Renderer::StartScene(cameras["main_0"], "text");
-            Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 4rv0.1.0-pre.4-alpha", { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec3(1.f), GetFont("nsjpl", 22));
+            Boomerang::Core::Graphics::Renderer::RenderText(BUILD_VERSION, { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec3(1.f), GetFont("nsjpl", 22));
             Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { 920, 520, 0.1f }, { 1.f, 1.f }, glm::vec3(0, 1, 0), GetFont("nsjpl", 32));
             Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec3(1), GetFont("nsjpl", 32));
             Graphics::Renderer::EndScene();
@@ -140,10 +150,9 @@ namespace Boomerang::Core {
         }
 
         cameras["main_0"]->SetLock(false);
+        world_initialized = true;
 
         ASWL::Utilities::FramesPerSecond::UpdateFPS();
-
-        return 0;
     }
 
     void Manager::shutdown() {
@@ -174,7 +183,8 @@ namespace Boomerang::Core {
         }
 
         // Update world
-        world->update(cameras["main_0"]->GetPosition(), engine.GetWindowDimensions());
+        if (world_initialized)
+            world->update(cameras["main_0"]->GetPosition(), engine.GetWindowDimensions());
     }
 
     const float Manager::dt() {
@@ -182,6 +192,10 @@ namespace Boomerang::Core {
     }
     const float Manager::fps() {
         return static_cast<float>(ASWL::Utilities::FramesPerSecond::GetFPS());
+    }
+
+    const bool Manager::GetWorldInitialized() const {
+        return world_initialized;
     }
 
     const std::unique_ptr<Graphics::OrthoCam>& Manager::GetCamera(const std::string& _name) {

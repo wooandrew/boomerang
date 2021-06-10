@@ -36,7 +36,7 @@
 #include "vertex.hpp"
 #include "../world/world.hpp"
 
-namespace Boomerang::Core::Graphics {
+namespace Boomerang::Core::Graphics::Renderer {
 
     struct RenderStorage {
 
@@ -49,7 +49,7 @@ namespace Boomerang::Core::Graphics {
 
     static RenderStorage* RenderData;
 
-    void Renderer::init() {
+    void init() {
 
         RenderData = new RenderStorage();
         RenderData->__quad_vtx_array = std::make_unique<Vertex>();
@@ -78,23 +78,29 @@ namespace Boomerang::Core::Graphics {
         RenderData->__shader_library = std::make_unique<ShaderLibrary>(ShaderLibrary("assets/shaders/.shaders"));
     }
 
-    void Renderer::shutdown() {
+    void shutdown() {
         delete RenderData;
     }
 
-    void Renderer::StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader) {
+    void StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader) {
 
         RenderData->__shader_library->GetMap().find(_shader)->second->Bind();
         RenderData->__shader_library->GetMap().find(_shader)->second->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
     }
 
-    void Renderer::EndScene() { }
+    void FlushScene() {
+
+    }
+
+    void EndScene() { 
+    
+    }
 
     // Render texture functions
-    void Renderer::RenderTexture(const glm::vec2& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
+    void RenderTexture(const glm::vec2& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
         RenderTexture({ _position.x, _position.y, 0.0f }, _scale, _texture);
     }
-    void Renderer::RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
+    void RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture) {
 
         RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", glm::vec4(1.0f));
         _texture->Bind();
@@ -111,10 +117,10 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Render text functions
-    void Renderer::RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font) {
+    void RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font) {
         RenderText(_string, glm::vec3(_position, 0), _scale, _color, _font);
     }
-    void Renderer::RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font) {
+    void RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font) {
 
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("text")->second;
         shader->SetFloat3("u_Color", _color);
@@ -167,10 +173,10 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Draw static quad functions
-    void Renderer::DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color) {
+    void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color) {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _color);
     }
-    void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color) {
+    void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color) {
 
         RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
@@ -182,10 +188,10 @@ namespace Boomerang::Core::Graphics {
 
         Manager::DrawIndexed(RenderData->__quad_vtx_array);
     }
-    void Renderer::DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
+    void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _rotation, _color);
     }
-    void Renderer::DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
+    void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
 
         RenderData->__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
         RenderData->__white->Bind();
@@ -206,7 +212,7 @@ namespace Boomerang::Core::Graphics {
     //void Renderer::LoadingDots(const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const float _runtime) {
     //    LoadingDots({ _position.x, _position.y, 0.0f }, _radius, _color);
     //}
-    void Renderer::LoadingDots(const glm::vec2& _WindowSize, const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const std::chrono::steady_clock::duration& _clock) {
+    void LoadingDots(const glm::vec2& _WindowSize, const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const std::chrono::steady_clock::duration& _clock) {
 
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("dots")->second;
         shader->SetFloat4("u_Color", _color);
@@ -227,7 +233,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Render Grid (debug_mode)
-    void Renderer::RenderGrid(const glm::vec2& _WindowSize,  const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
+    void RenderGrid(const glm::vec2& _WindowSize,  const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
 
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("grid")->second;
         shader->SetFloat4("u_Color", glm::vec4(1.f));
@@ -244,7 +250,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Render Chunk (debug_mode) -> this should be called from render world
-    void Renderer::RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
+    void RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
 
         std::shared_ptr<Shader> shader = RenderData->__shader_library->GetMap().find("basic")->second;
         shader->SetFloat4("u_Color", glm::vec4(1.f));

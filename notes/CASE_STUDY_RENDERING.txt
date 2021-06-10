@@ -28,21 +28,30 @@ THE SOLUTION
 
 PSEUDOCODE
 
+IN RENDERER:
+
+    BIND WHITE TEXTURE TO SLOT 0
+
     struct Vertex {
         vec3 position
         vec2 texcoord
         vec4 color
-        float location
+        float slot
     }
 
-    glCreateVertexArrays(1, &RendererID_VA)
-    glBindVertexArray(RendererID_VA)
+    const QuadsToDraw = 4000;
+    const VertexCount = QuadsToDraw * 4
+    const IndexCount = QuadsToDraw * 6
 
-    glCreateBuffers(1, &RendererID_VB)
-    glBindBuffer(GL_ARRAY_BUFFER, RendererID_VB)
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4000, nullptr, GL_DYNAMIC_DRAW)
+    // Create Vertex Buffer Array
+    glCreateVertexArrays(1, &VA)
+    glBindVertexArray(VA)
 
-    glEnableVertexAttribArray(RendererID_VB, 0)
+    glCreateBuffers(1, &VB)
+    glBindBuffer(GL_ARRAY_BUFFER, VB)
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * VertexCount, nullptr, GL_DYNAMIC_DRAW)
+
+    glEnableVertexAttribArray(VB, 0)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, position))
 
     glEnableVertexAttribArray(RendererID_VB, 1)
@@ -52,5 +61,36 @@ PSEUDOCODE
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color))
 
     glEnableVertexAttribArray(RendererID_VB, 3)
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, location))
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, slot))
 
+    int indices[IndexCount];
+
+    // Create Index Buffer Array
+    for (int i = 0, offset = 0; i < IndexCount; i += 6, offset += 4) {
+        
+        indices[i + 0] = 0 + offset;
+        indices[i + 1] = 1 + offset;
+        indices[i + 2] = 2 + offset;
+
+        indices[i + 3] = 2 + offset;
+        indices[i + 4] = 3 + offset;
+        indices[i + 5] = 0 + offset;
+    }
+
+    glCreateBuffers(1, &IB)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW)
+
+    // Pass Textures to Shader
+    int samplers[MaxTextureSlots] = { 0 to MaxTextureSlots - 1 }
+    shader->Bind()
+    shader->SetInt1v("u_Textures", MaxTextureSlots, samplers)
+
+    // Sub Data
+    auto vertices = CreateXQuads(10)
+
+    glBindBuffer(GL_ARRAY_BUFFER, VB)
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices)
+
+    glBindVertexArray(VA)
+    glDrawElements(GL_TRIANGLES, NumQuads * 6, GL_UNSIGNED_INT, nullptr)

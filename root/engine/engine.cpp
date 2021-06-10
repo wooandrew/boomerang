@@ -115,6 +115,13 @@ namespace Boomerang::Core {
         glfwSetMouseButtonCallback(window, Boomerang::Core::Input::Mouse::MouseButtonCallback);
         glfwSetKeyCallback(window, Boomerang::Core::Input::Keyboard::KeyCallback);
 
+        // Get maximum number of textures that can be bound at once
+        glad_glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MaxTextureImageUnits);
+
+        // Log System Info
+        ASWL::Logger::logger(" OGL ", "GL version:", glad_glGetString(GL_VERSION));
+        ASWL::Logger::logger(" OGL ", "GPU vendor:", glad_glGetString(GL_VENDOR));
+
         return 0;
     }
 

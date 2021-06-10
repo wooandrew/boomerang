@@ -70,36 +70,42 @@ int main(int argc, char* argv[]) {
         return ret;
     }
 
+    manager.InitializeWorld();
+
     while (manager.run()) {
 
         manager.update();
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
-        int chunks_rendered = 0;
+        if (manager.GetWorldInitialized()) {
 
-        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("main_0"));
-        for (auto const& [key, chunk] : manager.GetWorld()->GetMap()) {
+            int chunks_rendered = 0;
 
-            if (chunk->InFrame(manager.GetCamera("main_0")->GetPosition(), manager.GetWindowDimensions())) {
-                Boomerang::Core::Graphics::Renderer::RenderChunk(chunk, manager.GetWindowDimensions(), manager.GetCamera("main_0")->GetPosition(), manager.GetWorld()->GetCellSize());
-                chunks_rendered++;
+            Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("main_0"));
+
+            for (auto const& [key, chunk] : manager.GetWorld()->GetMap()) {
+
+                if (chunk->InFrame(manager.GetCamera("main_0")->GetPosition(), manager.GetWindowDimensions())) {
+                    Boomerang::Core::Graphics::Renderer::RenderChunk(chunk, manager.GetWindowDimensions(), manager.GetCamera("main_0")->GetPosition(), manager.GetWorld()->GetCellSize());
+                    chunks_rendered++;
+                }
             }
+
+            Boomerang::Core::Graphics::Renderer::EndScene();
+
+            Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("grid_0"), "grid");
+            Boomerang::Core::Graphics::Renderer::RenderGrid(manager.GetWindowDimensions(), manager.GetCamera("main_0")->GetPosition(), manager.GetWorld()->GetCellSize());
+            Boomerang::Core::Graphics::Renderer::EndScene();
+
+            Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("text_0"), "text");
+            Boomerang::Core::Graphics::Renderer::RenderText(Boomerang::Core::BUILD_VERSION, { 0, 290, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), manager.GetFont("nsjpl", 22));
+            Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)manager.fps()), { 920, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
+            Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
+            Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(manager.GetWorld()->GetMap().size()), { 0, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
+            Boomerang::Core::Graphics::Renderer::EndScene();
         }
-
-        Boomerang::Core::Graphics::Renderer::EndScene();
-
-        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("grid_0"), "grid");
-        Boomerang::Core::Graphics::Renderer::RenderGrid(manager.GetWindowDimensions(), manager.GetCamera("main_0")->GetPosition(), manager.GetWorld()->GetCellSize());
-        Boomerang::Core::Graphics::Renderer::EndScene();
-
-        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("text_0"), "text");
-        Boomerang::Core::Graphics::Renderer::RenderText("Boomerang 4rv0.1.0-pre.4-alpha", { 0, 290, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(1.f), manager.GetFont("nsjpl", 22));
-        Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)manager.fps()), { 920, 520, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
-        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
-        Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(manager.GetWorld()->GetMap().size()), { 0, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
-        Boomerang::Core::Graphics::Renderer::EndScene();
-
+        
         Boomerang::Core::Graphics::Manager::EndRender(manager.GetWindow());
     }
 

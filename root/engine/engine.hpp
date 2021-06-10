@@ -97,6 +97,8 @@ namespace Boomerang::Core {
         std::string WindowTitle;
         glm::vec2 WindowDimensions;
         glm::vec2 FramebufferDimensions;
+
+        int MaxTextureImageUnits;
     };
 }
 
