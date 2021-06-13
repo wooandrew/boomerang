@@ -47,14 +47,7 @@
 #include <ASWL/utilities.hpp>
 
 // TODO: Move to render manager
-namespace RENDER_LAYER {
-
-    constexpr float LAYER0 = 0.0f;
-    constexpr float LAYER1 = 0.1f;
-    constexpr float LAYER2 = 0.2f;
-    constexpr float LAYER3 = 0.3f;
-    constexpr float LAYER4 = 0.4f;
-}
+using namespace Boomerang::Core::Graphics::Renderer::RENDER_LAYER;
 
 int main(int argc, char* argv[]) {
 
@@ -70,7 +63,7 @@ int main(int argc, char* argv[]) {
         return ret;
     }
 
-    manager.InitializeWorld();
+    // manager.InitializeWorld();
 
     while (manager.run()) {
 
@@ -78,6 +71,14 @@ int main(int argc, char* argv[]) {
 
         Boomerang::Core::Graphics::Manager::BeginRender();
 
+        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("main_0"));
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ -1.f, 0.f, LAYER1 }, { 0.8, 0.8 }, { 0.8f, 0.2f, 0.3f, 1.f });
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ -1.f, -1.f, LAYER1 }, { 0.8, 0.8 }, { 0.8f, 0.2f, 0.3f, 1.f });
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ -1.f, -1.f, LAYER1 }, { 0.8, 0.8 }, { 0.8f, 0.2f, 0.3f, 1.f });
+        //Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, 0 }, { 0.25, 0.25 }, 25, { 1.f, 0.f, 0.f, 1.f });
+        Boomerang::Core::Graphics::Renderer::EndScene();
+
+        /*
         if (manager.GetWorldInitialized()) {
 
             int chunks_rendered = 0;
@@ -104,7 +105,7 @@ int main(int argc, char* argv[]) {
             Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { 0, 0, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
             Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(manager.GetWorld()->GetMap().size()), { 0, -30, RENDER_LAYER::LAYER1 }, { 1.f, 1.f }, glm::vec3(0, 1, 0), manager.GetFont("nsjpl", 32));
             Boomerang::Core::Graphics::Renderer::EndScene();
-        }
+        }*/
         
         Boomerang::Core::Graphics::Manager::EndRender(manager.GetWindow());
     }

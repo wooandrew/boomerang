@@ -42,7 +42,19 @@
 
 namespace Boomerang::Core::Graphics::Renderer {
 
-    void init();
+    namespace RENDER_LAYER {
+
+        constexpr float LAYER0 = 0.0f;
+        constexpr float LAYER1 = 0.1f;
+        constexpr float LAYER2 = 0.2f;
+        constexpr float LAYER3 = 0.3f;
+        constexpr float LAYER4 = 0.4f;
+    }
+
+
+    glm::vec3* NormalizedVertexPositions(const glm::vec3& _position, const glm::vec2& _size);
+
+    void init(const glm::vec2& _WindowDimensions);
     void shutdown();
 
     void StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader = "basic");

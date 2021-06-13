@@ -39,7 +39,7 @@ IN RENDERER:
         float slot
     }
 
-    const QuadsToDraw = 4000;
+    const QuadsToDraw = 10000;
     const VertexCount = QuadsToDraw * 4
     const IndexCount = QuadsToDraw * 6
 
@@ -51,16 +51,16 @@ IN RENDERER:
     glBindBuffer(GL_ARRAY_BUFFER, VB)
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * VertexCount, nullptr, GL_DYNAMIC_DRAW)
 
-    glEnableVertexAttribArray(VB, 0)
+    glEnableVertexArrayAttrib(VA, 0)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, position))
 
-    glEnableVertexAttribArray(RendererID_VB, 1)
+    glEnableVertexArrayAttrib(VA, 1)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texcoord))
 
-    glEnableVertexAttribArray(RendererID_VB, 2)
+    glEnableVertexArrayAttrib(VA, 2)
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color))
 
-    glEnableVertexAttribArray(RendererID_VB, 3)
+    glEnableVertexArrayAttrib(VA, 3)
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, slot))
 
     int indices[IndexCount];
@@ -79,7 +79,7 @@ IN RENDERER:
 
     glCreateBuffers(1, &IB)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW)
 
     // Pass Textures to Shader
     int samplers[MaxTextureSlots] = { 0 to MaxTextureSlots - 1 }

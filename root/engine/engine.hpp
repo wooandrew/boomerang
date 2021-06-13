@@ -87,6 +87,8 @@ namespace Boomerang::Core {
         GLFWwindow* GetWindow();
         const glm::vec2& GetWindowDimensions() const;
         const glm::vec2& GetFramebufferDimensions() const;
+        
+        const int GetMaxTextureUnits() const;
 
     private:
 
@@ -98,7 +100,7 @@ namespace Boomerang::Core {
         glm::vec2 WindowDimensions;
         glm::vec2 FramebufferDimensions;
 
-        int MaxTextureImageUnits;
+        int MaxTextureUnits;
     };
 }
 

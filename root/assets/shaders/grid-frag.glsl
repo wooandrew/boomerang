@@ -4,6 +4,7 @@ layout(location = 0) out vec4 color;
 
 uniform vec2 u_Resolution;
 uniform vec3 u_CameraPosition;
+uniform vec4 u_Color;
 uniform float u_CellSize;
 
 // TODO: make these variables in
@@ -43,5 +44,5 @@ void main() {
 		discard;
 	}
 	
-	color = col;
+	color = col * u_Color;
 }

@@ -37,28 +37,19 @@
 // Include boomerang libraries
 #include "vertex.hpp"
 
-namespace Boomerang::Core::Graphics {
+namespace Boomerang::Core::Graphics::Manager {
 
-    class Manager {
-
-        /// Graphics manager
-
-    public:
-
-        Manager() = delete;
-
-        static void init(const glm::vec4& color = glm::vec4(0));
-        static void shutdown();
-
-        static void SetViewPort(int x, int y, int width, int height);
-        static void SetClearColor(const glm::vec4& color);
-        static void Clear();
-
-        static void BeginRender();
-        static void EndRender(GLFWwindow* window);
-
-        static void DrawIndexed(const std::unique_ptr<Vertex>& vtxArray);
-    };
+    void init(const glm::vec4& color = glm::vec4(0));
+    void shutdown();
+    
+    void SetViewPort(int x, int y, int width, int height);
+    void SetClearColor(const glm::vec4& color);
+    void Clear();
+    
+    void BeginRender();
+    void EndRender(GLFWwindow* window);
+    
+    void DrawIndexed(const std::unique_ptr<VertexArray>& vtxArray, unsigned int _count = 0);
 }
 
 #endif // !BOOMERANG_ENGINE_GRAPHICS_MANAGER

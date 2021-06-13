@@ -43,7 +43,7 @@
 
 namespace Boomerang::Core {
 
-    constexpr const char* BUILD_VERSION = "Boomerang 5rv0.1.0-pre.4-alpha";
+    constexpr const char* BUILD_VERSION = "Boomerang 6rv0.1.0-pre.4-alpha";
 
     class Manager {
 

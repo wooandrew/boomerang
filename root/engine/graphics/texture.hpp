@@ -49,7 +49,7 @@ namespace Boomerang::Core::Graphics {
         const glm::vec2& GetDimensions() const;
 
         void SetData(void* _data, unsigned int _size);
-        void Bind(unsigned int slot = 0) const;
+        void Bind(unsigned int slot = 1) const;
 
     private:
 

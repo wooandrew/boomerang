@@ -68,21 +68,25 @@ namespace Boomerang::Core {
         // Initialize graphics manager
         Graphics::Manager::init();
 
+        Graphics::Manager::SetClearColor(glm::vec4(0.6));
+
         // Initialize 2d renderer
-        Graphics::Renderer::init();
+        Graphics::Renderer::init(engine.GetWindowDimensions());
 
         // Set default camera ortho to fit window dimensions
         DefaultCameraOrtho = glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
                                         -engine.GetWindowDimensions().y / 2.f, engine.GetWindowDimensions().y / 2.f);
 
+        auto NormalizedCameraOrtho = glm::ortho(-1, 1, -1, 1);
+
         // Create default cameras (main, text, debug/grid)
-        cameras.insert({ "main_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
+        cameras.insert({ "main_0", std::make_unique<Graphics::OrthoCam>(NormalizedCameraOrtho, 5.f) });
         cameras.insert({ "grid_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
         cameras.insert({ "text_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
 
         // Lock all cameras initially
         for (auto const& [key, val] : cameras)
-            val->SetLock(true);
+            val->SetLock(false);
 
         // Create default fonts
         FontLibrary.insert({ "nsjpl", std::make_unique<Graphics::FontLibrary>("nsjpl", "assets/fonts/nsjpl.otf") });

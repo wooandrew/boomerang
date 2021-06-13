@@ -116,7 +116,7 @@ namespace Boomerang::Core {
         glfwSetKeyCallback(window, Boomerang::Core::Input::Keyboard::KeyCallback);
 
         // Get maximum number of textures that can be bound at once
-        glad_glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MaxTextureImageUnits);
+        glad_glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MaxTextureUnits);
 
         // Log System Info
         ASWL::Logger::logger(" OGL ", "GL version:", glad_glGetString(GL_VERSION));
@@ -147,5 +147,9 @@ namespace Boomerang::Core {
 
     const glm::vec2& Engine::GetFramebufferDimensions() const {
         return FramebufferDimensions;
+    }
+
+    const int Engine::GetMaxTextureUnits() const {
+        return MaxTextureUnits;
     }
 }
