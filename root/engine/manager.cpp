@@ -71,7 +71,7 @@ namespace Boomerang::Core {
         Graphics::Manager::SetClearColor(glm::vec4(0.6));
 
         // Initialize 2d renderer
-        Graphics::Renderer::init(engine.GetWindowDimensions());
+        Graphics::Renderer::init();
 
         // Set default camera ortho to fit window dimensions
         DefaultCameraOrtho = glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
@@ -80,7 +80,7 @@ namespace Boomerang::Core {
         auto NormalizedCameraOrtho = glm::ortho(-1, 1, -1, 1);
 
         // Create default cameras (main, text, debug/grid)
-        cameras.insert({ "main_0", std::make_unique<Graphics::OrthoCam>(NormalizedCameraOrtho, 5.f) });
+        cameras.insert({ "main_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
         cameras.insert({ "grid_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
         cameras.insert({ "text_0", std::make_unique<Graphics::OrthoCam>(DefaultCameraOrtho, 500.f) });
 

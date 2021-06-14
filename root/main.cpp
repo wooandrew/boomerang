@@ -72,9 +72,8 @@ int main(int argc, char* argv[]) {
         Boomerang::Core::Graphics::Manager::BeginRender();
 
         Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("main_0"));
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ -1.f, 0.f, LAYER1 }, { 0.8, 0.8 }, { 0.8f, 0.2f, 0.3f, 1.f });
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ -1.f, -1.f, LAYER1 }, { 0.8, 0.8 }, { 0.8f, 0.2f, 0.3f, 1.f });
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ -1.f, -1.f, LAYER1 }, { 0.8, 0.8 }, { 0.8f, 0.2f, 0.3f, 1.f });
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0.f, 0.f, LAYER1 }, { 100, 100 }, { 1.f, 1.f, 1.f, 1.f });
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0.f, -200.f, LAYER1 }, { 100, 100 }, { 0.8f, 0.2f, 0.3f, 1.f });
         //Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, 0 }, { 0.25, 0.25 }, 25, { 1.f, 0.f, 0.f, 1.f });
         Boomerang::Core::Graphics::Renderer::EndScene();
 

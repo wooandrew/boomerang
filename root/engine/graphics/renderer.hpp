@@ -52,9 +52,9 @@ namespace Boomerang::Core::Graphics::Renderer {
     }
 
 
-    glm::vec3* NormalizedVertexPositions(const glm::vec3& _position, const glm::vec2& _size);
+    glm::vec3* CalculateVertexPositions(const glm::vec3& _position, const glm::vec2& _size);
 
-    void init(const glm::vec2& _WindowDimensions);
+    void init();
     void shutdown();
 
     void StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader = "basic");

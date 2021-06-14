@@ -65,6 +65,6 @@ namespace Boomerang::Core::Graphics::Manager {
         unsigned int count = (_count == 0) ? vtxArray->GetIndexBuffer()->GetCount() * 6 : _count;
 
         glad_glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-        glad_glBindTexture(GL_TEXTURE_2D, 0);
+        //glad_glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

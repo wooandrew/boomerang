@@ -21,6 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#pragma warning(disable : 6386)     // Disable buffer overrun message: it wasn't overrun.
+
 #include "renderer.hpp"
 
 // Include standard library
@@ -51,15 +53,14 @@ namespace Boomerang::Core::Graphics::Renderer {
         std::unique_ptr<ShaderLibrary> __shader_library;
         
         std::unique_ptr<VertexArray> __quad_vtx_array;
-        std::unique_ptr<VertexBuffer> __quad_vtx_buffer;
+        std::shared_ptr<VertexBuffer> __quad_vtx_buffer;
 
         std::unique_ptr<VertexArray> __quad_vtx_array_fixed;
         std::unique_ptr<Texture> __white;
 
-        unsigned int __quad_index_count = 0;
+        std::shared_ptr<Texture> __test;
 
-        // Window Size
-        glm::vec2 WindowDimensions;
+        unsigned int __quad_index_count = 0;
 
         // Vertex data storage
         Graphics::Vertex* __quad_vtx_buf_base = nullptr;
@@ -68,30 +69,27 @@ namespace Boomerang::Core::Graphics::Renderer {
 
     static RendererData sData;
 
-    glm::vec3* NormalizedVertexPositions(const glm::vec3& _position, const glm::vec2& _size) {
+    glm::vec3* CalculateVertexPositions(const glm::vec3& _position, const glm::vec2& _size) {
 
-        glm::vec3 NormalizedPositions[4] = { };
+        glm::vec3 __vp[4] = { };
 
-        const auto& __wd = sData.WindowDimensions;
+        // Counter clockwise vertices
+        __vp[0] = { _position.x - (_size.x / 2), _position.y - (_size.y / 2), _position.z };       // Bottom Left
+        __vp[1] = { _position.x + (_size.x / 2), _position.y - (_size.y / 2), _position.z };       // Bottom Right
+        __vp[2] = { _position.x + (_size.x / 2), _position.y + (_size.y / 2), _position.z };       // Top Right
+        __vp[3] = { _position.x - (_size.x / 2), _position.y + (_size.y / 2), _position.z };       // Top Left
 
-        NormalizedPositions[0] = { (_position.x - _size.x) / __wd.x, (_position.y - _size.y) / __wd.y, _position.z };       // Bottom Left
-        NormalizedPositions[1] = { (_position.x + _size.x) / __wd.x, (_position.y - _size.y) / __wd.y, _position.z };       // Bottom Right
-        NormalizedPositions[2] = { (_position.x - _size.x) / __wd.x, (_position.y + _size.y) / __wd.y, _position.z };       // Top Left
-        NormalizedPositions[3] = { (_position.x + _size.x) / __wd.x, (_position.y + _size.y) / __wd.y, _position.z };       // Top Right
-
-        return NormalizedPositions;
+        return __vp;
     }
 
-    void init(const glm::vec2& _WindowDimensions) {
-
-        sData.WindowDimensions = _WindowDimensions;
+    void init() {
 
         // Create Vertex Array (dynamic)
         sData.__quad_vtx_array = std::make_unique<VertexArray>();
         sData.__quad_vtx_buf_base = new Graphics::Vertex[sData.MaxVertices];
 
         // Create Vertex Buffer (dynamic)
-        sData.__quad_vtx_buffer = std::make_unique<VertexBuffer>();
+        sData.__quad_vtx_buffer = std::make_shared<VertexBuffer>();
         sData.__quad_vtx_buffer->Create(sData.MaxVertices * sizeof(Graphics::Vertex));
 
         sData.__quad_vtx_buffer->SetLayout({ { ShaderDataType::Float3, "a_Position" },
@@ -99,7 +97,7 @@ namespace Boomerang::Core::Graphics::Renderer {
                                              { ShaderDataType::Float4, "a_Color"},
                                              { ShaderDataType::Float, "a_TexSlot"} });
 
-        //sData.__quad_vtx_array->AddVertexBuffer(sData.__quad_vtx_buffer);
+        sData.__quad_vtx_array->AddVertexBuffer(sData.__quad_vtx_buffer);
 
         // Create Index Buffer (dynamic)
         uint32_t* __quad_indices = new uint32_t[sData.MaxIndices];
@@ -120,8 +118,6 @@ namespace Boomerang::Core::Graphics::Renderer {
 
         std::shared_ptr<IndexBuffer> __quad_ib = std::make_shared<IndexBuffer>(__quad_indices, sData.MaxIndices * sizeof(uint32_t));
         sData.__quad_vtx_array->SetIndexBuffer(__quad_ib);
-
-        delete[] __quad_indices;
 
         // Create Vertex Array (fixed)
         sData.__quad_vtx_array_fixed = std::make_unique<VertexArray>();
@@ -154,7 +150,14 @@ namespace Boomerang::Core::Graphics::Renderer {
         // Initialize Shader Library
         sData.__shader_library = std::make_unique<ShaderLibrary>(ShaderLibrary("assets/shaders/.shaders"));
 
+        sData.__white->Bind(0);
+
+        sData.__test = std::make_shared<Texture>("assets/nodes/ocean_125.png");
+
         sData.__quad_vtx_array->Bind();
+        sData.__test->Bind(0);
+
+        delete[] __quad_indices;
     }
 
     void shutdown() {
@@ -163,19 +166,22 @@ namespace Boomerang::Core::Graphics::Renderer {
 
     void StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader) {
 
+        sData.__quad_index_count = 0;
+        sData.__quad_vtx_buf_ptr = sData.__quad_vtx_buf_base;
+
         sData.__shader_library->GetMap().find(_shader)->second->Bind();
         sData.__shader_library->GetMap().find(_shader)->second->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
         sData.__shader_library->GetMap().find(_shader)->second->SetFloat4("u_Color", glm::vec4(1.f));
-        sData.__shader_library->GetMap().find(_shader)->second->SetFloat4("u_Transform", glm::vec4(1.f));
-
-        sData.__quad_index_count = 0;
-        sData.__quad_vtx_buf_ptr = sData.__quad_vtx_buf_base;
+        sData.__shader_library->GetMap().find(_shader)->second->SetMat4("u_Transform", glm::mat4(1.0f));
     }
 
     void FlushScene() {
 
-        uint32_t __size = reinterpret_cast<uint8_t*>(sData.__quad_vtx_buf_ptr) - reinterpret_cast<uint8_t*>(sData.__quad_vtx_buf_base);
+        uint32_t __size = reinterpret_cast<uint8_t*>(sData.__quad_vtx_buf_ptr) - 
+                          reinterpret_cast<uint8_t*>(sData.__quad_vtx_buf_base);
+
         sData.__quad_vtx_buffer->SetData(sData.__quad_vtx_buf_base, __size);
+
         Manager::DrawIndexed(sData.__quad_vtx_array, sData.__quad_index_count);
     }
 
@@ -265,51 +271,39 @@ namespace Boomerang::Core::Graphics::Renderer {
     }
     void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color) {
 
-        const glm::vec3* _norm_pos = NormalizedVertexPositions(_position, _size);
+        const glm::vec3* __vp = CalculateVertexPositions(_position, _size);
 
-        sData.__white->Bind(0);
+        //sData.__test->Bind(0);
 
         // Bottom Left
-        sData.__quad_vtx_buf_ptr->position = {0, 0, 0};
+        sData.__quad_vtx_buf_ptr->position = __vp[0];
         sData.__quad_vtx_buf_ptr->texcoord = { 0.f, 0.f };
         sData.__quad_vtx_buf_ptr->color = _color;
         sData.__quad_vtx_buf_ptr->texslot = 0.f;
         sData.__quad_vtx_buf_ptr++;
 
         // Bottom Right
-        sData.__quad_vtx_buf_ptr->position = {0.25, 0, 0};
+        sData.__quad_vtx_buf_ptr->position = __vp[1];
         sData.__quad_vtx_buf_ptr->texcoord = { 1.f, 0.f };
         sData.__quad_vtx_buf_ptr->color = _color;
         sData.__quad_vtx_buf_ptr->texslot = 0.f;
         sData.__quad_vtx_buf_ptr++;
 
-        // Top Left
-        sData.__quad_vtx_buf_ptr->position = {0, 0.25, 0};
+        // Top Right
+        sData.__quad_vtx_buf_ptr->position = __vp[2];
         sData.__quad_vtx_buf_ptr->texcoord = { 1.f, 1.f };
         sData.__quad_vtx_buf_ptr->color = _color;
         sData.__quad_vtx_buf_ptr->texslot = 0.f;
         sData.__quad_vtx_buf_ptr++;
 
-        // Top Right
-        sData.__quad_vtx_buf_ptr->position = {0.25, 0.25, 0};
+        // Top Left
+        sData.__quad_vtx_buf_ptr->position = __vp[3];
         sData.__quad_vtx_buf_ptr->texcoord = { 0.f, 1.f };
         sData.__quad_vtx_buf_ptr->color = _color;
         sData.__quad_vtx_buf_ptr->texslot = 0.f;
         sData.__quad_vtx_buf_ptr++;
 
         sData.__quad_index_count += 6;
-
-        //FlushScene();
-
-        /*
-        sData.__white->Bind();
-
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * 
-                              glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
-
-        sData.__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
-
-        Manager::DrawIndexed(sData.__quad_vtx_array);*/
     }
     void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _rotation, _color);
