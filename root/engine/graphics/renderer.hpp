@@ -52,11 +52,16 @@ namespace Boomerang::Core::Graphics::Renderer {
     }
 
 
-    glm::vec3* CalculateVertexPositions(const glm::vec3& _position, const glm::vec2& _size);
+    std::vector<glm::vec3> CalculateVertexPositions(const glm::vec3& _position, const glm::vec2& _size);
+    std::vector<glm::vec3> RotateVertices(const std::vector<glm::vec3>& _vertices, const glm::vec3& _position, const float _rotation);
 
     void init();
     void shutdown();
 
+    // Add to batch
+    void AddQuad(const std::vector<glm::vec3>& _vertices, const glm::vec4& _color, const float _texslot = 0);
+
+    // Render commands+
     void StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader = "basic");
     void FlushScene();
     void EndScene();

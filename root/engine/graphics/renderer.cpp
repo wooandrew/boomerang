@@ -50,17 +50,19 @@ namespace Boomerang::Core::Graphics::Renderer {
         const uint32_t MaxVertices = MaxQuads * 4;
         const uint32_t MaxIndices = MaxQuads * 6;
 
+        // Shaders
         std::unique_ptr<ShaderLibrary> __shader_library;
         
+        // Vertex Array Data
         std::unique_ptr<VertexArray> __quad_vtx_array;
         std::shared_ptr<VertexBuffer> __quad_vtx_buffer;
-
         std::unique_ptr<VertexArray> __quad_vtx_array_fixed;
-        std::unique_ptr<Texture> __white;
-
-        std::shared_ptr<Texture> __test;
-
         unsigned int __quad_index_count = 0;
+        
+        // Texture storage
+        std::shared_ptr<Texture> __white;
+        std::shared_ptr<Texture> __test;
+        std::vector<int> __samplers;
 
         // Vertex data storage
         Graphics::Vertex* __quad_vtx_buf_base = nullptr;
@@ -69,17 +71,31 @@ namespace Boomerang::Core::Graphics::Renderer {
 
     static RendererData sData;
 
-    glm::vec3* CalculateVertexPositions(const glm::vec3& _position, const glm::vec2& _size) {
+    std::vector<glm::vec3> CalculateVertexPositions(const glm::vec3& _position, const glm::vec2& _size) {
 
-        glm::vec3 __vp[4] = { };
+        std::vector<glm::vec3> __vp;
 
         // Counter clockwise vertices
-        __vp[0] = { _position.x - (_size.x / 2), _position.y - (_size.y / 2), _position.z };       // Bottom Left
-        __vp[1] = { _position.x + (_size.x / 2), _position.y - (_size.y / 2), _position.z };       // Bottom Right
-        __vp[2] = { _position.x + (_size.x / 2), _position.y + (_size.y / 2), _position.z };       // Top Right
-        __vp[3] = { _position.x - (_size.x / 2), _position.y + (_size.y / 2), _position.z };       // Top Left
+        __vp.push_back({ _position.x - (_size.x / 2), _position.y - (_size.y / 2), _position.z });       // Bottom Left
+        __vp.push_back({ _position.x + (_size.x / 2), _position.y - (_size.y / 2), _position.z });       // Bottom Right
+        __vp.push_back({ _position.x + (_size.x / 2), _position.y + (_size.y / 2), _position.z });       // Top Right
+        __vp.push_back({ _position.x - (_size.x / 2), _position.y + (_size.y / 2), _position.z });       // Top Left
 
         return __vp;
+    }
+
+    std::vector<glm::vec3> RotateVertices(const std::vector<glm::vec3>& _vertices, const glm::vec3& _position, const float _rotation) {
+
+        std::vector<glm::vec3> __rv;
+
+        const glm::mat4 matT = glm::translate(glm::identity<glm::mat4>(), -_position);
+        const glm::mat4 matR = glm::rotate(glm::identity<glm::mat4>(), glm::radians(_rotation), { 0.f, 0.f, 1.f });
+        const glm::mat4 matRT = glm::translate(glm::identity<glm::mat4>(), _position);
+
+        for (auto& vtx : _vertices)
+            __rv.push_back(glm::vec3(matRT * matR * matT * glm::vec4(vtx, 1.0f)));
+
+        return __rv;
     }
 
     void init() {
@@ -144,7 +160,7 @@ namespace Boomerang::Core::Graphics::Renderer {
         
         // Create 1x1 White Texture
         uint32_t __white_data = 0xffffffff;
-        sData.__white = std::make_unique<Texture>(glm::vec2(1, 1));
+        sData.__white = std::make_shared<Texture>(glm::vec2(1, 1));
         sData.__white->SetData(&__white_data, sizeof(uint32_t));
 
         // Initialize Shader Library
@@ -155,7 +171,9 @@ namespace Boomerang::Core::Graphics::Renderer {
         sData.__test = std::make_shared<Texture>("assets/nodes/ocean_125.png");
 
         sData.__quad_vtx_array->Bind();
-        sData.__test->Bind(0);
+
+        for (int i = 0; i < 32; i++)
+            sData.__samplers.push_back(i);
 
         delete[] __quad_indices;
     }
@@ -164,18 +182,55 @@ namespace Boomerang::Core::Graphics::Renderer {
         delete[] sData.__quad_vtx_buf_base;
     }
 
+    // Add to batch
+    void AddQuad(const std::vector<glm::vec3>& _vertices, const glm::vec4& _color, const float _texslot) {
+
+        // Bottom Left
+        sData.__quad_vtx_buf_ptr->position = _vertices[0];
+        sData.__quad_vtx_buf_ptr->texcoord = { 0.f, 0.f };
+        sData.__quad_vtx_buf_ptr->color = _color;
+        sData.__quad_vtx_buf_ptr->texslot = 0.f;
+        sData.__quad_vtx_buf_ptr++;
+
+        // Bottom Right
+        sData.__quad_vtx_buf_ptr->position = _vertices[1];
+        sData.__quad_vtx_buf_ptr->texcoord = { 1.f, 0.f };
+        sData.__quad_vtx_buf_ptr->color = _color;
+        sData.__quad_vtx_buf_ptr->texslot = 0.f;
+        sData.__quad_vtx_buf_ptr++;
+
+        // Top Right
+        sData.__quad_vtx_buf_ptr->position = _vertices[2];
+        sData.__quad_vtx_buf_ptr->texcoord = { 1.f, 1.f };
+        sData.__quad_vtx_buf_ptr->color = _color;
+        sData.__quad_vtx_buf_ptr->texslot = 0.f;
+        sData.__quad_vtx_buf_ptr++;
+
+        // Top Left
+        sData.__quad_vtx_buf_ptr->position = _vertices[3];
+        sData.__quad_vtx_buf_ptr->texcoord = { 0.f, 1.f };
+        sData.__quad_vtx_buf_ptr->color = _color;
+        sData.__quad_vtx_buf_ptr->texslot = 0.f;
+        sData.__quad_vtx_buf_ptr++;
+
+        sData.__quad_index_count += 6;
+    }
+
+    // Render commands
     void StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader) {
 
         sData.__quad_index_count = 0;
         sData.__quad_vtx_buf_ptr = sData.__quad_vtx_buf_base;
 
         sData.__shader_library->GetMap().find(_shader)->second->Bind();
+        sData.__shader_library->GetMap().find(_shader)->second->SetInt1v("u_Textures", 32, sData.__samplers.data());
         sData.__shader_library->GetMap().find(_shader)->second->SetMat4("u_ViewProjection", camera->GetViewProjectionMatrix());
         sData.__shader_library->GetMap().find(_shader)->second->SetFloat4("u_Color", glm::vec4(1.f));
         sData.__shader_library->GetMap().find(_shader)->second->SetMat4("u_Transform", glm::mat4(1.0f));
     }
-
     void FlushScene() {
+
+        sData.__test->Bind(0);
 
         uint32_t __size = reinterpret_cast<uint8_t*>(sData.__quad_vtx_buf_ptr) - 
                           reinterpret_cast<uint8_t*>(sData.__quad_vtx_buf_base);
@@ -184,7 +239,6 @@ namespace Boomerang::Core::Graphics::Renderer {
 
         Manager::DrawIndexed(sData.__quad_vtx_array, sData.__quad_index_count);
     }
-
     void EndScene() {
         FlushScene();
     }
@@ -270,57 +324,13 @@ namespace Boomerang::Core::Graphics::Renderer {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _color);
     }
     void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color) {
-
-        const glm::vec3* __vp = CalculateVertexPositions(_position, _size);
-
-        //sData.__test->Bind(0);
-
-        // Bottom Left
-        sData.__quad_vtx_buf_ptr->position = __vp[0];
-        sData.__quad_vtx_buf_ptr->texcoord = { 0.f, 0.f };
-        sData.__quad_vtx_buf_ptr->color = _color;
-        sData.__quad_vtx_buf_ptr->texslot = 0.f;
-        sData.__quad_vtx_buf_ptr++;
-
-        // Bottom Right
-        sData.__quad_vtx_buf_ptr->position = __vp[1];
-        sData.__quad_vtx_buf_ptr->texcoord = { 1.f, 0.f };
-        sData.__quad_vtx_buf_ptr->color = _color;
-        sData.__quad_vtx_buf_ptr->texslot = 0.f;
-        sData.__quad_vtx_buf_ptr++;
-
-        // Top Right
-        sData.__quad_vtx_buf_ptr->position = __vp[2];
-        sData.__quad_vtx_buf_ptr->texcoord = { 1.f, 1.f };
-        sData.__quad_vtx_buf_ptr->color = _color;
-        sData.__quad_vtx_buf_ptr->texslot = 0.f;
-        sData.__quad_vtx_buf_ptr++;
-
-        // Top Left
-        sData.__quad_vtx_buf_ptr->position = __vp[3];
-        sData.__quad_vtx_buf_ptr->texcoord = { 0.f, 1.f };
-        sData.__quad_vtx_buf_ptr->color = _color;
-        sData.__quad_vtx_buf_ptr->texslot = 0.f;
-        sData.__quad_vtx_buf_ptr++;
-
-        sData.__quad_index_count += 6;
+        AddQuad(CalculateVertexPositions(_position, _size), _color);
     }
     void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
         DrawQuad({ _position.x, _position.y, 0.0f }, _size, _rotation, _color);
     }
     void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color) {
-
-        sData.__shader_library->GetMap().find("basic")->second->SetFloat4("u_Color", _color);
-        sData.__white->Bind(0);
-
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * 
-                              glm::scale(glm::mat4(1.0f), { _size.x, _size.y, 1.0f });
-
-        transform = glm::rotate(transform, glm::radians(_rotation), { 0.f, 0.f, 1.f });
-        sData.__shader_library->GetMap().find("basic")->second->SetMat4("u_Transform", transform);
-        
-        //sData.__quad_vtx_array_fixed->Bind();
-        Manager::DrawIndexed(sData.__quad_vtx_array_fixed);
+        AddQuad(RotateVertices(CalculateVertexPositions(_position, _size), _position, _rotation), _color);
     }
 
     // Shader Only Rendering
@@ -329,39 +339,29 @@ namespace Boomerang::Core::Graphics::Renderer {
     //}
     void LoadingDots(const glm::vec2& _WindowSize, const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const std::chrono::steady_clock::duration& _clock) {
 
-        std::shared_ptr<Shader> shader = sData.__shader_library->GetMap().find("dots")->second;
-        shader->SetFloat4("u_Color", _color);
+        AddQuad(CalculateVertexPositions({ 0.f, 0.f, 1.f }, { 100.f, 100.f }), _color);
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 1.f)) *
-                              glm::scale(glm::mat4(1.0f), { 100, 100, 1.0f });
+        std::shared_ptr<Shader> shader = sData.__shader_library->GetMap().find("dots")->second;
 
         float runtime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(_clock).count() / 1000.f;
 
         shader->SetFloat2("u_Resolution", _WindowSize);
-        shader->SetMat4("u_Transform", transform);
+        //shader->SetMat4("u_Transform", transform);
         shader->SetInt("u_CircleCount", _count);
         shader->SetFloat("u_Spacing", _spacing);
         shader->SetFloat("u_Radius", _radius);
         shader->SetFloat("u_RunTime", runtime);
-
-        Manager::DrawIndexed(sData.__quad_vtx_array_fixed);
     }
 
     // Render Grid (debug_mode)
     void RenderGrid(const glm::vec2& _WindowSize,  const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom) {
 
+        AddQuad(CalculateVertexPositions({ 0, 0, 1.f }, { _WindowSize.x, _WindowSize.y }), glm::vec4(1.f));
         std::shared_ptr<Shader> shader = sData.__shader_library->GetMap().find("grid")->second;
-        shader->SetFloat4("u_Color", glm::vec4(1.f));
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 1.f)) * 
-                              glm::scale(glm::mat4(1.0f), { _WindowSize.x, _WindowSize.y, 1.0f });
-
-        shader->SetMat4("u_Transform", transform);
         shader->SetFloat("u_CellSize", _CellSize);
         shader->SetFloat2("u_Resolution", _WindowSize);
         shader->SetFloat3("u_CameraPosition", _CameraPosition);
-
-        Manager::DrawIndexed(sData.__quad_vtx_array_fixed);
     }
 
     // Render Chunk (debug_mode) -> this should be called from render world

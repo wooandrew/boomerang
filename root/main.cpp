@@ -64,6 +64,7 @@ int main(int argc, char* argv[]) {
     }
 
     // manager.InitializeWorld();
+    auto start = std::chrono::high_resolution_clock::now();
 
     while (manager.run()) {
 
@@ -73,8 +74,16 @@ int main(int argc, char* argv[]) {
 
         Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("main_0"));
         Boomerang::Core::Graphics::Renderer::DrawQuad({ 0.f, 0.f, LAYER1 }, { 100, 100 }, { 1.f, 1.f, 1.f, 1.f });
-        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0.f, -200.f, LAYER1 }, { 100, 100 }, { 0.8f, 0.2f, 0.3f, 1.f });
+        Boomerang::Core::Graphics::Renderer::DrawQuad({ 0.f, -200.f, LAYER1 }, { 100, 100 }, 30, { 0.8f, 0.2f, 0.3f, 1.f });
         //Boomerang::Core::Graphics::Renderer::DrawQuad({ 0, 0, 0 }, { 0.25, 0.25 }, 25, { 1.f, 0.f, 0.f, 1.f });
+        Boomerang::Core::Graphics::Renderer::EndScene();
+
+        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("grid_0"), "grid");
+        Boomerang::Core::Graphics::Renderer::RenderGrid(manager.GetWindowDimensions(), manager.GetCamera("main_0")->GetPosition(), 40.f);
+        Boomerang::Core::Graphics::Renderer::EndScene();
+
+        Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("grid_0"), "dots");
+        Boomerang::Core::Graphics::Renderer::LoadingDots(manager.GetWindowDimensions(), 5, 12.f, 3.f, glm::vec4(0.9), std::chrono::high_resolution_clock::now() - start);
         Boomerang::Core::Graphics::Renderer::EndScene();
 
         /*

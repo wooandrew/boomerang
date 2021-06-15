@@ -86,7 +86,9 @@ namespace Boomerang::Core {
 
         // Lock all cameras initially
         for (auto const& [key, val] : cameras)
-            val->SetLock(false);
+            val->SetLock(true);
+
+        cameras["main_0"]->SetLock(false);
 
         // Create default fonts
         FontLibrary.insert({ "nsjpl", std::make_unique<Graphics::FontLibrary>("nsjpl", "assets/fonts/nsjpl.otf") });
