@@ -68,10 +68,8 @@ namespace Boomerang::Core {
         // Initialize graphics manager
         Graphics::Manager::init();
 
-        Graphics::Manager::SetClearColor(glm::vec4(0.6));
-
         // Initialize 2d renderer
-        Graphics::Renderer::init();
+        Graphics::Renderer::init(engine.GetMaxTextureUnits());
 
         // Set default camera ortho to fit window dimensions
         DefaultCameraOrtho = glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
@@ -88,8 +86,6 @@ namespace Boomerang::Core {
         for (auto const& [key, val] : cameras)
             val->SetLock(true);
 
-        cameras["main_0"]->SetLock(false);
-
         // Create default fonts
         FontLibrary.insert({ "nsjpl", std::make_unique<Graphics::FontLibrary>("nsjpl", "assets/fonts/nsjpl.otf") });
         FontLibrary["nsjpl"]->AddSize(32);
@@ -103,7 +99,7 @@ namespace Boomerang::Core {
     void Manager::InitializeWorld() {
 
         // Initialize world
-        world = std::make_unique<World::Grid>(40);
+        world = std::make_unique<World::Grid>(80);
 
         // Terrain generation flag
         std::atomic<bool> FinishedWorldInit = false;
@@ -143,9 +139,9 @@ namespace Boomerang::Core {
             Graphics::Manager::BeginRender();
 
             Graphics::Renderer::StartScene(cameras["main_0"], "text");
-            Boomerang::Core::Graphics::Renderer::RenderText(BUILD_VERSION, { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec3(1.f), GetFont("nsjpl", 22));
-            Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { 920, 520, 0.1f }, { 1.f, 1.f }, glm::vec3(0, 1, 0), GetFont("nsjpl", 32));
-            Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec3(1), GetFont("nsjpl", 32));
+            Boomerang::Core::Graphics::Renderer::RenderText(BUILD_VERSION, { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec4(1.f), GetFont("nsjpl", 22));
+            Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { 920, 520, 0.1f }, { 1.f, 1.f }, glm::vec4(0, 1, 0, 1), GetFont("nsjpl", 32));
+            Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec4(1), GetFont("nsjpl", 32));
             Graphics::Renderer::EndScene();
 
             Graphics::Renderer::StartScene(cameras["grid_0"], "dots");

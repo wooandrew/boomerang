@@ -52,14 +52,14 @@ namespace Boomerang::Core::Graphics::Renderer {
     }
 
 
-    std::vector<glm::vec3> CalculateVertexPositions(const glm::vec3& _position, const glm::vec2& _size);
-    std::vector<glm::vec3> RotateVertices(const std::vector<glm::vec3>& _vertices, const glm::vec3& _position, const float _rotation);
+    glm::vec3* CalculateVertexPositions(const glm::vec3& _position, const glm::vec2& _size);
+    glm::vec3* RotateVertices(const glm::vec3* _vertices, const glm::vec3& _position, const float _rotation);
 
-    void init();
+    void init(int _MaxTextureUnits = 16);
     void shutdown();
 
     // Add to batch
-    void AddQuad(const std::vector<glm::vec3>& _vertices, const glm::vec4& _color, const float _texslot = 0);
+    void AddQuad(const glm::vec3* _vertices, const glm::vec4& _color, const float _texslot = 0);
 
     // Render commands+
     void StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader = "basic");
@@ -71,8 +71,8 @@ namespace Boomerang::Core::Graphics::Renderer {
     void RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
 
     // Render Text
-    void RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font);
-    void RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font);
+    void RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec4& _color, const Font& _font);
+    void RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec4& _color, const Font& _font);
 
     // Draw Static Quad
     void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
@@ -89,6 +89,8 @@ namespace Boomerang::Core::Graphics::Renderer {
 
     // Render Chunk (debug_mode) -> this should be called from render world
     void RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
+
+    void RenderNode(const std::shared_ptr<Boomerang::Core::World::Node>& node);
 }
 
 #endif // !BOOMERANG_ENGINE_GRAPHICS_RENDERER

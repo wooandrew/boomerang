@@ -120,4 +120,12 @@ namespace Boomerang::Core::Graphics {
     void Texture::Bind(unsigned int _slot) const {
         glad_glBindTextureUnit(_slot, TextureID);
     }
+
+    const unsigned int Texture::GetTextureID() const {
+        return TextureID;
+    }
+
+    bool Texture::operator==(const Texture& other) {
+        return TextureID == other.TextureID;
+    }
 }

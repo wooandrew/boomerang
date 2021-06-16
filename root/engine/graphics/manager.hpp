@@ -49,7 +49,7 @@ namespace Boomerang::Core::Graphics::Manager {
     void BeginRender();
     void EndRender(GLFWwindow* window);
     
-    void DrawIndexed(const std::unique_ptr<VertexArray>& vtxArray, unsigned int _count = 0);
+    void DrawIndexed(const std::unique_ptr<VertexArray>& vtxArray, int _count = -1);
 }
 
 #endif // !BOOMERANG_ENGINE_GRAPHICS_MANAGER

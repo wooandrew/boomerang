@@ -33,8 +33,39 @@
 
 namespace Boomerang::Core::Graphics {
 
-    void Character::Bind(unsigned int _slot) const {
-        glad_glBindTextureUnit(_slot, TextureID);
+    Character::Character(const char _char, const glm::vec2& _size, const glm::vec2& _bearing, signed long _advance, void* buffer) : Texture(_size) {
+        
+        path = _char;
+
+        dimensions = _size;
+        bearing = _bearing;
+        advance = _advance;
+
+        //glad_glGenTextures(1, &TextureID);
+        //glad_glBindTexture(GL_TEXTURE_2D, TextureID);
+        //glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, _size.x, _size.y, 0, GL_RED, GL_UNSIGNED_BYTE, buffer);
+        //
+        //// Set texture options
+        //glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //
+        //glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glad_glCreateTextures(GL_TEXTURE_2D, 1, &TextureID);
+        glad_glTextureStorage2D(TextureID, 1, GL_RED, dimensions.x, dimensions.y);
+        
+        glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        
+        glad_glTextureParameteri(TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glad_glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        
+        glad_glTextureSubImage2D(TextureID, 0, 0, 0, dimensions.x, dimensions.y, GL_RED, GL_UNSIGNED_BYTE, buffer);
+    }
+
+    bool operator==(const Texture& left, const Character& right) {
+        return left.GetTextureID() == right.GetTextureID();
     }
 
     Font::Font() {
@@ -86,28 +117,12 @@ namespace Boomerang::Core::Graphics {
                 continue;
             }
 
-            // Generate texture
-            unsigned int texture;
-            glad_glGenTextures(1, &texture);
-            glad_glBindTexture(GL_TEXTURE_2D, texture);
-            glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
-
-            // Set texture options
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
             // Store character for later use
-            Character character = {
-                texture,
+            characters[c] = std::make_shared<Character>(Character(c,
                 glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
                 glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                face->glyph->advance.x
-            };
-
-            characters.insert(std::pair<char, Character>(c, character));
+                face->glyph->advance.x, face->glyph->bitmap.buffer)
+            );
         }
 
         FT_Done_Face(face);
@@ -117,7 +132,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Getters
-    const std::map<char, Character>& Font::GetCharacters() const {
+    const std::map<char, std::shared_ptr<Character>>& Font::GetCharacters() const {
         return characters;
     }
 

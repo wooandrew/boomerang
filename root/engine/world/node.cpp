@@ -80,19 +80,18 @@ namespace Boomerang::Core::World {
     const glm::vec3& Node::GetPosition() const {
         return position;
     }
-
+    const glm::vec3& Node::GetTruePosition() const {
+        return GridToPixelCoord(position, size.x);
+    }
     const glm::vec2& Node::GetSize() const {
         return size;
     }
-
     const glm::vec2& Node::GetScale() const {
         return scale;
     }
-
     const std::shared_ptr<Boomerang::Core::Graphics::Texture> Node::GetTexture() const {
         return texture;
     }
-    
     const glm::mat4& Node::GetTransform() const {
         return transform;
     }

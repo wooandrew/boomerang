@@ -28,6 +28,7 @@
 
 // Include standard library
 #include <string>
+#include <memory>
 #include <map>
 
 // Include dependencies
@@ -35,17 +36,18 @@
 #include <FREETYPE/include/ft2build.h>
 #include FT_FREETYPE_H
 
+// Include boomerang libraries
+#include "texture.hpp"
+
 namespace Boomerang::Core::Graphics {
 
-    // TODO: overload Texture to create Character
-    struct Character {
+    struct Character : public Texture {
 
-        unsigned int TextureID;
-        glm::ivec2 size;            // Need to switch to our own convention
-        glm::ivec2 bearing;         // Need to switch to our own convention
+        Character() = default;
+        Character(const char _char, const glm::vec2& _size, const glm::vec2& _bearing, signed long _advance, void* buffer);
+
+        glm::vec2 bearing;         // Need to switch to our own convention
         signed long advance;
-
-        void Bind(unsigned int slot = 0) const;
     };
 
     class Font {
@@ -61,7 +63,7 @@ namespace Boomerang::Core::Graphics {
         int init(const std::string& _FontName, const std::string& _FontPath, int _FontSize = 48);
 
         // Getters
-        const std::map<char, Character>& GetCharacters() const;
+        const std::map<char, std::shared_ptr<Character>>& GetCharacters() const;
         const int GetSize() const;
 
     private:
@@ -71,7 +73,7 @@ namespace Boomerang::Core::Graphics {
 
         int FontSize;
 
-        std::map<char, Character> characters;
+        std::map<char, std::shared_ptr<Character>> characters;
     };
 
     class FontLibrary {
