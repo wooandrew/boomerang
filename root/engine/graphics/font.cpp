@@ -26,6 +26,7 @@
 // Include standard library
 #include <map>
 #include <fstream>
+//#include <algorithm>
 
 // Include dependencies
 #include <glad/glad.h>
@@ -33,52 +34,13 @@
 
 namespace Boomerang::Core::Graphics {
 
-    Character::Character(const char _char, const glm::vec2& _size, const glm::vec2& _bearing, signed long _advance, void* buffer) : Texture(_size) {
-        
-        path = _char;
-
-        dimensions = _size;
-        bearing = _bearing;
-        advance = _advance;
-
-        //glad_glGenTextures(1, &TextureID);
-        //glad_glBindTexture(GL_TEXTURE_2D, TextureID);
-        //glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, _size.x, _size.y, 0, GL_RED, GL_UNSIGNED_BYTE, buffer);
-        //
-        //// Set texture options
-        //glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //
-        //glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glad_glCreateTextures(GL_TEXTURE_2D, 1, &TextureID);
-        glad_glTextureStorage2D(TextureID, 1, GL_RED, dimensions.x, dimensions.y);
-        
-        glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        
-        glad_glTextureParameteri(TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glad_glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        
-        glad_glTextureSubImage2D(TextureID, 0, 0, 0, dimensions.x, dimensions.y, GL_RED, GL_UNSIGNED_BYTE, buffer);
-    }
-
-    bool operator==(const Texture& left, const Character& right) {
-        return left.GetTextureID() == right.GetTextureID();
-    }
-
     Font::Font() {
         FontName = "null";
         FontPath = "null";
         FontSize = 48;
+        dimensions = { 0, 0 };
     }
     Font::Font(const std::string& _FontName, const std::string& _FontPath, int _FontSize) {
-
-        FontName = _FontName;
-        FontPath = _FontPath;
-        FontSize = _FontSize;
-
         init(_FontName, _FontPath, _FontSize);
     }
     Font::~Font() {
@@ -90,6 +52,7 @@ namespace Boomerang::Core::Graphics {
         FontName = _FontName;
         FontPath = _FontPath;
         FontSize = _FontSize;
+        dimensions = { 0, 0 };
         
         FT_Library library;
         if (FT_Init_FreeType(&library)) {
@@ -109,7 +72,7 @@ namespace Boomerang::Core::Graphics {
         // Disable byte-alignment restriction
         glad_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        for (unsigned char c = 0; c < 128; c++) {
+        for (unsigned char c = 32; c < 128; c++) {
 
             // Load glyph 
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
@@ -117,12 +80,44 @@ namespace Boomerang::Core::Graphics {
                 continue;
             }
 
-            // Store character for later use
-            characters[c] = std::make_shared<Character>(Character(c,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                face->glyph->advance.x, face->glyph->bitmap.buffer)
-            );
+            // Calculate atlas dimensions
+            dimensions.x += face->glyph->bitmap.width;
+            dimensions.y = std::max(dimensions.y, static_cast<float>(face->glyph->bitmap.rows));
+        }
+
+        // Generate texture
+        glad_glGenTextures(1, &TextureID);
+        glad_glBindTexture(GL_TEXTURE_2D, TextureID);
+        glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, dimensions.x, dimensions.y, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+
+        // Set texture options
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glad_glBindTexture(GL_TEXTURE_2D, TextureID);
+
+        int x = 0;
+        for (unsigned char c = 32; c < 128; c++) {
+
+            // Load glyph 
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER))      // No need to log error here, if error occurs, it will 
+                continue;                                   // already have been logged by the previous loop.
+
+            // Sub in glyph data
+            glad_glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+
+            characters[c] = {
+                c,
+                { face->glyph->bitmap.width, face->glyph->bitmap.rows },
+                { face->glyph->bitmap_left, face->glyph->bitmap_top },
+                { face->glyph->advance.x, face->glyph->advance.y },
+                static_cast<float>(x) / dimensions.x
+            };
+
+            x += face->glyph->bitmap.width;
         }
 
         FT_Done_Face(face);
@@ -132,7 +127,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     // Getters
-    const std::map<char, std::shared_ptr<Character>>& Font::GetCharacters() const {
+    const std::map<char, Character>& Font::GetCharacters() const {
         return characters;
     }
 
@@ -146,14 +141,14 @@ namespace Boomerang::Core::Graphics {
         FontName = _FontName;
         FontPath = _FontPath;
 
-        fl.insert({ 48, Font(FontName, FontPath) });
+        fl.insert({ 48, std::make_shared<Font>(FontName, FontPath) });
     }
 
     void FontLibrary::AddSize(int _size) {
-        fl.insert({ _size, Font(FontName, FontPath, _size) });
+        fl.insert({ _size, std::make_shared<Font>(FontName, FontPath) });
     }
 
-    const Font& FontLibrary::GetFont(int _size) {
+    const std::shared_ptr<Font>& FontLibrary::GetFont(int _size) {
 
         if (fl.count(_size) == 0)
             AddSize(_size);

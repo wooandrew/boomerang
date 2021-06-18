@@ -41,16 +41,16 @@
 
 namespace Boomerang::Core::Graphics {
 
-    struct Character : public Texture {
+    struct Character {
 
-        Character() = default;
-        Character(const char _char, const glm::vec2& _size, const glm::vec2& _bearing, signed long _advance, void* buffer);
-
-        glm::vec2 bearing;         // Need to switch to our own convention
-        signed long advance;
+        unsigned char character;
+        glm::vec2 size;
+        glm::vec2 bearing;
+        glm::vec2 advance;
+        float tc_offset;
     };
 
-    class Font {
+    class Font : public Texture {
 
         /// Font objects & rendering
 
@@ -63,7 +63,7 @@ namespace Boomerang::Core::Graphics {
         int init(const std::string& _FontName, const std::string& _FontPath, int _FontSize = 48);
 
         // Getters
-        const std::map<char, std::shared_ptr<Character>>& GetCharacters() const;
+        const std::map<char, Character>& GetCharacters() const;
         const int GetSize() const;
 
     private:
@@ -73,7 +73,7 @@ namespace Boomerang::Core::Graphics {
 
         int FontSize;
 
-        std::map<char, std::shared_ptr<Character>> characters;
+        std::map<char, Character> characters;
     };
 
     class FontLibrary {
@@ -85,14 +85,14 @@ namespace Boomerang::Core::Graphics {
         FontLibrary(const std::string& _FontName, const std::string& _FontPath);
 
         void AddSize(int _size);    // Creates a bew font object of the desired size
-        const Font& GetFont(int _size);
+        const std::shared_ptr<Font>& GetFont(int _size);
 
     private:
 
         std::string FontName;
         std::string FontPath;
 
-        std::map<int, Font> fl;
+        std::map<int, std::shared_ptr<Font>> fl;
     };
 }
 

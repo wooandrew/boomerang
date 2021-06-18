@@ -69,7 +69,7 @@ namespace Boomerang::Core {
         Graphics::Manager::init();
 
         // Initialize 2d renderer
-        Graphics::Renderer::init(engine.GetMaxTextureUnits());
+        Graphics::Renderer::init(engine.GetWindowDimensions(), engine.GetMaxTextureUnits());
 
         // Set default camera ortho to fit window dimensions
         DefaultCameraOrtho = glm::ortho(-engine.GetWindowDimensions().x / 2.f, engine.GetWindowDimensions().x / 2.f,
@@ -139,13 +139,13 @@ namespace Boomerang::Core {
             Graphics::Manager::BeginRender();
 
             Graphics::Renderer::StartScene(cameras["main_0"], "text");
-            Boomerang::Core::Graphics::Renderer::RenderText(BUILD_VERSION, { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec4(1.f), GetFont("nsjpl", 22));
-            Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { 920, 520, 0.1f }, { 1.f, 1.f }, glm::vec4(0, 1, 0, 1), GetFont("nsjpl", 32));
-            Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec4(1), GetFont("nsjpl", 32));
+            Boomerang::Core::Graphics::Renderer::RenderText(BUILD_VERSION, { { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec4(1.f) }, GetFont("nsjpl", 22));
+            Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { { 920, 520, 0.1f }, { 1.f, 1.f }, { 0.f, 1.f, 0.f, 1.f } }, GetFont("nsjpl", 32));
+            Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec4(1) }, GetFont("nsjpl", 32));
             Graphics::Renderer::EndScene();
 
             Graphics::Renderer::StartScene(cameras["grid_0"], "dots");
-            Graphics::Renderer::LoadingDots(engine.GetWindowDimensions(), 5, 12.f, 3.f, glm::vec4(0.9), std::chrono::high_resolution_clock::now() - start);
+            Graphics::Renderer::LoadingDots(5, 12.f, 3.f, { { 0.f, 0.f, 1.f }, { 100.f, 20.f }, glm::vec4(0.9f) }, std::chrono::high_resolution_clock::now() - start);
             Graphics::Renderer::EndScene();
 
             Graphics::Manager::EndRender(engine.GetWindow());
@@ -203,7 +203,7 @@ namespace Boomerang::Core {
     const std::unique_ptr<Graphics::OrthoCam>& Manager::GetCamera(const std::string& _name) {
         return cameras[_name];
     }
-    const Graphics::Font& Manager::GetFont(const std::string& _name, int _size) {
+    const std::shared_ptr<Graphics::Font>& Manager::GetFont(const std::string & _name, int _size) {
         return FontLibrary[_name]->GetFont(_size);
     }
     const std::unique_ptr<World::Grid>& Manager::GetWorld() const {

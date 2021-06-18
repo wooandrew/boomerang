@@ -44,7 +44,6 @@ namespace Boomerang::Core::Graphics {
         glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
-
     Texture::Texture(const std::string& _path) : path(_path) {
 
         dimensions = glm::vec2();
@@ -101,6 +100,64 @@ namespace Boomerang::Core::Graphics {
 
     Texture::~Texture() {
         glad_glDeleteTextures(1, &TextureID);
+    }
+
+    int Texture::init(const std::string& _path) {
+
+        path = _path;
+
+        dimensions = glm::vec2();
+
+        TextureID = 0;
+
+        InternalFormat = 0;
+        DataFormat = 0;
+
+        int width = 0;
+        int height = 0;
+        int channels = 0;
+
+        stbi_set_flip_vertically_on_load(true);
+        stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+
+        if (data) {
+
+            dimensions = glm::vec2(width, height);
+
+            GLenum iFormat = 0;     // Temp Internal Format
+            GLenum dFormat = 0;     // Temp Data Format
+
+            if (channels == 4) {
+                iFormat = GL_RGBA8;
+                dFormat = GL_RGBA;
+            }
+            else if (channels == 3) {
+                iFormat = GL_RGB8;
+                dFormat = GL_RGB;
+            }
+            else
+                ASWL::Logger::logger("T0001", "Error: Bad channel #", std::to_string(channels));
+
+            InternalFormat = iFormat;
+            DataFormat = dFormat;
+
+            glad_glCreateTextures(GL_TEXTURE_2D, 1, &TextureID);
+            glad_glTextureStorage2D(TextureID, 1, InternalFormat, dimensions.x, dimensions.y);
+
+            glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glad_glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+            glad_glTextureParameteri(TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glad_glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+            glad_glTextureSubImage2D(TextureID, 0, 0, 0, dimensions.x, dimensions.y, DataFormat, GL_UNSIGNED_BYTE, data);
+        }
+        else
+            ASWL::Logger::logger("T0002", "Error: Failed to load image -> !stbi_load() [", path, "].");
+
+        stbi_image_free(data);
+
+        return 0;
     }
 
     const glm::vec2& Texture::GetDimensions() const {

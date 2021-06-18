@@ -41,18 +41,21 @@ namespace Boomerang::Core::Graphics {
 
     public:
 
+        Texture() = default;
         Texture(const glm::vec2& _dimensions);
         Texture(const std::string& _path);
         ~Texture();
 
+        virtual int init(const std::string& _path);
+
         const glm::vec2& GetDimensions() const;
 
         void SetData(void* _data, unsigned int _size);
-        void Bind(unsigned int slot = 1) const;
+        void Bind(unsigned int _slot = 1) const;
 
         const unsigned int GetTextureID() const;
 
-        bool operator==(const Texture& other);
+        bool operator== (const Texture& other);
 
     protected:
 

@@ -40,6 +40,7 @@
 namespace Boomerang::Core::Physics {
 
     // TODO: Object class should inherit from Serializable class
+    // TODO: Object class functions should all be virtual
     class Object {
 
         /// Inheritable object base class. All objects should inherit from this class.

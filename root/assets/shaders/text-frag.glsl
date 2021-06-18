@@ -51,9 +51,7 @@ void main() {
         case 30: color = vec4(1.0, 1.0, 1.0, texture(u_Textures[30], v_TexCoord).r) * o_Color;
         case 31: color = vec4(1.0, 1.0, 1.0, texture(u_Textures[31], v_TexCoord).r) * o_Color;
     }
-    
-    color = o_Color;
-
+   
     // Alpha channel handling
     if(color.a < 0.1) discard;
 }
