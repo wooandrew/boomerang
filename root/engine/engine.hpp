@@ -66,7 +66,7 @@ namespace Boomerang::Core {
                 WINDOWED,
                 FULLSCREEN,
                 WINDOWED_FULLSCREEN
-            }; VideoMode vidmode = VideoMode::WINDOWED;
+            }; VideoMode vidmode = VideoMode::WINDOWED_FULLSCREEN;
 
             std::vector<float> clearcolor = { 1.f, 1.f, 1.f, 0.f };     // Render surface clear color
             //RendererType rendermode = RendererType::Render_2D;        // Engine render mode

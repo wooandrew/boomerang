@@ -81,7 +81,7 @@ namespace Boomerang::Core::Graphics {
             }
 
             // Calculate atlas dimensions
-            dimensions.x += face->glyph->bitmap.width;
+            dimensions.x += face->glyph->bitmap.width + 1;
             dimensions.y = std::max(dimensions.y, static_cast<float>(face->glyph->bitmap.rows));
         }
 
@@ -117,7 +117,7 @@ namespace Boomerang::Core::Graphics {
                 static_cast<float>(x) / dimensions.x
             };
 
-            x += face->glyph->bitmap.width;
+            x += face->glyph->bitmap.width + 1;
         }
 
         FT_Done_Face(face);
@@ -130,9 +130,22 @@ namespace Boomerang::Core::Graphics {
     const std::map<char, Character>& Font::GetCharacters() const {
         return characters;
     }
-
     const int Font::GetSize() const {
         return FontSize;
+    }
+    std::vector<glm::vec2> Font::GetTexCoords(char _character) {
+
+        std::vector<glm::vec2> texcoords = { { 0.f, 0.f }, { 1.f, 0.f }, { 1.f, 1.f }, { 0.f, 1.f } };
+
+        Character ch = characters[_character];
+
+        // Bottom left to top left counter clockwise
+        texcoords[0] = { ch.tc_offset, 0 };                                                         // Bottom Left
+        texcoords[1] = { ch.tc_offset + (ch.size.x / dimensions.x), 0 };                            // Bottom Right
+        texcoords[2] = { ch.tc_offset + (ch.size.x / dimensions.x), ch.size.y / dimensions.y };     // Top Right
+        texcoords[3] = { ch.tc_offset, ch.size.y / dimensions.y };                                  // Top Left
+
+        return texcoords;
     }
 
     // Font Library
@@ -145,7 +158,7 @@ namespace Boomerang::Core::Graphics {
     }
 
     void FontLibrary::AddSize(int _size) {
-        fl.insert({ _size, std::make_shared<Font>(FontName, FontPath) });
+        fl.insert({ _size, std::make_shared<Font>(FontName, FontPath, _size) });
     }
 
     const std::shared_ptr<Font>& FontLibrary::GetFont(int _size) {

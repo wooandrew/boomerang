@@ -13,7 +13,7 @@ void main() {
 
     vec4 o_Color = u_Color * v_Color;
 
-    if (v_Color.x == 0 || v_Color.y == 0 || v_Color.z == 0)
+    if (v_Color == vec4(0))
         o_Color = u_Color;
 
     // This ugly switch statement exists because of visual artifacts created 

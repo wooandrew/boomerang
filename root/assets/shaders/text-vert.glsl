@@ -18,5 +18,7 @@ void main() {
     v_Color = a_Color;
     v_TexSlot = a_TexSlot;
 
-    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+    vec3 Position = vec3(a_Position.x,  -a_Position.y, a_Position.z);
+
+    gl_Position = u_ViewProjection * u_Transform * vec4(Position, 1.0);
 }

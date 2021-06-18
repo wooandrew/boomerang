@@ -307,6 +307,9 @@ namespace Boomerang::Core::Graphics::Renderer {
     // Render text functions
     void RenderText(const std::string& _string, const render_data& _data, const std::shared_ptr<Font>& _font) {
 
+        sData.__shader_library->GetMap().find("text")->second->SetFloat4("u_Color", _data.color);
+        sData.__shader_library->GetMap().find("text")->second->SetBool("u_Debug", false);
+
         if (sData.__texslot > sData.__max_texture_units - 1 || sData.__quad_index_count > sData.MaxIndices)
             FlushScene();
 
@@ -323,17 +326,23 @@ namespace Boomerang::Core::Graphics::Renderer {
             texslot = sData.__texslot++;
         }
 
-        float px = _data.position.x;
+        float px = 0;
         float pz = _data.position.z;
 
         // Calculate string offset
-        float offset = 0;
+        glm::vec2 offset = { 0.f, 0.f };
         for (std::string::const_iterator i = _string.begin(); i != _string.end(); ++i) {
 
             Character ch = _font->GetCharacters().find(*i)->second;
 
-            offset = std::abs((px + ch.bearing.x + (ch.size.x / 2.f)) * _data.scale.x - _data.position.x);
-            px += (static_cast<int>(ch.advance.x) >> 6) - (ch.bearing.x / 2.f);
+            float x = ((px + ch.bearing.x) + (ch.size.x / 2.f)) * _data.scale.x - offset.x;
+
+            if (i == _string.end() - 1)
+                offset.x = x + (ch.size.x / 2.f) + (_font->GetCharacters().find(_string[0])->second.bearing.x / 2.f) + 4;
+
+            offset.y = std::max(offset.y, ch.size.y);
+
+            px += ((static_cast<int>(ch.advance.x) >> 6) - (ch.bearing.x / 2.f)) * _data.scale.x;
         }
         offset /= 2.f;
 
@@ -346,16 +355,19 @@ namespace Boomerang::Core::Graphics::Renderer {
 
             Character ch = _font->GetCharacters().find(*i)->second;
 
+            float xPos = ((px + ch.bearing.x) + (ch.size.x / 2.f)) * _data.scale.x - offset.x;
 
-            float xPos = (px + ch.bearing.x + (ch.size.x / 2.f)) * _data.scale.x - offset;
-            float yPos = (_data.position.y + (ch.size.y / 2.f) - (ch.size.y - ch.bearing.y) - (_font->GetSize() / 2.f) * 0.75f) * _data.scale.y;
+            // yPos offset calculations are inverted, because glyphs are inverted, then corrected in the shader.
+            // Offsets:  inverted y axis position    glyph baseline bearing       glyph centering     string height
+            float yPos = (_data.position.y * -1.f) + (ch.size.y - ch.bearing.y) - (ch.size.y / 2.f) + (offset.y - 1.f);
 
             float t_Width = static_cast<float>(ch.size.x) * _data.scale.x;
             float t_Height = static_cast<float>(ch.size.y) * _data.scale.y;
 
-            //AddQuad(CalculateVertexPositions({ xPos, yPos, pz += 0.00001 }, { t_Width, t_Height }), _data.color, static_cast<float>(texslot));
+            auto tc = _font->GetTexCoords(*i);
+            AddQuad(CalculateVertexPositions({ xPos, yPos, pz += 0.00001 }, { t_Width, t_Height }), _data.color, tc.data(), static_cast<float>(texslot));
 
-            px += (static_cast<int>(ch.advance.x) >> 6) - (ch.bearing.x / 2.f);
+            px += ((static_cast<int>(ch.advance.x) >> 6) - (ch.bearing.x / 2.f)) * _data.scale.x;
         }
     }
     void RenderTextOld(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec4& _color, const std::shared_ptr<Font>& _font) {

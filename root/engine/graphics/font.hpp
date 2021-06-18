@@ -28,6 +28,7 @@
 
 // Include standard library
 #include <string>
+#include <vector>
 #include <memory>
 #include <map>
 
@@ -65,6 +66,7 @@ namespace Boomerang::Core::Graphics {
         // Getters
         const std::map<char, Character>& GetCharacters() const;
         const int GetSize() const;
+        std::vector<glm::vec2> GetTexCoords(char _character);
 
     private:
 
