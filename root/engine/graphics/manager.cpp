@@ -59,7 +59,7 @@ namespace Boomerang::Core::Graphics {
         glfwSwapBuffers(window);
     }
 
-    void Manager::DrawIndexed(const std::shared_ptr<Vertex>& vtxArray) {
+    void Manager::DrawIndexed(const std::unique_ptr<Vertex>& vtxArray) {
         glad_glDrawElements(GL_TRIANGLES, vtxArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
         glad_glBindTexture(GL_TEXTURE_2D, 0);
     }

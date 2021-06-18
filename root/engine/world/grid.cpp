@@ -25,10 +25,8 @@
 
 // Include standard library
 #include <iostream>
-#include <future>
 #include <thread>
 #include <chrono>
-#include <utility>
 
 // Include boomerang libraries
 #include "../math/math.hpp"
@@ -47,42 +45,52 @@ namespace Boomerang::Core::World {
         seed = mte();                       // Randomly generate seed, which is seeded by current_time
         mte = std::mt19937_64(seed);        // Create a Mersenne Twister (19937_64) generator
 
-        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 9);
-        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
+        int mult = mte() % 100;
+
+        VoronoiFunction = [=](int _x, int _y) {
+
+            int n = _x + _y * static_cast<int>(mult);
+            n ^= n >> 4 | n << 4;
+
+            n %= 64;
+
+            int nX = n % 8;
+            int nY = n / 8;
+
+            return glm::vec2(nX - 3, nY - 4);
+        };
 
         LastPosition = { 0, 0, 0 };
+
+        bt.test = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
+        bt.POLAR = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/polar_125.png");
+        bt.TUNDRA = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/tundra_125.png");
+        bt.BORL_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/borl_forest_125.png");
+        bt.COLD_DESERT = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/cold_desert_125.png");
+        bt.PLAINS = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/plains_125.png");
+        bt.TEMP_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/temp_forest_125.png");
+        bt.WARM_DESERT = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/warm_desert_125.png");
+        bt.GRASSLAND = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/grassland_125.png");
+        bt.SAVANNA = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/savanna_125.png");
+        bt.TROP_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/trop_forest_125.png");
+        bt.RAIN_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/rain_forest_125.png");
+        bt.OCEAN = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/ocean_125.png");
     }
 
-    Grid::Grid(float seed, float _CellSize, float _scale) {
-
-        CellSize = _CellSize;
-        scale = _scale;
+    Grid::Grid(float seed, float _CellSize, float _scale) : Grid(_CellSize, _scale) {
 
         mte = std::mt19937_64(seed);        // Create a Mersenne Twister (19937_64) generator
-
-        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
-        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 6);
-
-        LastPosition = { 0, 0, 0 };
+        int mult = mte() % 100;
     }
 
     Grid::~Grid() { }
 
     void Grid::init(const glm::vec3& _position, const glm::vec2& _windowSize) {
 
-        bt.test        = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
-        bt.POLAR       = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/polar_125.png");
-        bt.TUNDRA      = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/tundra_125.png");
-        bt.BORL_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/borl_forest_125.png");
-        bt.COLD_DESERT = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/cold_desert_125.png");
-        bt.PLAINS      = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/plains_125.png");
-        bt.TEMP_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/temp_forest_125.png");
-        bt.WARM_DESERT = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/warm_desert_125.png");
-        bt.GRASSLAND   = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/grassland_125.png");
-        bt.SAVANNA     = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/savanna_125.png");
-        bt.TROP_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/trop_forest_125.png");
-        bt.RAIN_FOREST = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/rain_forest_125.png");
-        bt.OCEAN       = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/ocean_125.png");
+        // Initialize noise functions
+        HeightNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
+        TempNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
+        RainNoises = Boomerang::Core::Math::NoiseFactory(mte, 8);
 
         // Return pixel position as grid position
         glm::vec3 gridCoord = PixelToGridCoord(_position, CellSize);
@@ -130,6 +138,7 @@ namespace Boomerang::Core::World {
                 float yMaxCC = std::round(yMax / 8) + 1;
                 float yMinCC = std::round(yMin / 8) - 1;
 
+                // Create a copy of the map for asynchronous terrain generation
                 std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>> cpy = map;
 
                 std::vector<ASWL::eXperimental::SetHash> hashList;
@@ -142,18 +151,29 @@ namespace Boomerang::Core::World {
                     }
                 }
 
+                // Unload calculated chunks
                 for (auto const& hash : hashList)
                     cpy.erase(hash);
 
+                // Load new chunks
                 for (int y = yMinCC * 8; y <= yMaxCC * 8; y += 8) {
                     for (int x = xMinCC * 8; x <= xMaxCC * 8; x += 8) {
+
                         ASWL::eXperimental::SetHash hash(x, y);
+
+                        // Generate chunk 
                         if (cpy.count(hash) == 0) {
 
-                            glm::vec3 p = { static_cast<int>(hash.x.to_ulong()), static_cast<int>(hash.y.to_ulong()), _position.z };
-                            cpy.insert({ hash, std::make_shared<Chunk>(p, CellSize, 80.f / 125.f) });
-                            for (auto const& [key, val] : cpy[hash]->GetMap())
-                                val->SetBiome(DetermineBiome(mte, { val->GetPosition().x, val->GetPosition().y }, TempNoises, RainNoises), bt);
+                            glm::vec3 pos = { static_cast<int>(hash.x.to_ulong()), static_cast<int>(hash.y.to_ulong()), _position.z };
+
+                            VoronoiPoint vp({ pos.x / 8, pos.y / 8 }, VoronoiFunction, HeightNoises, TempNoises, RainNoises);
+                            cpy.insert({ hash, std::make_shared<Chunk>(pos, CellSize, 80.f / 125.f, vp) });
+
+                            for (auto const& [key, val] : cpy[hash]->GetMap()) {
+                                std::pair<BIOME, std::shared_ptr<Boomerang::Core::Graphics::Texture>> pa;
+                                pa = VoronoiPoint::ClosestBiome({ val->GetPosition().x, val->GetPosition().y }, vp, bt);
+                                val->SetBiome(pa.first, pa.second);
+                            }
                         }
                     }
                 }
@@ -171,11 +191,16 @@ namespace Boomerang::Core::World {
     void Grid::GenerateChunk(const glm::vec3& _position) {
 
         ASWL::eXperimental::SetHash hash(_position.x, _position.y);
-        Chunk c(_position, CellSize, 80.f / 125.f);
-        map.insert({ hash, std::make_shared<Chunk>(c) });
+
+        VoronoiPoint vp({ _position.x / 8, _position.y / 8 }, VoronoiFunction, HeightNoises, TempNoises, RainNoises);
+        map.insert({ hash, std::make_shared<Chunk>(_position, CellSize, 80.f / 125.f, vp) });
         
-        for (auto const& [key, val] : map[hash]->GetMap())
-            val->SetBiome(DetermineBiome(mte, { val->GetPosition().x, val->GetPosition().y }, TempNoises, RainNoises), bt);
+        for (auto const& [key, val] : map[hash]->GetMap()) {
+            std::pair<BIOME, std::shared_ptr<Boomerang::Core::Graphics::Texture>> p;
+            p = VoronoiPoint::ClosestBiome({ val->GetPosition().x, val->GetPosition().y }, vp, bt);
+            val->SetBiome(p.first, p.second);
+        }
+            
     }
 
     void Grid::LoadChunk(const ASWL::eXperimental::SetHash& hash, const float layer) {

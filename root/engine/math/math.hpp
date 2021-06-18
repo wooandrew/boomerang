@@ -52,6 +52,8 @@ namespace Boomerang::Core::Math {
         return (radians * static_cast<T>(180)) / glm::pi<T>();
     }
 
+    const float Distance(const glm::vec2& p1, const glm::vec2& p2);
+
     const glm::vec3& RotatePoint(glm::vec3& point, const glm::vec3& pivot, float rotation, AngleType type = AngleType::DEGREES);
 
     const float SmoothNoise2D(float x, float y, std::function<float(int, int)> Noise2D);

@@ -1,0 +1,40 @@
+v0.1.0-pre.3-alpha (2w) World Generation Methodology:
+
+    SUMMARY:
+    Calculate precipitation and temperature using layered perlin noise functions,
+    such that each node has a procedurally generated temperature/precipitation map
+    that can is mapped to a biome diagram. The biome of that node is thusly determined.
+    This is the original implementation of world generation for Project Boomerang.
+
+    PSEUDOCODE:
+    func DETERMINE_BIOME(node, temp_noise, rain_noise):
+        
+        temp = Perlin(node, temp_noise);
+        rain = Perlin(node, rain_noise)
+
+        if (temp fall within range && rain falls within range):
+            map node to biome
+
+----------------------------------------------------------------------------------------------
+
+v0.1.0-pre.4-alpha (3w) World Generation Methodology (Proposed):
+    
+    SUMMARY:
+    Instead of layered perlin noise functions for precipitation and temperature,
+    the new world generation methodology will use Voronoi diagrams to generate more 
+    organic and larger biomes. This new methodology is proposed to reduce the randomness 
+    that is found in the original method; it will also increase the size of the biomes
+    thus creating more realistic biomes.
+
+    PROPOSAL:
+    1. During chunk generation, randomly choose a node within the chunk to be set as the
+       'Voronoi point.' This point will contain its true (node) position, as well as the
+       normalized chunk position (relative to [0, 0]).
+
+    2. Use layered perlin noise functions for precipitation, temperature, and height to
+       determine the biome each Voronoi point is in. This is a perlin complexity increase
+       of 1.
+
+    3. Generate the rest of the nodes within the chunk, and do the same for the surrounding
+       chunks, then calculate Voronoi tesselation accordingly. Set any node within the Voronoi
+       tesselation biome to the appropriate biome.

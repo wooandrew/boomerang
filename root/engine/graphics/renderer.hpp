@@ -28,6 +28,7 @@
 
 // Include standard library
 #include <string>
+#include <chrono>
 #include <memory>
 
 // Include dependencies
@@ -39,42 +40,38 @@
 #include "camera/orthocam.hpp"
 #include "../world/chunk.hpp"
 
-namespace Boomerang::Core::Graphics {
+namespace Boomerang::Core::Graphics::Renderer {
 
-    class Renderer {
+    void init();
+    void shutdown();
 
-        /// Static rendering functions
+    void StartScene(const std::unique_ptr<OrthoCam>& camera, const std::string& _shader = "basic");
+    void FlushScene();
+    void EndScene();
 
-    public:
+    // Render Texture
+    void RenderTexture(const glm::vec2& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
+    void RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
 
-        Renderer() = delete;
-        
-        static void init();
-        static void shutdown();
+    // Render Text
+    void RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font);
+    void RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const Font& _font);
 
-        static void StartScene(const std::shared_ptr<OrthoCam>& camera, const std::string& _shader = "basic");
-        static void EndScene();
+    // Draw Static Quad
+    void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
+    void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
+    void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
+    void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
 
-        // Render Texture
-        static void RenderTexture(const glm::vec2& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
-        static void RenderTexture(const glm::vec3& _position, const glm::vec2& _scale, const std::shared_ptr<Texture>& _texture);
+    // Shader Only Rendering
+    //RESERVED FOR POSITION //static void LoadingDots(const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const float _runtime);
+    void LoadingDots(const glm::vec2& _WindowSize, const int _count, const float _spacing, const float _radius, const glm::vec4& _color, const std::chrono::steady_clock::duration& _clock);
 
-        // Render Text
-        static void RenderText(const std::string& _string, const glm::vec2& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
-        static void RenderText(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec3& _color, const std::shared_ptr<Font>& _font);
+    // Render Grid (debug_mode)
+    void RenderGrid(const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
 
-        // Draw Static Quad
-        static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const glm::vec4& _color);
-        static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const glm::vec4& _color);
-        static void DrawQuad(const glm::vec2& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
-        static void DrawQuad(const glm::vec3& _position, const glm::vec2& _size, const float _rotation, const glm::vec4& _color);
-
-        // Render Grid (debug_mode)
-        static void RenderGrid(const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
-
-        // Render Chunk (debug_mode) -> this should be called from render world
-        static void RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const float _CellSize, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _zoom = 1.f);
-    };
+    // Render Chunk (debug_mode) -> this should be called from render world
+    void RenderChunk(const std::shared_ptr<Boomerang::Core::World::Chunk>& chunk, const glm::vec2& _WindowSize, const glm::vec3& _CameraPosition, const float _CellSize, const float _zoom = 1.f);
 }
 
 #endif // !BOOMERANG_ENGINE_GRAPHICS_RENDERER

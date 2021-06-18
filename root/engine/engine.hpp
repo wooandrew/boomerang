@@ -57,10 +57,16 @@ namespace Boomerang::Core {
         struct Metadata {       // This struct contains the metadata for the engine/glfwWindow. The data inside should be set BEFORE the engine is initialized.
 
             // Engine metadata
-            bool autoinit = true;               // Automatically initialize engine components
+            bool autoinit = false;              // Automatically initialize engine components
             bool debugmode = false;             // Enable debug mode
             bool loggingEnabled = true;         // Enable logging
-            bool fullscreenmode = true;         // Enable full screen mode
+            bool enableVSync = false;           // Enable VSync
+
+            enum class VideoMode {
+                WINDOWED,
+                FULLSCREEN,
+                WINDOWED_FULLSCREEN
+            }; VideoMode vidmode = VideoMode::WINDOWED;
 
             std::vector<float> clearcolor = { 1.f, 1.f, 1.f, 0.f };     // Render surface clear color
             //RendererType rendermode = RendererType::Render_2D;        // Engine render mode
@@ -91,6 +97,8 @@ namespace Boomerang::Core {
         std::string WindowTitle;
         glm::vec2 WindowDimensions;
         glm::vec2 FramebufferDimensions;
+
+        int MaxTextureImageUnits;
     };
 }
 

@@ -1,4 +1,4 @@
-# Project Boomerang : Sandbox (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
+# Project Boomerang : Sandbox/unit_test (c) 2020-2021 Andrew Woo, Porter Squires, Brandon Yau, and Awrish Khan
 
 # Modified MIT License
 # 
@@ -22,7 +22,4 @@
 
 cmake_minimum_required (VERSION 3.8)
 
-add_subdirectory(unit_test)
-
-add_executable(sandbox_cpp test.cpp)
-add_executable(sandbox_c test.c)
+add_executable(perlin perlin.cpp)

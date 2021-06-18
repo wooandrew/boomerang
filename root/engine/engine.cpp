@@ -36,6 +36,9 @@ namespace Boomerang::Core {
         WindowTitle = _WindowTitle;
         WindowDimensions = _WindowDimensions;
         FramebufferDimensions = glm::vec2(0);
+
+        if (metadata.autoinit)
+            init();
     }
     // Define defalt engine destructor
     Engine::~Engine() {
@@ -83,7 +86,7 @@ namespace Boomerang::Core {
         int height = 0;        
         glfwGetFramebufferSize(window, &width, &height);
         FramebufferDimensions = glm::vec2(width, height);
-        glfwSwapInterval(1);
+        glfwSwapInterval(metadata.enableVSync);
 
         // Window Setup
         const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -92,9 +95,15 @@ namespace Boomerang::Core {
         glfwSetWindowPos(window, xPos, yPos);
 
         // Full screen
-        if (metadata.fullscreenmode) {
+        if (metadata.vidmode == Metadata::VideoMode::FULLSCREEN) {
 
             glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+            SetWindowSize(mode->width, mode->height);
+            glad_glViewport(0, 0, mode->width, mode->height);
+        }
+        else if (metadata.vidmode == Metadata::VideoMode::WINDOWED_FULLSCREEN) {
+
+            glfwSetWindowMonitor(window, nullptr, 0, 0, mode->width, mode->height, mode->refreshRate);
             SetWindowSize(mode->width, mode->height);
             glad_glViewport(0, 0, mode->width, mode->height);
         }
@@ -105,6 +114,13 @@ namespace Boomerang::Core {
         glfwSetCursorPosCallback(window, Boomerang::Core::Input::Mouse::MousePositionCallback);
         glfwSetMouseButtonCallback(window, Boomerang::Core::Input::Mouse::MouseButtonCallback);
         glfwSetKeyCallback(window, Boomerang::Core::Input::Keyboard::KeyCallback);
+
+        // Get maximum number of textures that can be bound at once
+        glad_glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &MaxTextureImageUnits);
+
+        // Log System Info
+        ASWL::Logger::logger(" OGL ", "GL version:", glad_glGetString(GL_VERSION));
+        ASWL::Logger::logger(" OGL ", "GPU vendor:", glad_glGetString(GL_VENDOR));
 
         return 0;
     }

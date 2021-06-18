@@ -99,6 +99,10 @@ namespace Boomerang::Core::Graphics {
         return ViewProjectionMatrix;
     }
 
+    const bool OrthoCam::locked() const {
+        return lock;
+    }
+
     void OrthoCam::RecalculateMatrix() {
 
         // Scale, rotate, translate
@@ -114,24 +118,15 @@ namespace Boomerang::Core::Graphics {
 
         if (!lock) {
 
-            // TODO: Remove trig movement
-            if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W)) {               // UP
-                position.x -= std::sin(glm::radians(rotation)) * speed * dt;
-                position.y += std::cos(glm::radians(rotation)) * speed * dt;
-            }
-            else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S)) {          // DOWN
-                position.x += std::sin(glm::radians(rotation)) * speed * dt;
-                position.y -= std::cos(glm::radians(rotation)) * speed * dt;
-            }
+            if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_W))                 // UP
+                position.y += speed * dt;
+            else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_S))            // DOWN
+                position.y -= speed * dt;
 
-            if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A)) {               // LEFT
-                position.x -= std::cos(glm::radians(rotation)) * speed * dt;
-                position.y -= std::sin(glm::radians(rotation)) * speed * dt;
-            }
-            else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D)) {          // RIGHT
-                position.x += std::cos(glm::radians(rotation)) * speed * dt;
-                position.y += std::sin(glm::radians(rotation)) * speed * dt;
-            }
+            if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_A))                 // LEFT
+                position.x -= speed * dt;
+            else if (Boomerang::Core::Input::Keyboard::KeyIsPressed(GLFW_KEY_D))            // RIGHT
+                position.x += speed * dt;
 
             RecalculateMatrix();
         }

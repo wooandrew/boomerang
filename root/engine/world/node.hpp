@@ -53,7 +53,7 @@ namespace Boomerang::Core::World {
         void SetSize(const glm::vec2& _size);
         void SetScale(const glm::vec2& _scale);
         void SetTexture(const std::shared_ptr<Boomerang::Core::Graphics::Texture>& _texture);
-        void SetBiome(const BIOME _biome, const BIOME_TEXTURES bt);
+        void SetBiome(const BIOME _biome, const std::shared_ptr<Boomerang::Core::Graphics::Texture>& _texture);
         
         // Getters
         const glm::vec3& GetPosition() const;

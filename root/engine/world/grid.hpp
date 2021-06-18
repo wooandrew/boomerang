@@ -46,7 +46,7 @@ namespace Boomerang::Core::World {
     public:
 
         Grid(float _CellSize = 80.f, float _scale = 1.f);
-        Grid(float seed, float _CellSize = 80.f, float _scale = 1.f);
+        Grid(float seed, float _CellSize, float _scale);
         ~Grid();
 
         void init(const glm::vec3& _position, const glm::vec2& _windowSize);
@@ -70,8 +70,11 @@ namespace Boomerang::Core::World {
         std::map<ASWL::eXperimental::SetHash, std::shared_ptr<Chunk>> map;     // Loaded chunk map
 
         std::mt19937_64 mte;
+        std::vector<std::function<float(int, int)>> HeightNoises;
         std::vector<std::function<float(int, int)>> TempNoises;
         std::vector<std::function<float(int, int)>> RainNoises;
+
+        std::function<glm::vec2(int, int)> VoronoiFunction;
 
         glm::vec3 LastPosition;
 

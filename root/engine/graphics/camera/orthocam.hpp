@@ -59,6 +59,8 @@ namespace Boomerang::Core::Graphics {
         const glm::mat4& GetProjectionMatrix() const;
         const glm::mat4& GetViewProjectionMatrix() const;
 
+        const bool locked() const;
+
         // dt = delta time
         virtual void update(float dt);
 

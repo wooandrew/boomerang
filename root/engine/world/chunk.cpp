@@ -26,15 +26,19 @@
 
 namespace Boomerang::Core::World {
 
-    Chunk::Chunk(const glm::vec3& _position, const float _CellSize, const float _scale) {
+    Chunk::Chunk(const glm::vec3& _position, const float _CellSize, const float _scale, const VoronoiPoint& _vp) {
 
         position = _position;
         CellSize = _CellSize;
+        ChunkCoord = { position.x / 8, position.y / 8 };
+        vp = _vp;
         Generate(glm::vec2(_CellSize), glm::vec2(_scale));
     }
 
-    Chunk::Chunk(const glm::vec3& _position, const glm::vec2& _CellSize, const glm::vec2& _scale) {
+    Chunk::Chunk(const glm::vec3& _position, const glm::vec2& _CellSize, const glm::vec2& _scale, const VoronoiPoint& _vp) {
         position = _position;
+        ChunkCoord = { position.x / 8, position.y / 8 };
+        vp = _vp;
         Generate(_CellSize, _scale);
     }
 

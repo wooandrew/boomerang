@@ -117,7 +117,7 @@ namespace Boomerang::Core::Graphics {
 
         unsigned int program = glad_glCreateProgram();
 
-        std::array<unsigned int, 2> ids;
+        std::array<unsigned int, 2> ids = {};
         int idIndex = 0;
 
         for (auto& source : sources) {
@@ -197,6 +197,9 @@ namespace Boomerang::Core::Graphics {
     const std::string& Shader::GetName() const {
         return name;
     }
+    const unsigned int Shader::GetRendererID() const {
+        return RendererID;
+    }
 
     void Shader::Bind() const {
         glad_glUseProgram(RendererID);
@@ -221,8 +224,15 @@ namespace Boomerang::Core::Graphics {
     void Shader::SetFloat4(const std::string& _name, const glm::vec4& _value) {
         UploadUniformFloat4(_name, _value);
     }
+    void Shader::SetMat3(const std::string& _name, const glm::mat3& _value) {
+        UploadUniformMat3(_name, _value);
+    }
     void Shader::SetMat4(const std::string& _name, const glm::mat4& _value) {
         UploadUniformMat4(_name, _value);
+    }
+
+    void Shader::SetInt1v(const std::string& _name, const int _count, const int* _values) {
+        UploadUniformInt1v(_name, _count, _values);
     }
 
     void Shader::UploadUniformInt(const std::string& _name, int _value) {
@@ -256,6 +266,10 @@ namespace Boomerang::Core::Graphics {
         glad_glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(_matrix));
     }
 
+    void Shader::UploadUniformInt1v(const std::string& _name, const int _count, const int* _values) {
+        GLuint location = glad_glGetUniformLocation(RendererID, _name.c_str());
+        glad_glUniform1iv(location, _count, _values);
+    }
 
     ShaderLibrary::ShaderLibrary(const std::string& _libraryPath) {
         init(_libraryPath);

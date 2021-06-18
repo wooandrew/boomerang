@@ -53,6 +53,7 @@ namespace Boomerang::Core::Graphics {
         vtxBuffer->Bind();
 
         const auto& layout = vtxBuffer->GetLayout();
+
         for (const auto& element : layout) {
 
             glad_glEnableVertexAttribArray(VertexBufferIndex);

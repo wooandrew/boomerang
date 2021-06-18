@@ -27,6 +27,10 @@
 
 namespace Boomerang::Core::Math {
 
+    const float Distance(const glm::vec2& p1, const glm::vec2& p2) {
+        return std::sqrtf(std::powf(p2.x - p1.x, 2) + std::powf(p2.y - p1.y, 2));
+    }
+
     const glm::vec3& RotatePoint(glm::vec3& point, const glm::vec3& pivot, float rotation, AngleType type) {
 
         if (type == AngleType::DEGREES)
@@ -48,9 +52,9 @@ namespace Boomerang::Core::Math {
 
     const float SmoothNoise2D(float x, float y, std::function<float(int, int)> Noise2D) {
 
-        float corners = (Noise2D(x - 1, y - 1) + Noise2D(x + 1, y - 1) + Noise2D(x - 1, y + 1) + Noise2D(x + 1, y + 1)) / 16;
-        float sides = (Noise2D(x - 1, y) + Noise2D(x + 1, y) + Noise2D(x, y - 1) + Noise2D(x, y + 1)) / 8;
-        float center = Noise2D(x, y) / 4;
+        float corners = (Noise2D(x - 1, y - 1) + Noise2D(x + 1, y - 1) + Noise2D(x - 1, y + 1) + Noise2D(x + 1, y + 1)) / 16.f;
+        float sides = (Noise2D(x - 1, y) + Noise2D(x + 1, y) + Noise2D(x, y - 1) + Noise2D(x, y + 1)) / 8.f;
+        float center = Noise2D(x, y) / 4.f;
         
         return corners + sides + center;
     }
@@ -127,7 +131,7 @@ namespace Boomerang::Core::Math {
 
         std::vector<std::function<float(int, int)>> Noises;
 
-        unsigned long cRangeLo = mte() % 10000000000;
+        unsigned long cRangeLo = (mte() % 10000000000) + 1000000000;
         unsigned long cRangeHi = cRangeLo + (mte() % (cRangeLo / 1000));
 
         std::vector<int> aPrimes = GenPrime(10000, 99999);
