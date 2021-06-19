@@ -35,14 +35,21 @@
 
 namespace Boomerang::Core::Graphics {
 
-    class Vertex {
+    struct Vertex {
+        glm::vec3 position;
+        glm::vec2 texcoord;
+        glm::vec4 color;
+        float texslot;
+    };
+
+    class VertexArray {
 
         /// Vertex array class
 
     public:
 
-        Vertex();
-        ~Vertex();
+        VertexArray();
+        ~VertexArray();
 
         void Bind() const;
         void Unbind() const;
@@ -55,7 +62,7 @@ namespace Boomerang::Core::Graphics {
 
     private:
 
-        unsigned int RendererID;
+        unsigned int vtxaobj;
         unsigned int VertexBufferIndex;
 
         std::vector<std::shared_ptr<VertexBuffer>> VertexBuffers;

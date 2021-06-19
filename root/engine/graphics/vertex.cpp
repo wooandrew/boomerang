@@ -27,29 +27,29 @@
 
 namespace Boomerang::Core::Graphics {
 
-    Vertex::Vertex() {
+    VertexArray::VertexArray() {
         VertexBufferIndex = 0;
-        glad_glCreateVertexArrays(1, &RendererID);
+        glad_glCreateVertexArrays(1, &vtxaobj);
     }
-    Vertex::~Vertex() {
-        glad_glDeleteVertexArrays(1, &RendererID);
+    VertexArray::~VertexArray() {
+        glad_glDeleteVertexArrays(1, &vtxaobj);
     }
 
-    void Vertex::Bind() const {
-        glad_glBindVertexArray(RendererID);
+    void VertexArray::Bind() const {
+        glad_glBindVertexArray(vtxaobj);
     }
-    void Vertex::Unbind() const {
+    void VertexArray::Unbind() const {
         glad_glBindVertexArray(0);
     }
 
-    void Vertex::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vtxBuffer) {
+    void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vtxBuffer) {
 
         if (vtxBuffer->GetLayout().GetElements().size() == 0) {
             ASWL::Logger::logger("VA001", "Error: Vertex Buffer has no layout.");
             return;
         }
 
-        glad_glBindVertexArray(RendererID);
+        glad_glBindVertexArray(vtxaobj);
         vtxBuffer->Bind();
 
         const auto& layout = vtxBuffer->GetLayout();
@@ -58,25 +58,25 @@ namespace Boomerang::Core::Graphics {
 
             glad_glEnableVertexAttribArray(VertexBufferIndex);
             glad_glVertexAttribPointer(VertexBufferIndex, element.GetComponentCount(), ShaderTypeToGLBaseType(element.type),
-                                       element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.offset);
+                                       element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), reinterpret_cast<const void*>(element.offset));
             VertexBufferIndex++;
         }
 
         VertexBuffers.push_back(vtxBuffer);
     }
 
-    void Vertex::SetIndexBuffer(const std::shared_ptr<Boomerang::Core::Graphics::IndexBuffer>& idxBuffer) {
+    void VertexArray::SetIndexBuffer(const std::shared_ptr<Boomerang::Core::Graphics::IndexBuffer>& idxBuffer) {
 
-        glad_glBindVertexArray(RendererID);
+        glad_glBindVertexArray(vtxaobj);
         idxBuffer->Bind();
 
         ptrIndexBuffer = idxBuffer;
     }
 
-    const std::vector<std::shared_ptr<VertexBuffer>>& Vertex::GetVertexBuffers() const {
+    const std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::GetVertexBuffers() const {
         return VertexBuffers;
     }
-    const std::shared_ptr<IndexBuffer>& Vertex::GetIndexBuffer() const {
+    const std::shared_ptr<IndexBuffer>& VertexArray::GetIndexBuffer() const {
         return ptrIndexBuffer;
     }
 }

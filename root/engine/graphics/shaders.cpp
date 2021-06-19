@@ -230,6 +230,9 @@ namespace Boomerang::Core::Graphics {
     void Shader::SetMat4(const std::string& _name, const glm::mat4& _value) {
         UploadUniformMat4(_name, _value);
     }
+    void Shader::SetBool(const std::string& _name, const bool _value) {
+        UploadUniformBool(_name, _value);
+    }
 
     void Shader::SetInt1v(const std::string& _name, const int _count, const int* _values) {
         UploadUniformInt1v(_name, _count, _values);
@@ -264,6 +267,10 @@ namespace Boomerang::Core::Graphics {
     void Shader::UploadUniformMat4(const std::string& _name, const glm::mat4& _matrix) {
         GLuint location = glad_glGetUniformLocation(RendererID, _name.c_str());
         glad_glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(_matrix));
+    }
+    void Shader::UploadUniformBool(const std::string& _name, const bool _value) {
+        GLuint location = glad_glGetUniformLocation(RendererID, _name.c_str());
+        glad_glUniform1i(location, _value);
     }
 
     void Shader::UploadUniformInt1v(const std::string& _name, const int _count, const int* _values) {

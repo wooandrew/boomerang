@@ -26,6 +26,7 @@
 // Include standard library
 #include <map>
 #include <fstream>
+//#include <algorithm>
 
 // Include dependencies
 #include <glad/glad.h>
@@ -33,21 +34,13 @@
 
 namespace Boomerang::Core::Graphics {
 
-    void Character::Bind(unsigned int _slot) const {
-        glad_glBindTextureUnit(_slot, TextureID);
-    }
-
     Font::Font() {
         FontName = "null";
         FontPath = "null";
         FontSize = 48;
+        dimensions = { 0, 0 };
     }
     Font::Font(const std::string& _FontName, const std::string& _FontPath, int _FontSize) {
-
-        FontName = _FontName;
-        FontPath = _FontPath;
-        FontSize = _FontSize;
-
         init(_FontName, _FontPath, _FontSize);
     }
     Font::~Font() {
@@ -59,6 +52,7 @@ namespace Boomerang::Core::Graphics {
         FontName = _FontName;
         FontPath = _FontPath;
         FontSize = _FontSize;
+        dimensions = { 0, 0 };
         
         FT_Library library;
         if (FT_Init_FreeType(&library)) {
@@ -78,7 +72,7 @@ namespace Boomerang::Core::Graphics {
         // Disable byte-alignment restriction
         glad_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        for (unsigned char c = 0; c < 128; c++) {
+        for (unsigned char c = 32; c < 128; c++) {
 
             // Load glyph 
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
@@ -86,28 +80,44 @@ namespace Boomerang::Core::Graphics {
                 continue;
             }
 
-            // Generate texture
-            unsigned int texture;
-            glad_glGenTextures(1, &texture);
-            glad_glBindTexture(GL_TEXTURE_2D, texture);
-            glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+            // Calculate atlas dimensions
+            dimensions.x += face->glyph->bitmap.width + 1;
+            dimensions.y = std::max(dimensions.y, static_cast<float>(face->glyph->bitmap.rows));
+        }
 
-            // Set texture options
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // Generate texture
+        glad_glGenTextures(1, &TextureID);
+        glad_glBindTexture(GL_TEXTURE_2D, TextureID);
+        glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, dimensions.x, dimensions.y, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // Set texture options
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-            // Store character for later use
-            Character character = {
-                texture,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                face->glyph->advance.x
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glad_glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glad_glBindTexture(GL_TEXTURE_2D, TextureID);
+
+        int x = 0;
+        for (unsigned char c = 32; c < 128; c++) {
+
+            // Load glyph 
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER))      // No need to log error here, if error occurs, it will 
+                continue;                                   // already have been logged by the previous loop.
+
+            // Sub in glyph data
+            glad_glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+
+            characters[c] = {
+                c,
+                { face->glyph->bitmap.width, face->glyph->bitmap.rows },
+                { face->glyph->bitmap_left, face->glyph->bitmap_top },
+                { face->glyph->advance.x, face->glyph->advance.y },
+                static_cast<float>(x) / dimensions.x
             };
 
-            characters.insert(std::pair<char, Character>(c, character));
+            x += face->glyph->bitmap.width + 1;
         }
 
         FT_Done_Face(face);
@@ -120,9 +130,22 @@ namespace Boomerang::Core::Graphics {
     const std::map<char, Character>& Font::GetCharacters() const {
         return characters;
     }
-
     const int Font::GetSize() const {
         return FontSize;
+    }
+    std::vector<glm::vec2> Font::GetTexCoords(char _character) {
+
+        std::vector<glm::vec2> texcoords = { { 0.f, 0.f }, { 1.f, 0.f }, { 1.f, 1.f }, { 0.f, 1.f } };
+
+        Character ch = characters[_character];
+
+        // Bottom left to top left counter clockwise
+        texcoords[0] = { ch.tc_offset, 0 };                                                         // Bottom Left
+        texcoords[1] = { ch.tc_offset + (ch.size.x / dimensions.x), 0 };                            // Bottom Right
+        texcoords[2] = { ch.tc_offset + (ch.size.x / dimensions.x), ch.size.y / dimensions.y };     // Top Right
+        texcoords[3] = { ch.tc_offset, ch.size.y / dimensions.y };                                  // Top Left
+
+        return texcoords;
     }
 
     // Font Library
@@ -131,14 +154,14 @@ namespace Boomerang::Core::Graphics {
         FontName = _FontName;
         FontPath = _FontPath;
 
-        fl.insert({ 48, Font(FontName, FontPath) });
+        fl.insert({ 48, std::make_shared<Font>(FontName, FontPath) });
     }
 
     void FontLibrary::AddSize(int _size) {
-        fl.insert({ _size, Font(FontName, FontPath, _size) });
+        fl.insert({ _size, std::make_shared<Font>(FontName, FontPath, _size) });
     }
 
-    const Font& FontLibrary::GetFont(int _size) {
+    const std::shared_ptr<Font>& FontLibrary::GetFont(int _size) {
 
         if (fl.count(_size) == 0)
             AddSize(_size);

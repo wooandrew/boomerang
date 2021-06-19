@@ -74,6 +74,7 @@ namespace Boomerang::Core::Graphics {
         void SetFloat4(const std::string& _name, const glm::vec4& _value);
         void SetMat3(const std::string& _name, const glm::mat3& _value);
         void SetMat4(const std::string& _name, const glm::mat4& _value);
+        void SetBool(const std::string& _name, const bool _value);
 
         void SetInt1v(const std::string& _name, const int _count, const int* _values);
 
@@ -90,6 +91,7 @@ namespace Boomerang::Core::Graphics {
         void UploadUniformFloat4(const std::string& _name, const glm::vec4& _value);
         void UploadUniformMat3(const std::string& _name, const glm::mat3& _matrix);
         void UploadUniformMat4(const std::string& _name, const glm::mat4& _matrix);
+        void UploadUniformBool(const std::string& _name, const bool _value);
 
         void UploadUniformInt1v(const std::string& _name, const int _count, const int* _values);
 

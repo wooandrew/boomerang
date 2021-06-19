@@ -106,55 +106,68 @@ namespace Boomerang::Core::Graphics {
     // ***********************************************************
     // *** Vertex Buffer *****************************************
     // ***********************************************************
-    VertexBuffer::VertexBuffer(float* vertices, unsigned int size) {
-
-        glad_glCreateBuffers(1, &RendererID);
-        glad_glBindBuffer(GL_ARRAY_BUFFER, RendererID);
-        glad_glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    VertexBuffer::VertexBuffer() {
+        vtxbobj = 0;
     }
 
     VertexBuffer::~VertexBuffer() {
-        glad_glDeleteBuffers(1, &RendererID);
+        glad_glDeleteBuffers(1, &vtxbobj);
     }
 
     void VertexBuffer::Bind() const {
-        glad_glBindBuffer(GL_ARRAY_BUFFER, RendererID);
+        glad_glBindBuffer(GL_ARRAY_BUFFER, vtxbobj);
     }
 
     void VertexBuffer::Unbind() const {
         glad_glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
+    void VertexBuffer::SetData(const void* _data, const uint32_t _size) {
+        glad_glBindBuffer(GL_ARRAY_BUFFER, vtxbobj);
+        glad_glBufferSubData(GL_ARRAY_BUFFER, 0, _size, _data);
+    }
+
     const BufferLayout& VertexBuffer::GetLayout() const {
         return layout;
     }
-
     void VertexBuffer::SetLayout(const BufferLayout& _layout) {
         layout = _layout;
+    }
+
+    void VertexBuffer::Create(uint32_t _size) {
+        glad_glCreateBuffers(1, &vtxbobj);
+        glad_glBindBuffer(GL_ARRAY_BUFFER, vtxbobj);
+        glad_glBufferData(GL_ARRAY_BUFFER, _size, nullptr, GL_DYNAMIC_DRAW);
+    }
+    void VertexBuffer::Create(float* _vertices, uint32_t _size) {
+        glad_glCreateBuffers(1, &vtxbobj);
+        glad_glBindBuffer(GL_ARRAY_BUFFER, vtxbobj);
+        glad_glBufferData(GL_ARRAY_BUFFER, _size, _vertices, GL_STATIC_DRAW);
     }
 
     // ***********************************************************
     // *** Index Buffer ******************************************
     // ***********************************************************
-    IndexBuffer::IndexBuffer(unsigned int* indices, unsigned int _count) {
+    IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t _size) {
 
-        count = _count;
-        glad_glCreateBuffers(1, &RendererID);
-        glad_glBindBuffer(GL_ARRAY_BUFFER, RendererID);
-        glad_glBufferData(GL_ARRAY_BUFFER, _count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+        count = sizeof(indices) / sizeof(uint32_t);
+
+        glad_glCreateBuffers(1, &idxbobj);
+        glad_glBindBuffer(GL_ARRAY_BUFFER, idxbobj);
+        glad_glBufferData(GL_ARRAY_BUFFER, _size , indices, GL_STATIC_DRAW);
     }
     IndexBuffer::~IndexBuffer() {
-        glad_glDeleteBuffers(1, &RendererID);
+        glad_glDeleteBuffers(1, &idxbobj);
     }
 
     void IndexBuffer::Bind() const {
-        glad_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RendererID);
+        glad_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxbobj);
     }
     void IndexBuffer::Unbind() const {
         glad_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    unsigned int IndexBuffer::GetCount() const {
+    const unsigned int IndexBuffer::GetCount() const {
         return count;
     }
 }

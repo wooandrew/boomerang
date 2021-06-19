@@ -12,6 +12,8 @@
 #include <ostream>
 #include <iostream>
 #include <functional>
+#include <unordered_map>
+#include <exception>
 
 namespace ASWL::eXperimental {
 
@@ -100,6 +102,75 @@ namespace ASWL::eXperimental {
             }
         }
     }
+
+    template<typename K, typename T> class UnorderedSizedMap {
+
+    public:
+
+        UnorderedSizedMap() = default;
+
+        UnorderedSizedMap(int _size) {
+            size = static_cast<unsigned int>(_size);
+        }
+        ~UnorderedSizedMap() { }
+
+        void insert(K key, T type) {
+
+            if (map.size() < size)
+                map.insert({ key, type });
+            else
+                throw std::out_of_range("Map size exceeded!");
+        }
+
+        bool insert_or_assign(K key, T type) {
+
+            if (map.find(key) != map.end())
+                map[key] = type;
+            else
+                insert(key, type);
+        }
+
+        T& operator[](K key) {
+
+            if (map.find(key) != map.end())
+                return map[key];
+            else {
+
+                if (map.size() < size)
+                    insert(key, nullptr);
+                else
+                    throw std::out_of_range("Map size exceeded!");
+            }
+
+            return map[key];
+        }
+
+        const std::unordered_map<K, T>& GetMap() const {
+            return map;
+        }
+        const unsigned int GetSize() const {
+            return map.size();
+        }
+
+        std::unordered_map<K, T>::iterator begin() {
+            return map.begin();
+        }
+        std::unordered_map<K, T>::iterator end() {
+            return map.end();
+        }
+
+        std::unordered_map<K, T>::const_iterator begin() const {
+            return map.begin();
+        }
+        std::unordered_map<K, T>::const_iterator end() const {
+            return map.end();
+        }
+
+    private:
+
+        std::unordered_map<K, T> map;
+        unsigned int size;
+    };
 }
 
 #endif

@@ -57,6 +57,7 @@ namespace Boomerang::Core::World {
         
         // Getters
         const glm::vec3& GetPosition() const;
+        const glm::vec3& GetTruePosition() const;
         const glm::vec2& GetSize() const;
         const glm::vec2& GetScale() const;
         const std::shared_ptr<Boomerang::Core::Graphics::Texture> GetTexture() const;

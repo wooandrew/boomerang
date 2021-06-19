@@ -22,10 +22,11 @@
 */
 
 #include "manager.hpp"
+#include <iostream>
 
-namespace Boomerang::Core::Graphics {
+namespace Boomerang::Core::Graphics::Manager {
 
-    void Manager::init(const glm::vec4& color) {
+    void init(const glm::vec4& color) {
 
         glad_glEnable(GL_BLEND);
         glad_glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -37,30 +38,33 @@ namespace Boomerang::Core::Graphics {
 
         SetClearColor(color);
     }
-    void Manager::shutdown() {
+    void shutdown() {
 
     }
 
-    void Manager::SetViewPort(int x, int y, int width, int height) {
+    void SetViewPort(int x, int y, int width, int height) {
         glad_glViewport(x, y, width, height);
     }
-    void Manager::SetClearColor(const glm::vec4& color) {
+    void SetClearColor(const glm::vec4& color) {
         glad_glClearColor(color.r, color.g, color.b, color.a);
     }
 
-    void Manager::Clear() {
+    void Clear() {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void Manager::BeginRender() {
+    void BeginRender() {
         Clear();
     }
-    void Manager::EndRender(GLFWwindow* window) {
+    void EndRender(GLFWwindow* window) {
         glfwSwapBuffers(window);
     }
 
-    void Manager::DrawIndexed(const std::unique_ptr<Vertex>& vtxArray) {
-        glad_glDrawElements(GL_TRIANGLES, vtxArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-        glad_glBindTexture(GL_TEXTURE_2D, 0);
+    void DrawIndexed(const std::unique_ptr<VertexArray>& vtxArray, int _count) {
+
+        unsigned int count = (_count == -1) ? vtxArray->GetIndexBuffer()->GetCount() * 6 : _count;
+
+        glad_glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+        //glad_glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

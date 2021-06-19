@@ -1,4 +1,4 @@
-01/11/2021
+01/11/2021 - DONE
 
 -> Shader Library implementation
     > Must be readable from assets
@@ -22,8 +22,13 @@ order:frag,vert
 DONE -> Change Misc to ASWL
 
 
-04/04/2021
+04/04/2021 - DONE
 
 Chunk data storage
 
 64 nodes per chunk (8x8) ; each node is stored inside a chunk object as a map
+
+
+06/12/2021
+
+Change ShaderType/ShaderDataType to GLSLType/GLSLDataType

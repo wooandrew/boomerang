@@ -43,7 +43,7 @@
 
 namespace Boomerang::Core {
 
-    constexpr const char* BUILD_VERSION = "Boomerang 5rv0.1.0-pre.4-alpha";
+    constexpr const char* BUILD_VERSION = "Boomerang 11rv0.1.0-pre.4-alpha";
 
     class Manager {
 
@@ -74,7 +74,7 @@ namespace Boomerang::Core {
         const bool GetWorldInitialized() const;
 
         const std::unique_ptr<Graphics::OrthoCam>& GetCamera(const std::string& _name);
-        const Graphics::Font& GetFont(const std::string& _name, int _size);
+        const std::shared_ptr<Graphics::Font>& GetFont(const std::string& _name, int _size);
         const std::unique_ptr<World::Grid>& GetWorld() const;
         
         const glm::vec2& GetWindowDimensions() const;

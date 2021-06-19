@@ -21,26 +21,78 @@
 //  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <iostream>
+#include <string>
+#include <unordered_map>
+#include <stdexcept>
 
-int noise(int x, int y) {
+// map size limiter
+template<typename K, typename T> class UnorderedSizedMap {
 
-    int n = x + y * 31;
-    n ^= n >> 2 | n << 2;
-    n %= 64;
+public:
 
-    //int nX = n % 8;
-    //int nY = n / 8;
+    UnorderedSizedMap(int _size) {
+        size = static_cast<unsigned int>(_size);
+    }
+    ~UnorderedSizedMap() { }
 
-    return n;
-}
+    void insert(K key, T type) {
+
+        if (map.size() < size)
+            map.insert({ key, type });
+        else
+            throw std::out_of_range("Map size exceeded!");
+    }
+
+    bool insert_or_assign(K key, T type) {
+        
+        if (map.find(key) != map.end())
+            map[key] = type;
+        else
+            insert(key, type);
+    }
+
+    T& operator[](K key) {
+
+        if (map.find(key) != map.end())
+            return map[key];
+        else {
+
+            if (map.size() < size)
+                insert(key, "");
+            else
+                throw std::out_of_range("Map size exceeded!");
+        }
+           
+        return map[key];
+    }
+
+    const std::unordered_map<K, T>& GetMap() const {
+        return map;
+    }
+
+private:
+
+    std::unordered_map<K, T> map;
+    unsigned int size;
+};
 
 int main(int argc, char** args) {
 
-    for (int x = 0; x < 10; x++) {
-        for (int y = 0; y < 10; y++) {
-            noise(x, y);
-        }
+    UnorderedSizedMap<int, std::string> usm(2);
+
+    try {
+        usm[0] = "Hello World";
+        usm[1] = "Hello World";
+        usm[2] = "Hello World";
+        usm[4] = "Hello World";
+        //usm.insert(10, "Hello World");
+    }
+    catch (std::exception& e) {
+        std::cout << e.what() << std::endl;
     }
     
+    for (auto& [key, val] : usm.GetMap())
+        std::cout << "Key: " << key << "\tType: " << val << std::endl;
+
     return 0;
 }

@@ -87,18 +87,23 @@ namespace Boomerang::Core::Graphics {
 
     public:
 
-        VertexBuffer(float* vertices, unsigned int size);
+        VertexBuffer();
         ~VertexBuffer();
 
         void Bind() const;
         void Unbind() const;
 
+        void SetData(const void* _data, const uint32_t _size);
+
         const BufferLayout& GetLayout() const;
         void SetLayout(const BufferLayout& _layout);
 
+        void Create(uint32_t _size);
+        void Create(float* _vertices, uint32_t _size);
+
     private:
 
-        unsigned int RendererID;
+        unsigned int vtxbobj;
         BufferLayout layout;
     };
 
@@ -108,18 +113,18 @@ namespace Boomerang::Core::Graphics {
 
     public:
 
-        IndexBuffer(unsigned int* indices, unsigned int _count);
+        IndexBuffer(uint32_t* _indices, uint32_t _size); // Maybe change uint32_t to be a template type
         ~IndexBuffer();
 
         void Bind() const;
         void Unbind() const;
 
-        unsigned int GetCount() const;
+        const unsigned int GetCount() const;
 
     private:
 
-        unsigned int RendererID;
         unsigned int count;
+        unsigned int idxbobj;
     };
 }
 
