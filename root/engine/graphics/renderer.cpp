@@ -307,7 +307,6 @@ namespace Boomerang::Core::Graphics::Renderer {
     // Render text functions
     void RenderText(const std::string& _string, const render_data& _data, const std::shared_ptr<Font>& _font) {
 
-        sData.__shader_library->GetMap().find("text")->second->SetFloat4("u_Color", _data.color);
         sData.__shader_library->GetMap().find("text")->second->SetBool("u_Debug", false);
 
         if (sData.__texslot > sData.__max_texture_units - 1 || sData.__quad_index_count > sData.MaxIndices)
@@ -369,22 +368,6 @@ namespace Boomerang::Core::Graphics::Renderer {
 
             px += ((static_cast<int>(ch.advance.x) >> 6) - (ch.bearing.x / 2.f)) * _data.scale.x;
         }
-    }
-    void RenderTextOld(const std::string& _string, const glm::vec3& _position, const glm::vec2& _scale, const glm::vec4& _color, const std::shared_ptr<Font>& _font) {
-
-        sData.__quad_vtx_array_fixed->Bind();
-        sData.__shader_library->GetMap().find("text_old")->second->SetFloat4("u_Color", _color);
-
-        _font->Bind(0);
-
-        glm::vec3 scale = glm::vec3(_font->GetDimensions() * _scale, 1.f);
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), _position) * glm::scale(glm::mat4(1.f), scale);
-
-        sData.__shader_library->GetMap().find("text_old")->second->SetMat4("u_Transform", transform);
-
-        Manager::DrawIndexed(sData.__quad_vtx_array_fixed);
-
-        sData.__quad_vtx_array->Bind();
     }
 
     // Render Loading Indicator
