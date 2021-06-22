@@ -33,7 +33,7 @@
 
 // Include dependencies
 #include <GLM/glm/glm.hpp>
-#include <ASWL/utilities.hpp>
+#include <ASWL/timers.hpp>
 
 // Include boomerang libraries
 #include "engine.hpp"
@@ -43,7 +43,7 @@
 
 namespace Boomerang::Core {
 
-    constexpr const char* BUILD_VERSION = "Boomerang 12rv0.1.0-pre.4-alpha";
+    constexpr const char* BUILD_VERSION = "Boomerang 0fv0.1.0-pre.5-alpha";
 
     class Manager {
 
@@ -69,7 +69,10 @@ namespace Boomerang::Core {
 
         // Getters
         const float dt();
+        const float ft();
         const float fps();
+
+        std::string ft_str();
 
         const bool GetWorldInitialized() const;
 
@@ -91,7 +94,8 @@ namespace Boomerang::Core {
         bool world_initialized;
         std::unique_ptr<World::Grid> world;
 
-        ASWL::Utilities::DeltaTime DeltaTime;
+        ASWL::Timers::DeltaTime DeltaTime;
+        ASWL::Timers::FramesPerSecond _fps;
     };
 }
 

@@ -27,6 +27,8 @@
 #include <atomic>
 #include <chrono>
 #include <thread>
+#include <sstream>
+#include <iomanip>
 
 // Include dependencies
 #include <GLM/glm/gtc/matrix_transform.hpp>
@@ -41,6 +43,7 @@
 namespace Boomerang::Core {
 
     Manager::Manager() {
+
         DefaultCameraOrtho = glm::ortho(-500, 500, -309, 309);
         state = GAME_STATE::RUN;
 
@@ -91,7 +94,7 @@ namespace Boomerang::Core {
         FontLibrary["nsjpl"]->AddSize(32);
         FontLibrary["nsjpl"]->AddSize(56);
 
-        ASWL::Utilities::FramesPerSecond::UpdateFPS();
+        _fps.Update();
 
         return 0;
     }
@@ -125,7 +128,7 @@ namespace Boomerang::Core {
 
             // Update clocks
             DeltaTime.UpdateDeltaTime();
-            ASWL::Utilities::FramesPerSecond::UpdateFPS();
+            _fps.Update();
 
             // Update engine (poll events)
             engine.update();
@@ -140,6 +143,7 @@ namespace Boomerang::Core {
 
             Graphics::Renderer::StartScene(cameras["main_0"], "text");
             Boomerang::Core::Graphics::Renderer::RenderText(BUILD_VERSION, { { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec4(1.f) }, GetFont("nsjpl", 22));
+            Boomerang::Core::Graphics::Renderer::RenderText(ft_str(), {{820, 520, 0.1f}, {1.f, 1.f}, {0.f, 1.f, 0.f, 1.f}}, GetFont("nsjpl", 32));
             Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { { 920, 520, 0.1f }, { 1.f, 1.f }, { 0.f, 1.f, 0.f, 1.f } }, GetFont("nsjpl", 32));
             Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec4(1) }, GetFont("nsjpl", 32));
             Graphics::Renderer::EndScene();
@@ -154,7 +158,7 @@ namespace Boomerang::Core {
         cameras["main_0"]->SetLock(false);
         world_initialized = true;
 
-        ASWL::Utilities::FramesPerSecond::UpdateFPS();
+        _fps.Update(true);
     }
 
     void Manager::shutdown() {
@@ -173,7 +177,7 @@ namespace Boomerang::Core {
 
         // Update clocks
         DeltaTime.UpdateDeltaTime();
-        ASWL::Utilities::FramesPerSecond::UpdateFPS();
+        _fps.Update();
         
         // Update engine (poll events)
         engine.update();
@@ -192,8 +196,20 @@ namespace Boomerang::Core {
     const float Manager::dt() {
         return static_cast<float>(DeltaTime.GetDeltaTime());
     }
+    const float Manager::ft() {
+        return static_cast<float>(_fps.GetFT());
+    }
     const float Manager::fps() {
-        return static_cast<float>(ASWL::Utilities::FramesPerSecond::GetFPS());
+        return static_cast<float>(_fps.GetFPS());
+    }
+
+    std::string Manager::ft_str() {
+        
+        std::stringstream oss;
+
+        oss << std::fixed << std::setprecision(2) << _fps.GetFT();
+
+        return oss.str() + "ms";
     }
 
     const bool Manager::GetWorldInitialized() const {

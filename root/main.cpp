@@ -96,6 +96,7 @@ int main(int argc, char* argv[]) {
         
         Boomerang::Core::Graphics::Renderer::StartScene(manager.GetCamera("text_0"), "text");
         Boomerang::Core::Graphics::Renderer::RenderText(Boomerang::Core::BUILD_VERSION, { { 0, 290, LAYER1 }, { 1.f, 1.f }, glm::vec4(1.f) }, manager.GetFont("nsjpl", 22));
+        Boomerang::Core::Graphics::Renderer::RenderText(manager.ft_str(), { { 820, 520, LAYER1 }, { 1.f, 1.f }, {0.f, 1.f, 0.f, 1.f} }, manager.GetFont("nsjpl", 32));
         Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)manager.fps()), { { 920, 520, LAYER1 }, { 1.f, 1.f }, {0.f, 1.f, 0.f, 1.f} }, manager.GetFont("nsjpl", 32));
         Boomerang::Core::Graphics::Renderer::RenderText("Chunks Rendered: " + std::to_string((int)chunks_rendered), { { 0, 0, LAYER1 }, { 1.f, 1.f }, glm::vec4(0, 1, 0, 1) }, manager.GetFont("nsjpl", 32));
         Boomerang::Core::Graphics::Renderer::RenderText("Chunks Generated: " + std::to_string(manager.GetWorld()->GetMap().size()), { { 0, -30, LAYER1 }, { 1.f, 1.f }, glm::vec4(0, 1, 0, 1) }, manager.GetFont("nsjpl", 32));
