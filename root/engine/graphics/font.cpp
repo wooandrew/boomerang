@@ -114,8 +114,14 @@ namespace Boomerang::Core::Graphics {
                 { face->glyph->bitmap.width, face->glyph->bitmap.rows },
                 { face->glyph->bitmap_left, face->glyph->bitmap_top },
                 { face->glyph->advance.x, face->glyph->advance.y },
-                static_cast<float>(x) / dimensions.x
+                static_cast<float>(x) / dimensions.x,
             };
+
+            // Bottom left to top left counter clockwise
+            characters[c].TexCoords = { { characters[c].tc_offset, 0 },                                                                             // Bottom Left
+                                        { characters[c].tc_offset + (characters[c].size.x / dimensions.x), 0 },                                     // Bottom Right
+                                        { characters[c].tc_offset + (characters[c].size.x / dimensions.x), characters[c].size.y / dimensions.y },   // Top Right
+                                        { characters[c].tc_offset, characters[c].size.y / dimensions.y } };                                         // Top Left
 
             x += face->glyph->bitmap.width + 1;
         }

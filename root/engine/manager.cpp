@@ -142,10 +142,10 @@ namespace Boomerang::Core {
             Graphics::Manager::BeginRender();
 
             Graphics::Renderer::StartScene(cameras["main_0"], "text");
-            Boomerang::Core::Graphics::Renderer::RenderText(BUILD_VERSION, { { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec4(1.f) }, GetFont("nsjpl", 22));
-            Boomerang::Core::Graphics::Renderer::RenderText(ft_str(), {{820, 520, 0.1f}, {1.f, 1.f}, {0.f, 1.f, 0.f, 1.f}}, GetFont("nsjpl", 32));
-            Boomerang::Core::Graphics::Renderer::RenderText(std::to_string((int)fps()), { { 920, 520, 0.1f }, { 1.f, 1.f }, { 0.f, 1.f, 0.f, 1.f } }, GetFont("nsjpl", 32));
-            Boomerang::Core::Graphics::Renderer::RenderText("Generating the world...", { { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec4(1) }, GetFont("nsjpl", 32));
+            Graphics::Renderer::RenderText(BUILD_VERSION, { { 0, 290, 0.1f }, { 1.f, 1.f }, glm::vec4(1.f) }, GetFont("nsjpl", 22));
+            Graphics::Renderer::RenderText(ft_str(), {{820, 520, 0.1f}, {1.f, 1.f}, {0.f, 1.f, 0.f, 1.f}}, GetFont("nsjpl", 32));
+            Graphics::Renderer::RenderText(std::to_string((int)fps()), { { 920, 520, 0.1f }, { 1.f, 1.f }, { 0.f, 1.f, 0.f, 1.f } }, GetFont("nsjpl", 32));
+            Graphics::Renderer::RenderText("Generating the world...", { { 0, 50, 0.1f }, { 1.f, 1.f }, glm::vec4(1) }, GetFont("nsjpl", 32));
             Graphics::Renderer::EndScene();
 
             Graphics::Renderer::StartScene(cameras["grid_0"], "dots");

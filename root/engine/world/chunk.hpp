@@ -34,7 +34,7 @@
 
 // Include dependencies
 #include <GLM/glm/glm.hpp>
-#include "../../xperimental.hpp"
+#include <ASWL/experimental.hpp>
 
 // Include boomerang libraries
 #include "node.hpp"

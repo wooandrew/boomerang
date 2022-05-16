@@ -49,6 +49,8 @@ namespace Boomerang::Core::Graphics {
         glm::vec2 bearing;
         glm::vec2 advance;
         float tc_offset;
+
+        std::vector<glm::vec2> TexCoords;
     };
 
     class Font : public Texture {

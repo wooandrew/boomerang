@@ -37,7 +37,6 @@ namespace Boomerang::Core::World {
         size = _size;
         scale = _scale;
 
-        //texture = std::make_shared<Boomerang::Core::Graphics::Texture>("assets/nodes/test_125.png");
         rigidbody = std::make_shared<Boomerang::Core::Physics::Rigidbody>(GridToPixelCoord(position, size.x), size, scale);
 
         if (texture != nullptr)
@@ -50,7 +49,7 @@ namespace Boomerang::Core::World {
 
     void Node::UpdateTransform() {
 
-        transform = glm::translate(glm::mat4(1.0f), Boomerang::Core::World::GridToPixelCoord(position, size.x))
+        transform = glm::translate(glm::mat4(1.0f), GridToPixelCoord(position, size.x))
                   * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
     }
 

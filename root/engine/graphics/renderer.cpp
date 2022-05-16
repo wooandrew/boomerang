@@ -32,7 +32,7 @@
 
 // Include dependencies
 #include <GLM/glm/gtc/matrix_transform.hpp>
-//#include <GLM/glm/gtc/color_space.hpp>
+#include <ASWL/experimental.hpp>
 
 // Include boomerang libraries
 #include "manager.hpp"
@@ -58,7 +58,6 @@ namespace Boomerang::Core::Graphics::Renderer {
         // Vertex Array Data
         std::unique_ptr<VertexArray> __quad_vtx_array;
         std::shared_ptr<VertexBuffer> __quad_vtx_buffer;
-        std::unique_ptr<VertexArray> __quad_vtx_array_fixed;
         unsigned int __quad_index_count = 0;
         
         // Texture storage
@@ -68,6 +67,7 @@ namespace Boomerang::Core::Graphics::Renderer {
         std::shared_ptr<Texture> __white;
         std::vector<int> __samplers;
         ASWL::eXperimental::UnorderedSizedMap<int, std::shared_ptr<Texture>> __bound_texture_map;
+        std::vector<std::shared_ptr<Texture>> __bound_texture_array;
 
         // Vertex data storage
         Graphics::Vertex* __quad_vtx_buf_base = nullptr;
@@ -149,29 +149,6 @@ namespace Boomerang::Core::Graphics::Renderer {
         std::shared_ptr<IndexBuffer> __quad_ib = std::make_shared<IndexBuffer>(__quad_indices, sData.MaxIndices * sizeof(uint32_t));
         sData.__quad_vtx_array->SetIndexBuffer(__quad_ib);
 
-        // Create Vertex Array (fixed)
-        sData.__quad_vtx_array_fixed = std::make_unique<VertexArray>();
-
-        float __quad_vertices[] = {
-
-            // Positions            // Tex Coords
-            -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, // Bottom Left
-             0.5f, -0.5f, 0.0f,     1.0f, 0.0f, // Bottom Right
-             0.5f,  0.5f, 0.0f,     1.0f, 1.0f, // Top Right
-            -0.5f,  0.5f, 0.0f,     0.0f, 1.0f  // Top Left
-        };
-
-        // Create Vertex Buffer (fixed)
-        std::shared_ptr<VertexBuffer> __quad_vb_fixed = std::make_shared<VertexBuffer>();
-        __quad_vb_fixed->Create(__quad_vertices, sizeof(__quad_vertices));
-        __quad_vb_fixed->SetLayout({ { ShaderDataType::Float3, "a_Position" }, { ShaderDataType::Float2, "a_TexCoord" }});
-        sData.__quad_vtx_array_fixed->AddVertexBuffer(__quad_vb_fixed);
-
-        // Create Index Buffer (fixed)
-        uint32_t __quad_indices_fixed[6] = { 0, 1, 2, 2, 3, 0 };
-        std::shared_ptr<IndexBuffer> __quad_ib_fixed = std::make_shared<IndexBuffer>(__quad_indices_fixed, sizeof(__quad_indices_fixed));
-        sData.__quad_vtx_array_fixed->SetIndexBuffer(__quad_ib_fixed);
-
         // Initialize Shader Library
         sData.__shader_library = std::make_unique<ShaderLibrary>(ShaderLibrary("assets/shaders/.shaders"));
         sData.__quad_vtx_array->Bind();
@@ -188,9 +165,10 @@ namespace Boomerang::Core::Graphics::Renderer {
         sData.__white->SetData(&__white_data, sizeof(uint32_t));
 
         sData.__bound_texture_map = ASWL::eXperimental::UnorderedSizedMap<int, std::shared_ptr<Texture>>(sData.__max_texture_units);
+        sData.__bound_texture_array.resize(sData.__max_texture_units);
 
         for (int i = 0; i < sData.__max_texture_units; i++)
-            sData.__bound_texture_map[i] = sData.__white;
+            sData.__bound_texture_array[i] = sData.__white;
 
         delete[] __quad_indices;
     }
@@ -251,7 +229,7 @@ namespace Boomerang::Core::Graphics::Renderer {
             return;
 
         for (int i = 0; i < sData.__texslot; i++)
-            sData.__bound_texture_map[i]->Bind(i);
+            sData.__bound_texture_array[i]->Bind(i);
 
         uint32_t __size = reinterpret_cast<uint8_t*>(sData.__quad_vtx_buf_ptr) - 
                           reinterpret_cast<uint8_t*>(sData.__quad_vtx_buf_base);
@@ -288,13 +266,13 @@ namespace Boomerang::Core::Graphics::Renderer {
         int texslot = 0;
 
         for(int i = 1; i < sData.__texslot; i++) {
-            if (*sData.__bound_texture_map[i].get() == *_texture.get()) {
+            if (*sData.__bound_texture_array[i].get() == *_texture.get()) {
                 texslot = i;
                 break;
             }
         }
         if (texslot == 0) {
-            sData.__bound_texture_map[sData.__texslot] = _texture;
+            sData.__bound_texture_array[sData.__texslot] = _texture;
             texslot = sData.__texslot++;
         }
 
@@ -315,13 +293,13 @@ namespace Boomerang::Core::Graphics::Renderer {
         int texslot = 0;
 
         for (int i = 1; i < sData.__texslot; i++) {
-            if (sData.__bound_texture_map[i]->GetTextureID() == _font->GetTextureID()) {
+            if (sData.__bound_texture_array[i]->GetTextureID() == _font->GetTextureID()) {
                 texslot = i;
                 break;
             }
         }
         if (texslot == 0) {
-            sData.__bound_texture_map[sData.__texslot] = _font;
+            sData.__bound_texture_array[sData.__texslot] = _font;
             texslot = sData.__texslot++;
         }
 
@@ -356,15 +334,14 @@ namespace Boomerang::Core::Graphics::Renderer {
 
             float xPos = ((px + ch.bearing.x) + (ch.size.x / 2.f)) * _data.scale.x - offset.x;
 
-            // yPos offset calculations are inverted, because glyphs are inverted, then corrected in the shader.
+            // yPos offset calculations are inverted, because font is inverted, then corrected in the shader.
             // Offsets:  inverted y axis position    glyph baseline bearing       glyph centering     string height
             float yPos = (_data.position.y * -1.f) + (ch.size.y - ch.bearing.y) - (ch.size.y / 2.f) + (offset.y - 1.f);
 
             float t_Width = static_cast<float>(ch.size.x) * _data.scale.x;
             float t_Height = static_cast<float>(ch.size.y) * _data.scale.y;
 
-            auto tc = _font->GetTexCoords(*i);
-            AddQuad(CalculateVertexPositions({ xPos, yPos, pz += 0.00001 }, { t_Width, t_Height }), _data.color, tc.data(), static_cast<float>(texslot));
+            AddQuad(CalculateVertexPositions({ xPos, yPos, pz += 0.00001 }, { t_Width, t_Height }), _data.color, ch.TexCoords.data(), static_cast<float>(texslot));
 
             px += ((static_cast<int>(ch.advance.x) >> 6) - (ch.bearing.x / 2.f)) * _data.scale.x;
         }
@@ -413,13 +390,13 @@ namespace Boomerang::Core::Graphics::Renderer {
                 int texslot = 0;
 
                 for (int i = 1; i < sData.__texslot; i++) {
-                    if (*sData.__bound_texture_map[i].get() == *node->GetTexture().get()) {
+                    if (sData.__bound_texture_array[i]->GetTextureID() == node->GetTexture()->GetTextureID()) {
                         texslot = i;
                         break;
                     }
                 }
                 if (texslot == 0) {
-                    sData.__bound_texture_map[sData.__texslot] = node->GetTexture();
+                    sData.__bound_texture_array[sData.__texslot] = node->GetTexture();
                     texslot = sData.__texslot++;
                 }
 
@@ -438,13 +415,13 @@ namespace Boomerang::Core::Graphics::Renderer {
     //    int texslot = 0;
     //
     //    for (int i = 1; i < sData.__texslot; i++) {
-    //        if (*sData.__bound_texture_map[i].get() == *node->GetTexture().get()) {
+    //        if (*sData.__bound_texture_array[i].get() == *node->GetTexture().get()) {
     //            texslot = i;
     //            break;
     //        }
     //    }
     //    if (texslot == 0) {
-    //        sData.__bound_texture_map[sData.__texslot] = node->GetTexture();
+    //        sData.__bound_texture_array[sData.__texslot] = node->GetTexture();
     //        texslot = sData.__texslot++;
     //    }
     //

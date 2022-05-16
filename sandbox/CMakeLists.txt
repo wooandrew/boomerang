@@ -24,5 +24,11 @@ cmake_minimum_required (VERSION 3.8)
 
 add_subdirectory(unit_test)
 
+enable_language(ASM)
+
+
 add_executable(sandbox_cpp test.cpp)
 add_executable(sandbox_c test.c)
+
+target_link_libraries(sandbox_cpp PRIVATE libaswl)
+#target_link_libraries(sandbox_cpp PRIVATE "round.asm")
